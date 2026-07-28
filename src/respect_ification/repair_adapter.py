@@ -5,6 +5,7 @@ import hashlib
 import json
 import mimetypes
 import os
+import posixpath
 import re
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional, Set, Tuple
@@ -68,16 +69,31 @@ _MANIFEST_NAMES = {
     "webmanifest",
 }
 _STRING_LITERAL = re.compile(r"""["']([^"'\r\n]{1,240})["']""")
+_GENERIC_REFERENCE_NAMES = {
+    "cache.json",
+    "config.json",
+    "index.json",
+    "metadata.json",
+    "settings.json",
+}
 _CONTENT_WORDS = {
     "activity",
+    "activities",
     "chapter",
+    "chapters",
     "content",
     "course",
+    "courses",
     "exercise",
+    "exercises",
     "lesson",
+    "lessons",
     "module",
+    "modules",
     "song",
+    "songs",
     "unit",
+    "units",
 }
 _SIGNALS = {
     "launch": (
@@ -131,6 +147,47 @@ _SIGNALS = {
         "database",
         "query(",
         "download",
+    ),
+    "embedded_packaging": (
+        "assets.srcDir",
+        "src/main/assets",
+        "copy bundle resources",
+        "Bundle.main",
+        "includeAssets",
+        "embeddedResource",
+    ),
+    "embedded_loading": (
+        "assets.open",
+        "AssetManager",
+        "Bundle.main",
+        "getResource",
+        "classpath:",
+    ),
+    "remote_acquisition": (
+        "HttpURLConnection",
+        "HttpClient",
+        "URLSession",
+        "fetch(",
+        "download",
+        "ktor.client",
+        "OkHttpClient",
+    ),
+    "bounded_cache": (
+        "cacheDir",
+        "cachesDirectory",
+        "CacheStorage",
+        "IndexedDB",
+        "LruCache",
+        "maximumSize",
+        "maxCache",
+        "evict",
+    ),
+    "catalog_discovery": (
+        "application/opds+json",
+        "application/webpub+json",
+        "learningUnits",
+        "catalog",
+        "publication manifest",
     ),
 }
 
@@ -196,10 +253,30 @@ def _source_references(
     for source_path, text in source_text.items():
         for literal in _STRING_LITERAL.findall(text):
             normalized = literal.replace("\\", "/").lstrip("./")
+            resolved = {
+                normalized,
+                posixpath.normpath(
+                    posixpath.join(
+                        posixpath.dirname(source_path),
+                        literal.replace("\\", "/"),
+                    )
+                ),
+            }
             candidates = []
-            if normalized in inventory_paths:
-                candidates.append(normalized)
-            candidates.extend(by_name.get(Path(normalized).name, []))
+            for target in resolved:
+                if target in inventory_paths:
+                    candidates.append(target)
+                prefix = target.rstrip("/") + "/"
+                candidates.extend(
+                    path for path in inventory_paths if path.startswith(prefix)
+                )
+            basename_matches = by_name.get(Path(normalized).name, [])
+            if (
+                len(basename_matches) == 1
+                and Path(normalized).name.lower()
+                not in _GENERIC_REFERENCE_NAMES
+            ):
+                candidates.extend(basename_matches)
             for candidate in candidates:
                 if candidate == source_path:
                     continue
@@ -208,6 +285,24 @@ def _source_references(
         path: sorted(referrers)
         for path, referrers in sorted(references.items())
     }
+
+
+def _reaches_any_referrer(
+    path: str,
+    references: Dict[str, List[str]],
+    targets: Set[str],
+    visited: Optional[Set[str]] = None,
+) -> bool:
+    seen = set() if visited is None else visited
+    if path in seen:
+        return False
+    seen.add(path)
+    for referrer in references.get(path, []):
+        if referrer in targets:
+            return True
+        if _reaches_any_referrer(referrer, references, targets, seen):
+            return True
+    return False
 
 
 def analyze_canapp_source(
@@ -227,6 +322,7 @@ def analyze_canapp_source(
     )
     inventory = []
     source_text: Dict[str, str] = {}
+    reference_text: Dict[str, str] = {}
     text_by_path: Dict[str, Optional[str]] = {}
     for path in _files(root):
         relative = path.relative_to(root).as_posix()
@@ -239,6 +335,8 @@ def analyze_canapp_source(
             and text is not None
         ):
             source_text[relative] = text
+        if relative.startswith(scope_prefix) and text is not None:
+            reference_text[relative] = text
         inventory.append(
             {
                 "path": relative,
@@ -247,7 +345,7 @@ def analyze_canapp_source(
             }
         )
     inventory_paths = {item["path"] for item in inventory}
-    references = _source_references(source_text, inventory_paths)
+    references = _source_references(reference_text, inventory_paths)
     seams: Dict[str, List[str]] = {
         "build": [],
         "manifest": [],
@@ -270,6 +368,10 @@ def analyze_canapp_source(
             if any(signal.lower() in text.lower() for signal in signals):
                 seams[category].append(path)
     candidates = []
+    product_sources = set(source_text) - set(seams["build"])
+    embedded_build_files = set(seams["build"]) & set(
+        seams["embedded_packaging"]
+    )
     for item in inventory:
         path = item["path"]
         suffix = Path(path).suffix.lower()
@@ -282,12 +384,24 @@ def analyze_canapp_source(
         content_named = path.startswith(scope_prefix) and bool(
             words & _CONTENT_WORDS
         )
-        referenced_by_product = any(
-            source_path not in seams["build"]
-            for source_path in referrers
+        referenced_by_product = _reaches_any_referrer(
+            path,
+            references,
+            product_sources,
         )
-        if not content_named and not referenced_by_product:
+        embedded_by_build = _reaches_any_referrer(
+            path,
+            references,
+            embedded_build_files,
+        )
+        build_content_named = embedded_by_build and bool(words & _CONTENT_WORDS)
+        if not content_named and not referenced_by_product and not build_content_named:
             continue
+        delivery_evidence = []
+        if embedded_by_build:
+            delivery_evidence.append("embedded_by_build")
+        if referenced_by_product:
+            delivery_evidence.append("referenced_by_product_source")
         candidates.append(
             {
                 **item,
@@ -297,16 +411,22 @@ def analyze_canapp_source(
                 ),
                 "metadata_hint": _metadata_hint(text_by_path[path]),
                 "referenced_by": referrers,
+                "delivery_evidence": delivery_evidence,
                 "reasons": sorted(
                     reason
                     for reason, present in (
                         ("content-oriented path", content_named),
                         ("referenced by product source", referenced_by_product),
+                        ("included by build configuration", embedded_by_build),
                     )
                     if present
                 ),
             }
         )
+    embedded_content = bool(seams["embedded_packaging"]) or any(
+        "embedded_by_build" in item["delivery_evidence"]
+        for item in candidates
+    )
     return {
         "source_root_name": root.name,
         "canapp_root": (
@@ -321,6 +441,12 @@ def analyze_canapp_source(
             for key, values in seams.items()
         },
         "content_candidates": candidates,
+        "content_delivery": {
+            "embedded_content": embedded_content,
+            "on_demand_acquisition": bool(seams["remote_acquisition"]),
+            "bounded_cache": bool(seams["bounded_cache"]),
+            "catalog_discovery": bool(seams["catalog_discovery"]),
+        },
     }
 
 
@@ -338,6 +464,28 @@ def build_repair_adapter(
     ):
         raise ValueError("work plan semantic hash mismatch")
     analysis = analyze_canapp_source(source_root, canapp_root)
+    delivery = analysis["content_delivery"]
+    acquisition_required = bool(
+        analysis["content_candidates"]
+        and (
+            delivery["embedded_content"]
+            or not delivery["on_demand_acquisition"]
+            or not delivery["bounded_cache"]
+            or not delivery["catalog_discovery"]
+        )
+    )
+    if delivery["embedded_content"]:
+        source_delivery_state = "embedded"
+    elif delivery["on_demand_acquisition"] and not delivery["bounded_cache"]:
+        source_delivery_state = "remote_unbounded"
+    elif (
+        delivery["on_demand_acquisition"]
+        and delivery["bounded_cache"]
+        and delivery["catalog_discovery"]
+    ):
+        source_delivery_state = "external_on_demand"
+    else:
+        source_delivery_state = "external_or_unknown"
     tasks = [
         {
             "task_id": item.get("task_id"),
@@ -358,9 +506,22 @@ def build_repair_adapter(
         "profile_id": work_plan.get("profile_id"),
         "source_analysis": analysis,
         "tasks": tasks,
+        "content_acquisition_contract": {
+            "required": acquisition_required,
+            "source_delivery_state": source_delivery_state,
+            "requirements": [
+                "Keep ordinary lesson payloads outside the installable CanApp artifact.",
+                "Discover lightweight catalog and publication metadata before acquiring lesson payloads.",
+                "Acquire only the selected lesson through its declared publication resource.",
+                "Validate response status, media type, publication identity, and declared integrity before parsing.",
+                "Use a bounded persistent cache with offline reuse and deterministic eviction.",
+                "Keep proprietary lesson parsing and runtime integration in normal CanApp-owned code.",
+            ],
+        },
         "required_invariants": [
             "Trace the production content inventory through real build, storage, selection, loading, and completion paths before generating descriptions.",
             "Generate one truthful OPDS publication and Readium wrapper per real selectable lesson, or document and verify a real grouping represented by one publication.",
+            "Externalize ordinary lesson payloads and make the CanApp acquire only the selected publication resource on demand through a bounded, integrity-checked cache.",
             "Make every acquisition launch the exact selected lesson through the CanApp production entry path.",
             "Bind runtime activity and Experience API statements to the selected publication and actual lesson facts.",
             "Keep provisional external services outside the CanApp while serving source-derived, correctly formatted artifacts.",
@@ -409,6 +570,11 @@ def render_repair_prompt(adapter: Dict[str, Any]) -> str:
         "manifest",
         "existing_respect",
         "storage_or_loading",
+        "embedded_packaging",
+        "embedded_loading",
+        "remote_acquisition",
+        "bounded_cache",
+        "catalog_discovery",
         "selection",
         "completion",
         "launch",
@@ -435,6 +601,11 @@ def render_repair_prompt(adapter: Dict[str, Any]) -> str:
             "## Required repair behavior",
             "",
             "- Add or revise normal production code so an acquisition launch selects the exact catalog publication's real lesson.",
+            "- Remove ordinary lesson payloads from the installable application package. Retain only an explicitly justified bootstrap lesson when the product has a real offline-first requirement for it.",
+            "- Discover lightweight descriptor, catalog, and publication metadata first; download only the selected lesson when the learner selects or launches it.",
+            "- Validate the selected response status, media type, publication identity, and declared integrity before the proprietary lesson parser receives any bytes.",
+            "- Store acquired lessons in a bounded local cache that supports offline reuse, atomic replacement, and deterministic eviction without turning cached content into a second catalog authority.",
+            "- Keep the transport, catalog, publication, cache, and acquisition contracts content-format agnostic. The proprietary lesson parser remains CanApp-owned and is invoked only after generic acquisition validation succeeds.",
             "- Generate the default OPDS catalog and Readium publication wrappers from the verified real inventory. Preserve each native lesson artifact losslessly as a declared resource when applicable.",
             "- Derive identifiers, titles, media types, images, and other descriptions from real source facts. Do not invent a lesson, generic wrapper, marker resource, placeholder image, or disconnected activity.",
             "- Emit Experience API statements from the selected lesson's actual runtime lifecycle and completion facts. Do not use a hidden query parameter, debug-only completion route, canned snapshot, or Test Suite recognition.",

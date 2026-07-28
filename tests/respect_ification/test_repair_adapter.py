@@ -115,6 +115,153 @@ def test_source_analysis_scopes_product_code_but_follows_external_content(tmp_pa
     assert "other/unrelated.unit" not in paths
 
 
+def test_source_analysis_distinguishes_packaged_content_from_on_demand_acquisition(
+    tmp_path,
+):
+    app = tmp_path / "app"
+    app.mkdir()
+    (app / "build.gradle.kts").write_text(
+        'sourceSets["main"].assets.srcDir("../lesson-library")'
+    )
+    (app / "LessonLoader.kt").write_text(
+        'fun load(name: String) = context.assets.open(name)'
+    )
+    lessons = tmp_path / "lesson-library"
+    lessons.mkdir()
+    (lessons / "one.proprietary").write_text('{"title":"One"}')
+
+    analysis = analyze_canapp_source(tmp_path, canapp_root=Path("app"))
+
+    candidate = next(
+        item
+        for item in analysis["content_candidates"]
+        if item["path"] == "lesson-library/one.proprietary"
+    )
+    assert candidate["delivery_evidence"] == ["embedded_by_build"]
+    assert analysis["content_delivery"]["embedded_content"] is True
+    assert analysis["content_delivery"]["on_demand_acquisition"] is False
+    assert analysis["content_delivery"]["bounded_cache"] is False
+
+
+def test_source_analysis_does_not_mistake_publication_generation_for_packaging(
+    tmp_path,
+):
+    app = tmp_path / "app"
+    app.mkdir()
+    (app / "build.gradle.kts").write_text(
+        'tasks.register("catalog") { commandLine("python", "generate.py") }'
+    )
+    (app / "generate.py").write_text(
+        'MODEL = "publication.json"\n'
+        'def generate(): return MODEL\n'
+    )
+    (app / "publication.json").write_text(
+        '{"lesson_source_root":"../lesson-library"}'
+    )
+    lessons = tmp_path / "lesson-library"
+    lessons.mkdir()
+    (lessons / "one.proprietary").write_text('{"title":"One"}')
+    (app / "Acquisition.kt").write_text(
+        'HttpURLConnection(URL("https://example.test/catalog.json"))\n'
+        'val index = root.resolve("index.json")\n'
+        'fun evict() = Unit\n'
+        'const val catalog = "application/opds+json"\n'
+    )
+    unrelated = tmp_path / "unrelated-library"
+    unrelated.mkdir()
+    (unrelated / "index.json").write_text('{"not":"a lesson"}')
+
+    analysis = analyze_canapp_source(tmp_path, canapp_root=Path("app"))
+
+    candidate_paths = {
+        item["path"] for item in analysis["content_candidates"]
+    }
+    assert "lesson-library/one.proprietary" in candidate_paths
+    assert "unrelated-library/index.json" not in candidate_paths
+    candidate = next(
+        item
+        for item in analysis["content_candidates"]
+        if item["path"] == "lesson-library/one.proprietary"
+    )
+    assert candidate["delivery_evidence"] == ["referenced_by_product_source"]
+    assert analysis["content_delivery"] == {
+        "embedded_content": False,
+        "on_demand_acquisition": True,
+        "bounded_cache": True,
+        "catalog_discovery": True,
+    }
+    adapter = build_repair_adapter(
+        _work_plan(),
+        tmp_path,
+        testkit_commit="abc123",
+        canapp_root=Path("app"),
+    )
+    assert adapter["content_acquisition_contract"]["required"] is False
+    assert (
+        adapter["content_acquisition_contract"]["source_delivery_state"]
+        == "external_on_demand"
+    )
+
+
+def test_repair_prompt_requires_generic_external_on_demand_lesson_delivery(
+    tmp_path,
+):
+    app = tmp_path / "native"
+    app.mkdir()
+    (app / "build.gradle.kts").write_text(
+        'sourceSets["main"].assets.srcDir("../course-library")'
+    )
+    (app / "Loader.kt").write_text(
+        'fun open(name: String) = assets.open(name)'
+    )
+    courses = tmp_path / "course-library"
+    courses.mkdir()
+    (courses / "unit.blob").write_bytes(b"real lesson bytes")
+
+    adapter = build_repair_adapter(
+        _work_plan(),
+        tmp_path,
+        testkit_commit="abc123",
+        canapp_root=Path("native"),
+    )
+    prompt = render_repair_prompt(adapter)
+
+    contract = adapter["content_acquisition_contract"]
+    assert contract["required"] is True
+    assert contract["source_delivery_state"] == "embedded"
+    assert "Remove ordinary lesson payloads from the installable application package" in prompt
+    assert "download only the selected lesson" in prompt
+    assert "bounded local cache" in prompt
+    assert "offline reuse" in prompt
+    assert "media type, publication identity, and declared integrity" in prompt
+    assert "proprietary lesson parser remains CanApp-owned" in prompt
+
+
+def test_repair_adapter_requires_catalog_discovery_for_external_content(
+    tmp_path,
+):
+    app = tmp_path / "web"
+    app.mkdir()
+    (app / "loader.ts").write_text(
+        'fetch("remote.lesson"); function evict() {}'
+    )
+    (app / "remote.lesson").write_bytes(b"real lesson bytes")
+
+    adapter = build_repair_adapter(
+        _work_plan("PROFILE-WEB"),
+        tmp_path,
+        testkit_commit="abc123",
+    )
+
+    assert adapter["source_analysis"]["content_delivery"] == {
+        "embedded_content": False,
+        "on_demand_acquisition": True,
+        "bounded_cache": True,
+        "catalog_discovery": False,
+    }
+    assert adapter["content_acquisition_contract"]["required"] is True
+
+
 def test_repair_adapter_rejects_modified_work_plan(tmp_path):
     plan = _work_plan()
     plan["tasks"][0]["row_id"] = "OPDS-004"

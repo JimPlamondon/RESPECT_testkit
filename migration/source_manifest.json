@@ -58,7 +58,7 @@
       "adaptation_reason": "standalone package layout, installed-resource access, or destination documentation",
       "blob_oid": "1741e313761bcc686895be6bfbc0969ba9bb8b10",
       "destination_path": "docs/respect_ification/README.md",
-      "destination_sha256": "ff6d7dac8fbf033e04fe40d53d2ab7c5813ace7226bc539cad6aa77c27fc4cd4",
+      "destination_sha256": "d01a2f05608a34bf0debf370180eeacb26c7389e4457a67656db1e98e3608b68",
       "disposition": "adapted",
       "item_class": "documentation",
       "license": "Apache-2.0",
@@ -2267,7 +2267,7 @@
       "source_repository": "https://github.com/JimPlamondon/jims"
     }
   ],
-  "manifest_hash": "eed845688aa8c1a316fe83cd811416a3d47cc3c94f22e38d2ed94c395d80b71f",
+  "manifest_hash": "4cb43a9e1c12027232cfea85202a00aceb727da4988da627eada85fe909f0990",
   "schema_version": "1.0.0",
   "source_inventory": "migration/source_inventory.json",
   "source_inventory_hash": "b2b61c31421dd6591fc48a1fd1d21de78f243c52f834d7a5045fccfea6565e50"

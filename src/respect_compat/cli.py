@@ -24,7 +24,12 @@ from .opds_validator import validate_opds
 from .profile import load_profile
 from .report import suite_json_payload, verify_suite_payload, write_reports, write_suite_reports
 from .security_labels import SecurityContext
-from .target import load_fixture_target, load_server_target, load_url_target
+from .target import (
+    load_apk_target,
+    load_fixture_target,
+    load_server_target,
+    load_url_target,
+)
 
 
 class SuiteArgumentParser(argparse.ArgumentParser):
@@ -75,6 +80,7 @@ def main(argv: Optional[list[str]] = None) -> int:
     input_group.add_argument("--manifest-url")
     input_group.add_argument("--fixture-dir")
     input_group.add_argument("--server-base-url")
+    input_group.add_argument("--apk-only", action="store_true")
     parser.add_argument("--profile", required=True)
     parser.add_argument("--apk", type=Path)
     parser.add_argument("--device-id")
@@ -107,7 +113,11 @@ def main(argv: Optional[list[str]] = None) -> int:
     try:
         matrix = load_matrix()
         matrix.resolve_profile(args.profile)
-        if args.fixture_dir:
+        if args.apk_only:
+            if not args.apk:
+                parser.error("--apk-only requires --apk")
+            target = load_apk_target(args.apk)
+        elif args.fixture_dir:
             target = load_fixture_target(Path(args.fixture_dir), apk=args.apk)
         elif args.manifest_url:
             target = load_url_target(args.manifest_url, apk=args.apk)

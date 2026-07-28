@@ -8,6 +8,8 @@ Provision the exact OPDS (Open Publication Distribution System) and Readium Web 
 
 Run `respect-compat --help` or `python -m respect_compat.cli --help` for the supported black-box target forms and output parameters. `--profile` accepts the canonical profile identifiers `PROFILE-WEB`, `PROFILE-NATIVE_ANDROID`, `PROFILE-SUITE_QUALITY`, and `PROFILE-CLAIMED_FUTURE`.
 
+The `--apk-only --apk <path>` target form assesses a raw native Android Candidate App before it has a descriptor or publication server. It binds the exact submitted APK, supplies no invented document, and lets the ordinary Matrix executors report absent discovery and publication behavior alongside static APK findings and blocked runtime prerequisites.
+
 Certification produces a fresh unpredictable scenario nonce. Test and replay modes may accept a deterministic run seed. Applicable rows that cannot be observed fail closed as blocked.
 
 Every run emits the authoritative JSON report, a sanitized evidence manifest, an immutable RESPECT-ification task packet, a text report, and a JUnit test report. The task packet contains only actionable CanApp-owned nonpasses and is the one-way handoff to the optional Kit.

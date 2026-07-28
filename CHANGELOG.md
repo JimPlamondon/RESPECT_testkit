@@ -12,6 +12,7 @@
 - Add a complete 84-row Matrix truth audit, row-specific durable-repair contracts, validated narrow-verifier receipts, and fail-closed ownership boundaries.
 - Reject blanket lesson-candidate confirmation, bind confirmed inventories to current source bytes, and bind production publication identity to the submitted Android Package Kit.
 - Prevent suite-forced cleanup, unvisited links, unsupported catalog types, unresolved relative links, or bundled fixture assertions from becoming false compatibility evidence.
+- Add an APK-only assessment target so a raw native Android Candidate App can receive honest missing-interface results without a fabricated descriptor.
 
 ## 0.1.0
 

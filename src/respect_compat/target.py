@@ -133,6 +133,26 @@ def load_fixture_target(root: Path, apk: Optional[Path] = None) -> CanAppTarget:
     )
 
 
+def load_apk_target(apk: Path) -> CanAppTarget:
+    resolved = apk.resolve(strict=True)
+    if not resolved.is_file():
+        raise ValueError("submitted APK must be a file")
+    uri = f"android-apk://submitted/{resolved.name}"
+    return CanAppTarget(
+        uri=uri,
+        adapter="apk_only",
+        digest=_digest("apk_only", uri, b"", resolved),
+        document={},
+        apk=resolved,
+        metadata={
+            "descriptor_absent": True,
+            "_trusted_reference": False,
+            "_controlled_runtime": False,
+        },
+        capabilities={"apk", "native_android"},
+    )
+
+
 def load_url_target(url: str, apk: Optional[Path] = None) -> CanAppTarget:
     observation = fetch(url)
     data = observation.json_data

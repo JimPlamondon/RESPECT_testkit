@@ -24,6 +24,7 @@ from respect_compat.resources import resource
 from respect_compat.target import (
     CanAppTarget,
     HttpObservation,
+    load_apk_target,
     load_fixture_target,
     load_url_target,
 )
@@ -221,6 +222,47 @@ def test_url_target_performs_real_http_request():
     assert Handler.requests == 1
     assert loaded.document == descriptor
     assert loaded.observations[0].status == 200
+
+
+def test_apk_only_target_represents_an_absent_descriptor_without_invention(
+    tmp_path,
+):
+    apk = tmp_path / "candidate.apk"
+    apk.write_bytes(b"submitted apk bytes")
+
+    loaded = load_apk_target(apk)
+
+    assert loaded.adapter == "apk_only"
+    assert loaded.document == {}
+    assert loaded.metadata["descriptor_absent"] is True
+    assert loaded.capabilities == {"apk", "native_android"}
+    assert loaded.apk == apk.resolve()
+
+
+def test_cli_apk_only_mode_writes_matrix_results(tmp_path):
+    apk = tmp_path / "candidate.apk"
+    apk.write_bytes(b"submitted apk bytes")
+    output = tmp_path / "output"
+
+    exit_code = main(
+        [
+            "--apk-only",
+            "--apk",
+            str(apk),
+            "--profile",
+            "PROFILE-SUITE_QUALITY",
+            "--mode",
+            "test",
+            "--output-dir",
+            str(output),
+        ]
+    )
+
+    report = json.loads((output / "respect-report.json").read_text())
+    assert exit_code == 0
+    assert report["target_adapter"] == "apk_only"
+    assert report["target_uri"].startswith("android-apk://submitted/")
+    assert report["coverage"]["selected"] == report["coverage"]["executed"]
 
 
 def test_cli_url_mode_executes_and_writes_verified_report(tmp_path):

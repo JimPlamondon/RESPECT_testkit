@@ -130,6 +130,7 @@ def main(argv: Optional[list[str]] = None) -> int:
                 driver_receipt=args.runtime_driver_receipt,
                 scenario_path=args.runtime_scenario,
                 scenario_nonce=secrets.token_hex(12),
+                certification_mode=args.mode == "certification",
             )
             target.capabilities.add("controlled_android_runtime")
         except (FileNotFoundError, json.JSONDecodeError, OSError, RuntimeError, ValueError) as error:

@@ -1286,7 +1286,7 @@
       "adaptation_reason": "standalone package layout, installed-resource access, or destination documentation",
       "blob_oid": "35e843a361f635a8930ead07c6a3a7c7b478d222",
       "destination_path": "src/respect_compat/android_apk.py",
-      "destination_sha256": "1ff02666d8630b874ea1d4b8ab737d29575f10bc1d19d88b6a37db99fbfbfa19",
+      "destination_sha256": "111c2716d555a53794be5ce126ef87a984ca99f9a7f7be0b517d7bb2ce4a4b33",
       "disposition": "adapted",
       "item_class": "runtime",
       "license": "Apache-2.0",
@@ -1338,7 +1338,7 @@
       "adaptation_reason": "standalone package layout, installed-resource access, or destination documentation",
       "blob_oid": "1837891fb1f884686bc1311091676fa07a0c1d97",
       "destination_path": "src/respect_compat/cli.py",
-      "destination_sha256": "db6d19edd99a5a3a413d02513b112a5098ad6d2419a4e5d12ec3f498d8262018",
+      "destination_sha256": "23bcd9cea6503e229ce5fdb9b1d810a2e2fb6e9e1bcf7fdb36e601b5708863c4",
       "disposition": "adapted",
       "item_class": "runtime",
       "license": "Apache-2.0",
@@ -2266,7 +2266,7 @@
       "source_repository": "https://github.com/JimPlamondon/jims"
     }
   ],
-  "manifest_hash": "7ff1c045a108ca9ff60663d6fb62a7333a97dd68838f0ba58765706518e7e81a",
+  "manifest_hash": "2f03a77f2c933d4567d1e7d313a5af11912e7e0cb284ca23ffb44f4f41231ade",
   "schema_version": "1.0.0",
   "source_inventory": "migration/source_inventory.json",
   "source_inventory_hash": "b2b61c31421dd6591fc48a1fd1d21de78f243c52f834d7a5045fccfea6565e50"

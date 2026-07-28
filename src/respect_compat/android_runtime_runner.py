@@ -194,6 +194,7 @@ def run_native_android_runtime(
     driver_receipt: Path,
     scenario_path: Path,
     scenario_nonce: str,
+    certification_mode: bool = False,
     adb: Optional[Path] = None,
     command_runner: Callable[..., subprocess.CompletedProcess] = subprocess.run,
     sleeper: Callable[[float], None] = time.sleep,
@@ -220,6 +221,10 @@ def run_native_android_runtime(
     probe = probe_android_device(device_id, adb=adb)
     if not probe.get("healthy"):
         raise ValueError("selected Android Debug Bridge device is unhealthy")
+    if certification_mode and probe.get("emulator") is not False:
+        raise ValueError(
+            "certification mode requires an attributable physical Android device"
+        )
     tool = adb
     if tool is None:
         located = shutil.which("adb")

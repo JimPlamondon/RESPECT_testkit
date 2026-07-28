@@ -222,9 +222,20 @@ def probe_android_device(
         timeout=10,
     )
     state = completed.stdout.strip()
+    emulator = None
+    if completed.returncode == 0 and state == "device":
+        qemu = subprocess.run(
+            [str(tool), "-s", device_id, "shell", "getprop", "ro.kernel.qemu"],
+            check=False,
+            capture_output=True,
+            text=True,
+            timeout=10,
+        )
+        emulator = qemu.returncode == 0 and qemu.stdout.strip() == "1"
     return {
         "device_id": device_id,
         "healthy": completed.returncode == 0 and state == "device",
+        "emulator": emulator,
         "state": state,
         "return_code": completed.returncode,
         "stderr": completed.stderr.strip(),

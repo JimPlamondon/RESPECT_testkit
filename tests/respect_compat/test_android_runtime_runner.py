@@ -6,6 +6,7 @@ import hashlib
 
 import pytest
 
+import respect_compat.android_runtime_runner as runtime_runner
 from respect_compat.android_runtime_runner import (
     DRIVER_PACKAGE,
     load_runtime_scenario,
@@ -103,3 +104,57 @@ def test_driver_receipt_binds_suite_source_and_apk(tmp_path):
     path.write_text(json.dumps(receipt))
     with pytest.raises(ValueError, match="does not match"):
         verify_runtime_driver_receipt(apk, path)
+
+
+def test_certification_mode_rejects_an_emulator_before_device_mutation(
+    tmp_path, monkeypatch
+):
+    target = type(
+        "Target",
+        (),
+        {"apk": tmp_path / "canapp.apk", "metadata": {}, "digest": "target"},
+    )()
+    target.apk.write_bytes(b"canapp")
+    driver = tmp_path / "driver.apk"
+    driver.write_bytes(b"driver")
+    scenario = tmp_path / "scenario.json"
+    scenario.write_text(json.dumps(_scenario()))
+    monkeypatch.setattr(
+        runtime_runner,
+        "verify_runtime_driver_receipt",
+        lambda *_args: {},
+    )
+    monkeypatch.setattr(
+        runtime_runner,
+        "inspect_apk",
+        lambda path: {
+            "package_id": (
+                DRIVER_PACKAGE if path == driver else "org.example.canapp"
+            ),
+            "services": [
+                {
+                    "exported": True,
+                    "actions": ["org.openeel.action.xapioveripc"],
+                }
+            ],
+        },
+    )
+    monkeypatch.setattr(
+        runtime_runner,
+        "probe_android_device",
+        lambda *_args, **_kwargs: {"healthy": True, "emulator": True},
+    )
+
+    with pytest.raises(ValueError, match="physical Android device"):
+        runtime_runner.run_native_android_runtime(
+            target,
+            device_id="emulator-5554",
+            driver_apk=driver,
+            driver_receipt=tmp_path / "receipt.json",
+            scenario_path=scenario,
+            scenario_nonce="nonce",
+            certification_mode=True,
+            command_runner=lambda *_args, **_kwargs: pytest.fail(
+                "device command should not run"
+            ),
+        )

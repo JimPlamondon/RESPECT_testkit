@@ -23,6 +23,22 @@ from .target import CanAppTarget
 
 DRIVER_PACKAGE = "org.respect.testkit.runtime"
 DRIVER_PROTOCOL_VERSION = "1.0.0"
+ACQUISITION_PREFIX = "http://opds-spec.org/acquisition"
+DEFAULT_CATALOG_REL = (
+    "https://respect.ustadmobile.com/ns/default-lesson-catalog"
+)
+LEARNING_UNIT_TYPES = {
+    "application/html+xml",
+    "application/xml",
+    "text/html",
+}
+RESERVED_LAUNCH_PARAMETERS = {
+    "activity_id",
+    "actor",
+    "auth",
+    "endpoint",
+    "xapiIpcPackage",
+}
 _PACKAGE = re.compile(r"^[A-Za-z][A-Za-z0-9_]*(?:\.[A-Za-z0-9_]+)+$")
 _KEY_EVENTS = {"BACK", "ENTER", "HOME"}
 
@@ -149,6 +165,141 @@ def load_runtime_scenario(path: Path) -> Dict[str, Any]:
     return {**value, "actions": normalized}
 
 
+def _relations(link: Dict[str, Any]) -> List[str]:
+    value = link.get("rel")
+    if isinstance(value, str):
+        return value.split()
+    if isinstance(value, list):
+        return [item for item in value if isinstance(item, str)]
+    return []
+
+
+def _target_json(target: CanAppTarget, url: str) -> Dict[str, Any]:
+    observation = next(
+        (
+            item
+            for item in target.observations
+            if item.requested_url == url or item.final_url == url
+        ),
+        None,
+    )
+    if observation is None:
+        from .target import fetch
+
+        observation = fetch(url)
+        target.observations.append(observation)
+    value = observation.json_data
+    if observation.status != 200 or not isinstance(value, dict):
+        raise ValueError("default lesson catalog is not parseable OPDS JSON")
+    return value
+
+
+def derive_catalog_launch_url(
+    target: CanAppTarget,
+    scenario: Dict[str, Any],
+) -> str:
+    descriptor_base = target.metadata.get("descriptor_url")
+    if not isinstance(descriptor_base, str):
+        descriptor_base = (
+            target.observations[0].final_url
+            if target.observations
+            else target.uri
+        )
+    descriptor_links = target.document.get("links")
+    if not isinstance(descriptor_links, list):
+        descriptor_links = []
+    catalog_links = [
+        link
+        for link in descriptor_links
+        if isinstance(link, dict)
+        and DEFAULT_CATALOG_REL in _relations(link)
+        and isinstance(link.get("href"), str)
+    ]
+    if len(catalog_links) != 1:
+        raise ValueError(
+            "runtime verification requires exactly one default lesson catalog"
+        )
+    catalog_url = urllib.parse.urljoin(
+        descriptor_base,
+        catalog_links[0]["href"],
+    )
+    catalog = _target_json(target, catalog_url)
+    publications = catalog.get("publications")
+    if not isinstance(publications, list):
+        publications = []
+    selected = [
+        publication
+        for publication in publications
+        if isinstance(publication, dict)
+        and isinstance(publication.get("metadata"), dict)
+        and publication["metadata"].get("identifier")
+        == scenario["activity_id"]
+    ]
+    if len(selected) != 1:
+        raise ValueError(
+            "runtime activity identifier must match exactly one selected OPDS publication"
+        )
+    publication_links = selected[0].get("links")
+    if not isinstance(publication_links, list):
+        publication_links = []
+    acquisitions = [
+        link
+        for link in publication_links
+        if isinstance(link, dict)
+        and isinstance(link.get("href"), str)
+        and any(
+            relation.startswith(ACQUISITION_PREFIX)
+            for relation in _relations(link)
+        )
+        and str(link.get("type", "")).split(";", 1)[0]
+        in LEARNING_UNIT_TYPES
+    ]
+    if len(acquisitions) != 1:
+        raise ValueError(
+            "selected OPDS publication must have exactly one launchable acquisition"
+        )
+    acquisition_url = urllib.parse.urljoin(
+        catalog_url,
+        acquisitions[0]["href"],
+    )
+    parsed = urllib.parse.urlparse(acquisition_url)
+    existing = urllib.parse.parse_qsl(
+        parsed.query,
+        keep_blank_values=True,
+    )
+    if (
+        parsed.scheme != "https"
+        or not parsed.netloc
+        or parsed.fragment
+        or RESERVED_LAUNCH_PARAMETERS
+        & {key for key, _value in existing}
+    ):
+        raise ValueError(
+            "selected OPDS acquisition is not a safe HTTPS launch base"
+        )
+    launch_parameters = [
+        ("endpoint", scenario["endpoint"]),
+        ("auth", scenario["auth"]),
+        (
+            "actor",
+            json.dumps(
+                scenario["actor"],
+                separators=(",", ":"),
+            ),
+        ),
+        ("activity_id", scenario["activity_id"]),
+        ("xapiIpcPackage", DRIVER_PACKAGE),
+    ]
+    derived = urllib.parse.urlunparse(
+        parsed._replace(query=urllib.parse.urlencode(existing + launch_parameters))
+    )
+    if scenario["launch_url"] != derived:
+        raise ValueError(
+            "runtime scenario launch URL is not the catalog-derived launch URL"
+        )
+    return derived
+
+
 def parse_driver_events(text: str) -> List[Dict[str, Any]]:
     events = []
     for line_number, line in enumerate(text.splitlines(), 1):
@@ -235,6 +386,7 @@ def run_native_android_runtime(
         raise ValueError(
             "certification mode requires an attributable physical Android device"
         )
+    launch_url = derive_catalog_launch_url(target, scenario)
     tool = adb
     if tool is None:
         located = shutil.which("adb")
@@ -260,7 +412,7 @@ def run_native_android_runtime(
         "--re-verify",
         scenario["canapp_package"],
     )
-    host = urllib.parse.urlparse(scenario["launch_url"]).hostname or ""
+    host = urllib.parse.urlparse(launch_url).hostname or ""
     association = ""
     for _attempt in range(10):
         association = device(
@@ -296,7 +448,7 @@ def run_native_android_runtime(
         "-c",
         "android.intent.category.BROWSABLE",
         "-d",
-        shlex.quote(scenario["launch_url"]),
+        shlex.quote(launch_url),
     ).stdout.strip()
     launch = device(
         "shell",
@@ -308,7 +460,7 @@ def run_native_android_runtime(
         "-c",
         "android.intent.category.BROWSABLE",
         "-d",
-        shlex.quote(scenario["launch_url"]),
+        shlex.quote(launch_url),
     ).stdout
     for action in scenario["actions"]:
         if action["type"] == "wait":

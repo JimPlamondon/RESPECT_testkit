@@ -36,7 +36,17 @@ DRIVER_GATED_ROW_IDS = frozenset(
     }
 )
 
-_TEXT_SUFFIXES = {".gradle", ".java", ".kts", ".kt", ".xml"}
+_TEXT_SUFFIXES = {
+    ".gradle",
+    ".html",
+    ".java",
+    ".jimsong",
+    ".js",
+    ".json",
+    ".kts",
+    ".kt",
+    ".xml",
+}
 _IGNORED_PARTS = {
     ".git",
     ".gradle",
@@ -100,6 +110,7 @@ def analyze_canapp_source(source_root: Path) -> Dict[str, List[str]]:
     if not root.is_dir():
         raise ValueError("CanApp source root must be a directory")
     analysis: Dict[str, Set[str]] = {key: set() for key in _SIGNALS}
+    analysis["lesson_content_files"] = set()
     for path in _candidate_files(root):
         relative = path.relative_to(root).as_posix()
         try:
@@ -109,6 +120,15 @@ def analyze_canapp_source(source_root: Path) -> Dict[str, List[str]]:
         for category, signals in _SIGNALS.items():
             if any(signal in path.name or signal in relative or signal in text for signal in signals):
                 analysis[category].add(relative)
+        content_path = relative.lower()
+        if path.suffix == ".jimsong" or (
+            path.suffix in {".html", ".json"}
+            and any(
+                signal in content_path
+                for signal in ("lesson", "course", "song")
+            )
+        ):
+            analysis["lesson_content_files"].add(relative)
     return {key: sorted(values) for key, values in analysis.items()}
 
 
@@ -166,10 +186,19 @@ def render_runtime_driver_prompt(
         f"- launch and intent handling: {_paths(analysis['launch_files'])}",
         f"- lifecycle handling: {_paths(analysis['lifecycle_files'])}",
         f"- lesson facts and completion: {_paths(analysis['lesson_fact_files'])}",
+        f"- lesson content candidates: {_paths(analysis['lesson_content_files'])}",
         f"- Experience API or Messenger integration: {_paths(analysis['xapi_files'])}",
         f"- existing test source sets: {_paths(analysis['test_files'])}",
         "",
         "Treat these paths as nonnormative implementation hints. Re-read the live files before editing, preserve production behavior, and keep target-specific trigger code in test source sets. Do not place secrets, private actors, credentials, device identifiers, or generated evidence in source control.",
+        "",
+        "## Truthfulness and content binding",
+        "",
+        "Build a one-to-one inventory of real lessons that the production CanApp actually packages, loads, downloads, or otherwise makes selectable. Derive the default lesson catalog and Readium publication wrappers from that inventory. Do not invent a generic lesson, placeholder title, placeholder image, marker script, or publication solely to satisfy structural validators. If the source format cannot be wrapped losslessly, report the missing adapter as a repair task.",
+        "",
+        "Each catalog publication must identify one real lesson or a documented real grouping, and its acquisition URL must launch that exact lesson. The Test Suite controller must derive the launch URL from the selected catalog publication, append only the standard reserved launch parameters, and require the launch `activity_id` to equal that publication's identifier. Reject owner-selected launch URLs, hidden control parameters, and disconnected activity identifiers.",
+        "",
+        "Experience API evidence must result from the selected lesson's actual launch and lifecycle. A debug-only trigger, manufactured lesson snapshot, canned completion, or test-only query parameter is diagnostic evidence only and cannot satisfy a CanApp conformance row. Bind statement activity, score, completion, and success fields to facts observed from the selected real lesson.",
         "",
         "## Required rows",
         "",

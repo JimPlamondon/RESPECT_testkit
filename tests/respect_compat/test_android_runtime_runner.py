@@ -9,12 +9,14 @@ import pytest
 import respect_compat.android_runtime_runner as runtime_runner
 from respect_compat.android_runtime_runner import (
     DRIVER_PACKAGE,
+    derive_catalog_launch_url,
     domain_is_verified,
     load_runtime_scenario,
     parse_driver_events,
     runtime_driver_source_hash,
     verify_runtime_driver_receipt,
 )
+from respect_compat.target import CanAppTarget, HttpObservation
 
 
 def _scenario():
@@ -60,6 +62,102 @@ def test_scenario_loader_rejects_arbitrary_shell_action(tmp_path):
 
     with pytest.raises(ValueError, match="action"):
         load_runtime_scenario(path)
+
+
+def _catalog_target():
+    descriptor_url = "https://canapp.example/descriptor.json"
+    catalog_url = "https://canapp.example/catalog.json"
+    descriptor = {
+        "metadata": {
+            "identifier": "https://canapp.example/app",
+            "title": "Example CanApp",
+        },
+        "links": [
+            {
+                "rel": [
+                    "https://respect.ustadmobile.com/ns/default-lesson-catalog"
+                ],
+                "href": catalog_url,
+                "type": "application/opds+json",
+            }
+        ],
+    }
+    catalog = {
+        "metadata": {"title": "Real lessons"},
+        "publications": [
+            {
+                "metadata": {
+                    "identifier": "https://lesson.example/activity",
+                    "title": "Real lesson",
+                },
+                "links": [
+                    {
+                        "rel": [
+                            "http://opds-spec.org/acquisition/open-access"
+                        ],
+                        "href": "lessons/real/launch",
+                        "type": "text/html",
+                    }
+                ],
+            }
+        ],
+    }
+    return CanAppTarget(
+        uri=descriptor_url,
+        adapter="manifest_url",
+        digest="target",
+        document=descriptor,
+        observations=[
+            HttpObservation(
+                requested_url=descriptor_url,
+                final_url=descriptor_url,
+                status=200,
+                headers={"content-type": "application/opds+json"},
+                body=json.dumps(descriptor).encode(),
+            ),
+            HttpObservation(
+                requested_url=catalog_url,
+                final_url=catalog_url,
+                status=200,
+                headers={"content-type": "application/opds+json"},
+                body=json.dumps(catalog).encode(),
+            ),
+        ],
+        capabilities={"remote_http"},
+    )
+
+
+def test_runtime_launch_is_derived_from_selected_catalog_publication():
+    scenario = _scenario()
+    scenario["launch_url"] = (
+        "https://canapp.example/lessons/real/launch"
+        "?endpoint=https%3A%2F%2Flrs.example%2Fxapi%2F"
+        "&auth=Basic+local-control"
+        "&actor=%7B%22objectType%22%3A%22Agent%22%2C%22account%22%3A"
+        "%7B%22homePage%22%3A%22https%3A%2F%2Fexample.invalid%22%2C"
+        "%22name%22%3A%22control%22%7D%7D"
+        "&activity_id=https%3A%2F%2Flesson.example%2Factivity"
+        "&xapiIpcPackage=org.respect.testkit.runtime"
+    )
+
+    assert derive_catalog_launch_url(_catalog_target(), scenario) == scenario[
+        "launch_url"
+    ]
+
+
+def test_runtime_launch_rejects_url_disconnected_from_catalog():
+    scenario = _scenario()
+
+    with pytest.raises(ValueError, match="catalog-derived"):
+        derive_catalog_launch_url(_catalog_target(), scenario)
+
+
+def test_runtime_launch_rejects_invented_activity_identifier():
+    scenario = _scenario()
+    scenario["activity_id"] = "https://lesson.example/invented"
+
+    with pytest.raises(ValueError, match="selected OPDS publication"):
+        derive_catalog_launch_url(_catalog_target(), scenario)
 
 
 def test_driver_event_parser_requires_health_control_and_valid_json_lines():

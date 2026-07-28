@@ -60,6 +60,9 @@ def test_source_analysis_maps_mobile_seams_without_copying_source(tmp_path):
     )
     lesson = activity.parent / "LessonCore.kt"
     lesson.write_text("data class LessonSnapshot(val hits: Int, val total: Int)")
+    song = tmp_path / "JiMS_Songs" / "Real_Lesson.jimsong"
+    song.parent.mkdir()
+    song.write_text('{"title":"Real Lesson","format_version":2}')
 
     analysis = analyze_canapp_source(tmp_path)
 
@@ -69,6 +72,9 @@ def test_source_analysis_maps_mobile_seams_without_copying_source(tmp_path):
     ]
     assert "app/src/androidMain/kotlin/org/example/LessonCore.kt" in analysis[
         "lesson_fact_files"
+    ]
+    assert "JiMS_Songs/Real_Lesson.jimsong" in analysis[
+        "lesson_content_files"
     ]
     assert "class MainActivity" not in json.dumps(analysis)
 
@@ -90,6 +96,9 @@ def test_runtime_driver_prompt_covers_all_gated_rows_and_discovered_paths(tmp_pa
     assert "app/src/main/AndroidManifest.xml" in prompt
     assert "abc123" in prompt
     assert "26 runtime-driver-gated rows" in prompt
+    assert "derive the launch URL from the selected catalog publication" in prompt
+    assert "one-to-one inventory of real lessons" in prompt
+    assert "debug-only trigger" in prompt
     assert "_trusted_reference" not in prompt
     assert "_controlled_runtime" not in prompt
 

@@ -1,0 +1,109 @@
+{
+  "$id": "urn:respect:publication-manifest:1.0.0",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "canapp": {
+      "additionalProperties": false,
+      "properties": {
+        "application_id": {
+          "pattern": "^[A-Za-z][A-Za-z0-9_]*(?:\\.[A-Za-z][A-Za-z0-9_]*)+$",
+          "type": "string"
+        },
+        "identifier": {
+          "format": "uri",
+          "pattern": "^https://",
+          "type": "string"
+        },
+        "launch_path_prefix": {
+          "pattern": "^/.+/$",
+          "type": "string"
+        },
+        "public_path": {
+          "pattern": "^/[^/].*[^/]$|^/[A-Za-z0-9._~-]$",
+          "type": "string"
+        },
+        "title": {
+          "$ref": "#/$defs/localized"
+        }
+      },
+      "required": [
+        "identifier",
+        "title",
+        "application_id",
+        "public_path",
+        "launch_path_prefix"
+      ],
+      "type": "object"
+    },
+    "default_lesson_identifier": {
+      "format": "uri",
+      "pattern": "^https://",
+      "type": "string"
+    },
+    "format_version": {
+      "const": "1.0.0"
+    },
+    "lessons": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "identifier": {
+            "format": "uri",
+            "pattern": "^https://",
+            "type": "string"
+          },
+          "image_path": {
+            "minLength": 1,
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "media_type": {
+            "pattern": "^[^/\\s]+/[^;\\s]+$",
+            "type": "string"
+          },
+          "slug": {
+            "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+            "type": "string"
+          },
+          "source_path": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": {
+            "$ref": "#/$defs/localized"
+          }
+        },
+        "required": [
+          "identifier",
+          "title",
+          "slug",
+          "source_path",
+          "media_type"
+        ],
+        "type": "object"
+      },
+      "minItems": 1,
+      "type": "array"
+    }
+  },
+  "required": [
+    "format_version",
+    "canapp",
+    "default_lesson_identifier",
+    "lessons"
+  ],
+  "type": "object",
+  "$defs": {
+    "localized": {
+      "additionalProperties": {
+        "minLength": 1,
+        "type": "string"
+      },
+      "minProperties": 1,
+      "type": "object"
+    }
+  }
+}

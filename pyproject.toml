@@ -43,7 +43,7 @@ respect_compat = [
   "data/schemas/*.json",
   "data/fixtures/**/*",
 ]
-respect_ification = ["data/schemas/*.json"]
+respect_ification = ["data/publication/*.json", "data/schemas/*.json"]
 
 [tool.pytest.ini_options]
 addopts = "-ra"

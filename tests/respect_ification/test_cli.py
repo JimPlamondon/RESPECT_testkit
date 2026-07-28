@@ -120,3 +120,63 @@ def test_repair_plan_cli_writes_adapter_and_prompt(tmp_path):
     assert adapter["adapter_scope"] == "kit_time_only"
     assert "lessons/real.unit" in prompt
     assert "Truthful publication metadata" in prompt
+
+
+def test_publication_pack_and_verify_cli(tmp_path):
+    source = tmp_path / "source"
+    source.mkdir()
+    (source / "real.unit").write_bytes(b"real proprietary lesson")
+    manifest = {
+        "format_version": "1.0.0",
+        "canapp": {
+            "identifier": "https://owner.example/canapps/example",
+            "title": {"en": "Example"},
+            "application_id": "example.owner.app",
+            "public_path": "/example",
+            "launch_path_prefix": "/example/launch/",
+        },
+        "default_lesson_identifier": (
+            "https://owner.example/lessons/real"
+        ),
+        "lessons": [
+            {
+                "identifier": "https://owner.example/lessons/real",
+                "title": {"en": "Real Unit"},
+                "slug": "real",
+                "source_path": "real.unit",
+                "media_type": "application/vnd.example.unit",
+            }
+        ],
+    }
+    manifest_path = tmp_path / "publication-manifest.json"
+    manifest_path.write_text(json.dumps(manifest))
+    output = tmp_path / "publication-pack"
+    receipt = tmp_path / "verification-receipt.json"
+
+    assert main(
+        [
+            "publication-pack",
+            "--manifest",
+            str(manifest_path),
+            "--source-root",
+            str(source),
+            "--origin",
+            "https://lessons.owner.example",
+            "--signing-fingerprint",
+            "AA:" * 31 + "AA",
+            "--provision",
+            "provisional",
+            "--output",
+            str(output),
+        ]
+    ) == 0
+    assert main(
+        [
+            "publication-verify",
+            "--pack",
+            str(output),
+            "--receipt-output",
+            str(receipt),
+        ]
+    ) == 0
+    assert json.loads(receipt.read_text())["valid"] is True

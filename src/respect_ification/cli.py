@@ -8,7 +8,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 from respect_compat.cli import main as suite_main
-from respect_compat.android_apk import probe_android_device
+from respect_compat.android_apk import inspect_apk, probe_android_device
 from respect_compat.android_runtime_runner import run_native_android_runtime
 from respect_compat.handoff import canonical_hash
 from respect_compat.target import (
@@ -21,6 +21,14 @@ from respect_compat.target import (
 from .ledger import append_event, read_ledger
 from .planner import build_work_plan, validate_work_plan
 from .prep import generate_prep, write_prep
+from .publication_pack import (
+    build_publication_manifest_from_adapter,
+    build_publication_pack,
+    build_verification_receipt,
+    verify_deployed_publication,
+    verify_publication_pack,
+)
+from .publication_server import serve_publication_pack
 from .repair_adapter import write_repair_adapter
 from .verifier import run_narrow_verifier
 
@@ -148,6 +156,88 @@ def build_parser() -> KitArgumentParser:
     repair_plan.add_argument("--adapter-output", type=Path, required=True)
     repair_plan.add_argument("--prompt-output", type=Path, required=True)
 
+    publication_pack = subparsers.add_parser("publication-pack")
+    publication_pack.add_argument("--manifest", type=Path, required=True)
+    publication_pack.add_argument("--source-root", type=Path, required=True)
+    publication_pack.add_argument("--origin", required=True)
+    publication_signer = publication_pack.add_mutually_exclusive_group(
+        required=True
+    )
+    publication_signer.add_argument(
+        "--signing-fingerprint",
+    )
+    publication_signer.add_argument("--apk", type=Path)
+    publication_pack.add_argument(
+        "--provision",
+        choices=("provisional", "production"),
+        required=True,
+    )
+    publication_pack.add_argument(
+        "--signer-kind",
+        choices=("debug", "release"),
+    )
+    publication_pack.add_argument("--output", type=Path, required=True)
+
+    publication_manifest = subparsers.add_parser(
+        "publication-manifest"
+    )
+    publication_manifest.add_argument(
+        "--repair-adapter",
+        type=Path,
+        required=True,
+    )
+    publication_manifest.add_argument(
+        "--source-root",
+        type=Path,
+        required=True,
+    )
+    publication_manifest.add_argument(
+        "--canapp-identifier",
+        required=True,
+    )
+    publication_manifest.add_argument("--canapp-title", required=True)
+    publication_manifest.add_argument("--application-id", required=True)
+    publication_manifest.add_argument("--public-path", required=True)
+    publication_manifest.add_argument(
+        "--launch-path-prefix",
+        required=True,
+    )
+    publication_manifest.add_argument(
+        "--lesson-identifier-root",
+        required=True,
+    )
+    publication_manifest.add_argument(
+        "--lesson-media-type",
+        required=True,
+    )
+    publication_manifest.add_argument("--language", default="en")
+    publication_manifest.add_argument(
+        "--confirm-all-candidates",
+        action="store_true",
+    )
+    publication_manifest.add_argument(
+        "--output",
+        type=Path,
+        required=True,
+    )
+
+    publication_verify = subparsers.add_parser("publication-verify")
+    publication_verify.add_argument("--pack", type=Path, required=True)
+    publication_verify.add_argument(
+        "--receipt-output",
+        type=Path,
+        required=True,
+    )
+    publication_verify.add_argument("--deployed-origin")
+    publication_verify.add_argument("--ca-cert", type=Path)
+
+    publication_serve = subparsers.add_parser("publication-serve")
+    publication_serve.add_argument("--pack", type=Path, required=True)
+    publication_serve.add_argument("--bind", default="127.0.0.1")
+    publication_serve.add_argument("--port", type=int, default=8765)
+    publication_serve.add_argument("--certfile", type=Path)
+    publication_serve.add_argument("--keyfile", type=Path)
+
     status = subparsers.add_parser("status")
     status.add_argument("--work-plan", type=Path, required=True)
     status.add_argument("--ledger", type=Path, required=True)
@@ -217,6 +307,99 @@ def main(argv: Optional[List[str]] = None) -> int:
             print(
                 "Wrote the Kit-time repair adapter and source-derived "
                 "implementation prompt."
+            )
+            return 0
+        if args.command == "publication-pack":
+            manifest = _read(args.manifest)
+            signing_fingerprint = args.signing_fingerprint
+            if args.apk:
+                inspection = inspect_apk(args.apk)
+                expected_package = manifest.get("canapp", {}).get(
+                    "application_id"
+                )
+                if inspection.get("package_id") != expected_package:
+                    raise ValueError(
+                        "APK package identifier does not match the "
+                        "publication manifest"
+                    )
+                signer = inspection.get("signer_sha256")
+                if not isinstance(signer, str):
+                    raise ValueError(
+                        "APK signing certificate could not be determined"
+                    )
+                signing_fingerprint = ":".join(
+                    signer[index : index + 2]
+                    for index in range(0, len(signer), 2)
+                )
+            receipt = build_publication_pack(
+                manifest,
+                args.source_root,
+                args.origin,
+                signing_fingerprint,
+                args.output,
+                provision=args.provision,
+                signer_kind=args.signer_kind,
+            )
+            print(
+                f"Wrote a {receipt['provision']} RESPECT Publication Pack "
+                f"for {receipt['lesson_count']} real lessons."
+            )
+            return 0
+        if args.command == "publication-manifest":
+            adapter = _read(args.repair_adapter)
+            manifest = build_publication_manifest_from_adapter(
+                adapter,
+                args.source_root,
+                canapp_identifier=args.canapp_identifier,
+                canapp_title=args.canapp_title,
+                application_id=args.application_id,
+                public_path=args.public_path,
+                launch_path_prefix=args.launch_path_prefix,
+                lesson_identifier_root=args.lesson_identifier_root,
+                lesson_media_type=args.lesson_media_type,
+                language=args.language,
+                confirm_all_candidates=args.confirm_all_candidates,
+            )
+            _write(args.output, manifest)
+            print(
+                f"Wrote a truthful publication manifest for "
+                f"{len(manifest['lessons'])} source-derived lessons."
+            )
+            return 0
+        if args.command == "publication-verify":
+            errors = verify_publication_pack(args.pack)
+            if args.deployed_origin:
+                errors.extend(
+                    verify_deployed_publication(
+                        args.pack,
+                        deployed_origin=args.deployed_origin,
+                        ca_cert=args.ca_cert,
+                    )
+                )
+            elif args.ca_cert:
+                raise ValueError(
+                    "--ca-cert requires --deployed-origin"
+                )
+            errors = sorted(set(errors))
+            receipt = build_verification_receipt(
+                args.pack,
+                errors,
+                deployed_origin=args.deployed_origin,
+            )
+            _write(args.receipt_output, receipt)
+            print(
+                "Publication Pack valid."
+                if not errors
+                else f"Publication Pack invalid: {errors}"
+            )
+            return 0 if not errors else 2
+        if args.command == "publication-serve":
+            serve_publication_pack(
+                args.pack,
+                bind=args.bind,
+                port=args.port,
+                certfile=args.certfile,
+                keyfile=args.keyfile,
             )
             return 0
         if args.command == "status":

@@ -235,6 +235,10 @@ def test_repair_prompt_requires_generic_external_on_demand_lesson_delivery(
     assert "offline reuse" in prompt
     assert "media type, publication identity, and declared integrity" in prompt
     assert "proprietary lesson parser remains CanApp-owned" in prompt
+    assert "RESPECT Publication Pack" in prompt
+    assert "publication-manifest" in prompt
+    assert "publication-pack" in prompt
+    assert "publication-verify" in prompt
 
 
 def test_repair_adapter_requires_catalog_discovery_for_external_content(

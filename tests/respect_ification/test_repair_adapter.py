@@ -4,19 +4,22 @@
 from pathlib import Path
 
 from respect_compat.handoff import canonical_hash
+from respect_compat.matrix_runtime import load_matrix
 from respect_ification.repair_adapter import (
     analyze_canapp_source,
     build_repair_adapter,
     render_repair_prompt,
 )
+from respect_ification.truth_audit import build_matrix_truth_audit
 
 
 def _work_plan(profile_id="PROFILE-NATIVE_ANDROID"):
+    matrix = load_matrix()
     core = {
         "artifact_type": "respect_ification_local_work_plan",
         "format_version": "1.0.0",
         "profile_id": profile_id,
-        "matrix_semantic_hash": "matrix-hash",
+        "matrix_semantic_hash": matrix.semantic_hash,
         "target_digest": "target-digest",
         "tasks": [
             {
@@ -87,6 +90,76 @@ def test_repair_adapter_is_kit_time_and_profile_agnostic(tmp_path):
     assert "hidden query parameter" in prompt
     assert "Test Suite recognition" in prompt
     assert "suite-owned companion" not in prompt
+
+
+def test_truth_audit_covers_every_matrix_row_without_owner_substitution():
+    matrix = load_matrix()
+
+    audit = build_matrix_truth_audit(matrix)
+
+    assert audit["summary"] == {
+        "row_count": 84,
+        "canapp_repair_row_count": 57,
+        "protected_non_canapp_row_count": 27,
+        "uncovered_row_count": 0,
+    }
+    assert {item["row_id"] for item in audit["rows"]} == set(matrix.rows)
+    canapp = [item for item in audit["rows"] if item["owner"] == "canapp"]
+    protected = [item for item in audit["rows"] if item["owner"] != "canapp"]
+    assert all(
+        item["kit_disposition"] == "durable_canapp_repair_required"
+        and item["durable_product_change_required"] is True
+        and item["implementation_targets"]
+        and item["required_evidence_class"]
+        and item["forbidden_substitutes"]
+        for item in canapp
+    )
+    assert all(
+        item["kit_disposition"] == "protected_non_canapp_requirement"
+        and item["durable_product_change_required"] is False
+        for item in protected
+    )
+
+
+def test_each_adapter_task_contains_its_complete_row_truth_contract(tmp_path):
+    (tmp_path / "lesson.unit").write_text('{"title":"Real lesson"}')
+
+    adapter = build_repair_adapter(
+        _work_plan(),
+        tmp_path,
+        testkit_commit="abc123",
+    )
+
+    task = adapter["tasks"][0]
+    contract = task["truth_contract"]
+    assert contract["row_id"] == "OPDS-003"
+    assert contract["durable_product_change_required"] is True
+    assert "source-derived OPDS" in contract["implementation_targets"][0]
+    assert "owner-authored pass flag" in contract["forbidden_substitutes"][0]
+    assert adapter["matrix_truth_audit"]["summary"]["row_count"] == 84
+
+
+def test_repair_adapter_rejects_non_canapp_repair_task(tmp_path):
+    matrix = load_matrix()
+    plan = _work_plan()
+    plan["tasks"][0]["task_id"] = "repair:AUTH-002"
+    plan["tasks"][0]["row_id"] = "AUTH-002"
+    plan["tasks"][0]["normative_task"]["task_id"] = "repair:AUTH-002"
+    plan["tasks"][0]["normative_task"]["row_id"] = "AUTH-002"
+    plan["tasks"][0]["normative_task"]["narrow_verifier_id"] = (
+        "matrix-row:AUTH-002"
+    )
+    plan["semantic_hash"] = canonical_hash(plan, ("semantic_hash",))
+    assert "AUTH-002" in {
+        row.row_id for row in matrix.selected_rows(plan["profile_id"])
+    }
+
+    try:
+        build_repair_adapter(plan, tmp_path, testkit_commit="abc123")
+    except ValueError as error:
+        assert "owned by respect_service" in str(error)
+    else:
+        raise AssertionError("non-CanApp Matrix row became a CanApp repair")
 
 
 def test_source_analysis_scopes_product_code_but_follows_external_content(tmp_path):

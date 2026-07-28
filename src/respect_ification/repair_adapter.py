@@ -11,6 +11,9 @@ from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional, Set, Tuple
 
 from respect_compat.handoff import canonical_hash
+from respect_compat.matrix_runtime import load_matrix
+
+from .truth_audit import build_matrix_truth_audit, select_truth_contracts
 
 
 _IGNORED_PARTS = {
@@ -463,6 +466,23 @@ def build_repair_adapter(
         work_plan, ("semantic_hash",)
     ):
         raise ValueError("work plan semantic hash mismatch")
+    matrix = load_matrix()
+    if work_plan.get("matrix_semantic_hash") != matrix.semantic_hash:
+        raise ValueError("work plan Matrix hash does not match the canonical Matrix")
+    profile = matrix.resolve_profile(str(work_plan.get("profile_id")))
+    selected_row_ids = {
+        row.row_id for row in matrix.selected_rows(profile.profile_id)
+    }
+    planned_row_ids = [
+        str(item.get("row_id")) for item in work_plan.get("tasks", [])
+    ]
+    outside_profile = sorted(set(planned_row_ids) - selected_row_ids)
+    if outside_profile:
+        raise ValueError(
+            f"repair rows are outside the selected profile: {outside_profile}"
+        )
+    truth_audit = build_matrix_truth_audit(matrix)
+    truth_contracts = select_truth_contracts(truth_audit, planned_row_ids)
     analysis = analyze_canapp_source(source_root, canapp_root)
     delivery = analysis["content_delivery"]
     acquisition_required = bool(
@@ -492,6 +512,7 @@ def build_repair_adapter(
             "row_id": item.get("row_id"),
             "expected": item.get("normative_task", {}).get("expected"),
             "source_hints": item.get("source_hints", []),
+            "truth_contract": truth_contracts[str(item.get("row_id"))],
         }
         for item in work_plan.get("tasks", [])
     ]
@@ -506,6 +527,7 @@ def build_repair_adapter(
         "profile_id": work_plan.get("profile_id"),
         "source_analysis": analysis,
         "tasks": tasks,
+        "matrix_truth_audit": truth_audit,
         "content_acquisition_contract": {
             "required": acquisition_required,
             "source_delivery_state": source_delivery_state,
@@ -652,8 +674,23 @@ def render_repair_prompt(adapter: Dict[str, Any]) -> str:
         ]
     )
     for task in adapter["tasks"]:
-        lines.append(
-            f"- `{task['row_id']}` — {task.get('expected') or 'Use the live Matrix expectation.'}"
+        contract = task["truth_contract"]
+        lines.extend(
+            [
+                f"### `{task['row_id']}` — {contract['title']}",
+                "",
+                f"- Matrix expectation: {task.get('expected') or contract['test_action']}",
+                f"- Required behavior: {contract['canapp_behavior']}",
+                f"- Positive case: {contract['positive_case']}",
+                f"- Negative case: {contract['negative_case']}",
+                f"- Required observation: {contract['test_action']}",
+                f"- Implement in: {', '.join(contract['implementation_targets'])}",
+                f"- Inspect source seams: {', '.join(contract['source_seams'])}",
+                f"- Evidence class: {contract['required_evidence_class']}",
+                "- Forbidden substitutes: "
+                + "; ".join(contract["forbidden_substitutes"]),
+                "",
+            ]
         )
     lines.extend(
         [

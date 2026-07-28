@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import argparse
+import hashlib
 import json
 import secrets
 from pathlib import Path
@@ -11,6 +12,7 @@ from respect_compat.cli import main as suite_main
 from respect_compat.android_apk import inspect_apk, probe_android_device
 from respect_compat.android_runtime_runner import run_native_android_runtime
 from respect_compat.handoff import canonical_hash
+from respect_compat.matrix_runtime import load_matrix
 from respect_compat.target import (
     CanAppTarget,
     load_fixture_target,
@@ -30,6 +32,7 @@ from .publication_pack import (
 )
 from .publication_server import serve_publication_pack
 from .repair_adapter import write_repair_adapter
+from .truth_audit import build_matrix_truth_audit
 from .verifier import run_narrow_verifier
 
 
@@ -156,6 +159,9 @@ def build_parser() -> KitArgumentParser:
     repair_plan.add_argument("--adapter-output", type=Path, required=True)
     repair_plan.add_argument("--prompt-output", type=Path, required=True)
 
+    truth_audit = subparsers.add_parser("truth-audit")
+    truth_audit.add_argument("--output", type=Path, required=True)
+
     publication_pack = subparsers.add_parser("publication-pack")
     publication_pack.add_argument("--manifest", type=Path, required=True)
     publication_pack.add_argument("--source-root", type=Path, required=True)
@@ -212,8 +218,9 @@ def build_parser() -> KitArgumentParser:
     )
     publication_manifest.add_argument("--language", default="en")
     publication_manifest.add_argument(
-        "--confirm-all-candidates",
-        action="store_true",
+        "--lesson-inventory",
+        type=Path,
+        required=True,
     )
     publication_manifest.add_argument(
         "--output",
@@ -309,9 +316,30 @@ def main(argv: Optional[List[str]] = None) -> int:
                 "implementation prompt."
             )
             return 0
+        if args.command == "truth-audit":
+            audit = build_matrix_truth_audit(load_matrix())
+            audit["semantic_hash"] = canonical_hash(
+                audit,
+                ("semantic_hash",),
+            )
+            _write(args.output, audit)
+            print(
+                "Audited "
+                f"{audit['summary']['row_count']} Matrix rows: "
+                f"{audit['summary']['canapp_repair_row_count']} require "
+                "durable CanApp repair and "
+                f"{audit['summary']['protected_non_canapp_row_count']} "
+                "retain their non-CanApp owner."
+            )
+            return 0
         if args.command == "publication-pack":
             manifest = _read(args.manifest)
             signing_fingerprint = args.signing_fingerprint
+            apk_binding = None
+            if args.provision == "production" and not args.apk:
+                raise ValueError(
+                    "production publication requires a submitted APK"
+                )
             if args.apk:
                 inspection = inspect_apk(args.apk)
                 expected_package = manifest.get("canapp", {}).get(
@@ -331,6 +359,13 @@ def main(argv: Optional[List[str]] = None) -> int:
                     signer[index : index + 2]
                     for index in range(0, len(signer), 2)
                 )
+                apk_binding = {
+                    "package_id": str(inspection.get("package_id")),
+                    "signer_sha256": signer.upper(),
+                    "apk_sha256": hashlib.sha256(
+                        args.apk.read_bytes()
+                    ).hexdigest(),
+                }
             receipt = build_publication_pack(
                 manifest,
                 args.source_root,
@@ -339,6 +374,7 @@ def main(argv: Optional[List[str]] = None) -> int:
                 args.output,
                 provision=args.provision,
                 signer_kind=args.signer_kind,
+                apk_binding=apk_binding,
             )
             print(
                 f"Wrote a {receipt['provision']} RESPECT Publication Pack "
@@ -347,6 +383,7 @@ def main(argv: Optional[List[str]] = None) -> int:
             return 0
         if args.command == "publication-manifest":
             adapter = _read(args.repair_adapter)
+            confirmed_inventory = _read(args.lesson_inventory)
             manifest = build_publication_manifest_from_adapter(
                 adapter,
                 args.source_root,
@@ -357,8 +394,8 @@ def main(argv: Optional[List[str]] = None) -> int:
                 launch_path_prefix=args.launch_path_prefix,
                 lesson_identifier_root=args.lesson_identifier_root,
                 lesson_media_type=args.lesson_media_type,
+                confirmed_inventory=confirmed_inventory,
                 language=args.language,
-                confirm_all_candidates=args.confirm_all_candidates,
             )
             _write(args.output, manifest)
             print(
@@ -368,6 +405,15 @@ def main(argv: Optional[List[str]] = None) -> int:
             return 0
         if args.command == "publication-verify":
             errors = verify_publication_pack(args.pack)
+            deployment = _read(args.pack / "deployment.json")
+            if (
+                deployment.get("provision") == "production"
+                and not args.deployed_origin
+            ):
+                errors.append(
+                    "PRODUCTION_DEPLOYMENT_NOT_VERIFIED: "
+                    "production verification requires --deployed-origin"
+                )
             if args.deployed_origin:
                 errors.extend(
                     verify_deployed_publication(

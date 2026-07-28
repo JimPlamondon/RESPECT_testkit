@@ -12,7 +12,8 @@ from respect_compat.handoff import build_handoff
 from respect_compat.handoff import canonical_hash
 from respect_compat.matrix_runtime import load_matrix
 from respect_compat.models import ResultState
-from respect_compat.target import CanAppTarget
+from respect_compat.resources import resource
+from respect_compat.target import CanAppTarget, load_fixture_target
 from respect_ification.ledger import append_event, read_ledger
 from respect_ification.planner import build_work_plan, validate_work_plan
 from respect_ification.prep import generate_prep, validate_prep_pair
@@ -154,6 +155,49 @@ def test_ledger_rejects_unsafe_verifier_reference(tmp_path):
         )
 
 
+def test_ledger_requires_a_valid_eligible_verifier_receipt(tmp_path):
+    report, evidence, tasks = _handoff()
+    plan = build_work_plan(report, evidence, tasks)
+    task = next(
+        item for item in plan["tasks"] if item["row_id"] == "MANIFEST-002"
+    )
+    ledger = tmp_path / "ledger.jsonl"
+    receipt_path = tmp_path / "manifest-002-verifier.json"
+    receipt = run_narrow_verifier(
+        task["normative_task"]["narrow_verifier_id"],
+        task["row_id"],
+        load_fixture_target(
+            resource("data/fixtures/v0_1/positive/native_valid")
+        ),
+        plan["profile_id"],
+        predecessor_target_digest=plan["target_digest"],
+    )
+    assert receipt["state"] == "pass"
+    assert receipt["verification_eligible"] is True
+    receipt_path.write_text(json.dumps(receipt))
+    append_event(ledger, plan, task["task_id"], "diagnosing", "inspect")
+    append_event(ledger, plan, task["task_id"], "implementing", "implement")
+    append_event(ledger, plan, task["task_id"], "verifying", "verify")
+    append_event(
+        ledger,
+        plan,
+        task["task_id"],
+        "locally_verified",
+        "narrow verifier passed",
+        receipt_path.name,
+    )
+    assert (
+        read_ledger(ledger, plan)["tasks"][task["task_id"]]["state"]
+        == "locally_verified"
+    )
+
+    receipt["verification_eligible"] = False
+    receipt["semantic_hash"] = canonical_hash(receipt, ("semantic_hash",))
+    receipt_path.write_text(json.dumps(receipt))
+    with pytest.raises(ValueError, match="does not authorize"):
+        read_ledger(ledger, plan)
+
+
 def test_narrow_verifier_is_non_certifying():
     report, evidence, tasks = _handoff()
     plan = build_work_plan(report, evidence, tasks)
@@ -170,6 +214,24 @@ def test_narrow_verifier_is_non_certifying():
     assert result["row_id"] == task["row_id"]
     assert result["predecessor_target_digest"] == "prior-target"
     assert result["target_lineage"] == "owner_supplied_repaired_successor"
+
+
+def test_fixture_cannot_locally_verify_a_live_publication_row():
+    target = load_fixture_target(
+        resource("data/fixtures/v1_0/positive/web_reference")
+    )
+
+    result = run_narrow_verifier(
+        "matrix-row:OPDS-003",
+        "OPDS-003",
+        target,
+        "PROFILE-WEB",
+        predecessor_target_digest="prior-target",
+    )
+
+    assert result["state"] == "pass"
+    assert result["verification_eligible"] is False
+    assert "fixture evidence is diagnostic" in result["eligibility_reason"]
 
 
 def test_unknown_or_packet_command_verifier_is_rejected():

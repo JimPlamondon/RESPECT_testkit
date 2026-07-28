@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import http.client
+import hashlib
 import json
 import threading
 from http.server import ThreadingHTTPServer
@@ -121,6 +122,8 @@ def test_builds_complete_content_agnostic_publication_pack(tmp_path):
     assert receipt["provision"] == "provisional"
     assert receipt["lesson_count"] == 2
     assert receipt["verification"]["valid"] is True
+    assert receipt["verification"]["scope"] == "pack_integrity_only"
+    assert receipt["verification"]["deployed_origin_verified"] is False
     assert verify_publication_pack(output) == []
 
 
@@ -129,18 +132,42 @@ def test_builds_publication_manifest_from_generic_repair_analysis(tmp_path):
     candidates = [
         {
             "path": "shared/Opaque_One.lessonpack",
+            "sha256": hashlib.sha256(
+                b"\x00opaque proprietary lesson one"
+            ).hexdigest(),
             "metadata_hint": {"title": "Opaque One"},
         },
         {
             "path": "shared/Opaque_Two.lessonpack",
+            "sha256": hashlib.sha256(
+                b"\x00opaque proprietary lesson two"
+            ).hexdigest(),
             "metadata_hint": {"title": "Opaque Two"},
         },
     ]
     adapter = {
         "artifact_type": "respect_ification_generated_repair_adapter",
-        "source_analysis": {"content_candidates": candidates},
+        "source_analysis": {
+            "source_tree_digest": "source-tree-digest",
+            "content_candidates": candidates,
+        },
     }
     adapter["semantic_hash"] = canonical_hash(adapter)
+    inventory = {
+        "artifact_type": "respect_confirmed_lesson_inventory",
+        "format_version": "1.0.0",
+        "source_tree_digest": "source-tree-digest",
+        "inventory_complete": True,
+        "default_source_path": "shared/Opaque_One.lessonpack",
+        "lessons": [
+            {
+                "source_path": candidate["path"],
+                "sha256": candidate["sha256"],
+                "title": candidate["metadata_hint"]["title"],
+            }
+            for candidate in candidates
+        ],
+    }
 
     manifest = build_publication_manifest_from_adapter(
         adapter,
@@ -152,7 +179,7 @@ def test_builds_publication_manifest_from_generic_repair_analysis(tmp_path):
         launch_path_prefix="/example/launch/",
         lesson_identifier_root="https://owner.example/lessons",
         lesson_media_type="application/vnd.example.lesson",
-        confirm_all_candidates=True,
+        confirmed_inventory=inventory,
     )
 
     assert [item["source_path"] for item in manifest["lessons"]] == [
@@ -173,15 +200,35 @@ def test_manifest_derivation_refuses_invented_lesson_titles(tmp_path):
     adapter = {
         "artifact_type": "respect_ification_generated_repair_adapter",
         "source_analysis": {
+            "source_tree_digest": "source-tree-digest",
             "content_candidates": [
                 {
                     "path": "shared/Opaque_One.lessonpack",
+                    "sha256": hashlib.sha256(
+                        b"\x00opaque proprietary lesson one"
+                    ).hexdigest(),
                     "metadata_hint": {},
                 }
             ]
         },
     }
     adapter["semantic_hash"] = canonical_hash(adapter)
+    inventory = {
+        "artifact_type": "respect_confirmed_lesson_inventory",
+        "format_version": "1.0.0",
+        "source_tree_digest": "source-tree-digest",
+        "inventory_complete": True,
+        "default_source_path": "shared/Opaque_One.lessonpack",
+        "lessons": [
+            {
+                "source_path": "shared/Opaque_One.lessonpack",
+                "sha256": adapter["source_analysis"][
+                    "content_candidates"
+                ][0]["sha256"],
+                "title": "",
+            }
+        ],
+    }
 
     with pytest.raises(ValueError, match="truthful title"):
         build_publication_manifest_from_adapter(
@@ -194,7 +241,7 @@ def test_manifest_derivation_refuses_invented_lesson_titles(tmp_path):
             launch_path_prefix="/example/launch/",
             lesson_identifier_root="https://owner.example/lessons",
             lesson_media_type="application/vnd.example.lesson",
-            confirm_all_candidates=True,
+            confirmed_inventory=inventory,
         )
 
 
@@ -355,3 +402,41 @@ def test_production_pack_rejects_non_public_origins_and_debug_signers(
             tmp_path / "pack",
             provision="production",
         )
+
+
+def test_production_pack_requires_signing_evidence_bound_to_the_apk(tmp_path):
+    source = _source(tmp_path)
+    with pytest.raises(ValueError, match="bound to the submitted APK"):
+        build_publication_pack(
+            _manifest(),
+            source,
+            "https://lessons.owner.example",
+            FINGERPRINT,
+            tmp_path / "unbound",
+            provision="production",
+            signer_kind="release",
+        )
+
+    binding = {
+        "package_id": "example.owner.canapp",
+        "signer_sha256": FINGERPRINT.replace(":", ""),
+        "apk_sha256": "ab" * 32,
+    }
+    receipt = build_publication_pack(
+        _manifest(),
+        source,
+        "https://lessons.owner.example",
+        FINGERPRINT,
+        tmp_path / "bound",
+        provision="production",
+        signer_kind="release",
+        apk_binding=binding,
+    )
+
+    assert receipt["apk_binding"] == binding
+    deployment = json.loads(
+        (tmp_path / "bound" / "deployment.json").read_text()
+    )
+    assert deployment["apk_binding"] == binding
+    assert receipt["verification"]["scope"] == "pack_integrity_only"
+    assert receipt["verification"]["deployed_origin_verified"] is False

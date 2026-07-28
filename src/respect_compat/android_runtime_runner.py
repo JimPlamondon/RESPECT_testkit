@@ -473,8 +473,6 @@ def run_native_android_runtime(
             )
         elif action["type"] == "keyevent":
             device("shell", "input", "keyevent", action["key"])
-    device("shell", "am", "force-stop", scenario["canapp_package"])
-    sleeper(0.25)
     event_text = device(
         "shell",
         "run-as",
@@ -482,6 +480,8 @@ def run_native_android_runtime(
         "cat",
         "files/events.jsonl",
     ).stdout
+    device("shell", "am", "force-stop", scenario["canapp_package"])
+    sleeper(0.25)
     raw_events = parse_driver_events(event_text)
 
     apk_sha256 = _sha256(target.apk)

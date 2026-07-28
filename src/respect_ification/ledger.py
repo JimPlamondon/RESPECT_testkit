@@ -32,6 +32,55 @@ def _task_map(plan: Dict[str, Any]) -> Dict[str, Dict[str, Any]]:
     return {item["task_id"]: item for item in plan.get("tasks", [])}
 
 
+def _validate_verifier_result(
+    ledger_path: Path,
+    reference: str,
+    plan: Dict[str, Any],
+    task_id: str,
+) -> None:
+    from respect_compat.handoff import canonical_hash
+
+    receipt_path = (ledger_path.parent / reference).resolve()
+    try:
+        receipt_path.relative_to(ledger_path.parent.resolve())
+    except ValueError as error:
+        raise ValueError("unsafe verifier result reference") from error
+    try:
+        receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as error:
+        raise ValueError(
+            f"verifier result is unavailable or invalid: {reference}"
+        ) from error
+    task = _task_map(plan)[task_id]
+    expected = {
+        "artifact_type": "respect_ification_narrow_verifier_result",
+        "mode": "narrow_non_certifying",
+        "certified": False,
+        "matrix_semantic_hash": plan.get("matrix_semantic_hash"),
+        "profile_id": plan.get("profile_id"),
+        "predecessor_target_digest": plan.get("target_digest"),
+        "row_id": task.get("row_id"),
+        "verifier_id": task.get("normative_task", {}).get(
+            "narrow_verifier_id"
+        ),
+        "state": "pass",
+        "verification_eligible": True,
+    }
+    for field, value in expected.items():
+        if receipt.get(field) != value:
+            raise ValueError(
+                f"verifier result {field} does not authorize local verification"
+            )
+    if receipt.get("result", {}).get("state") != "pass":
+        raise ValueError(
+            "verifier result embedded Matrix row did not pass"
+        )
+    if receipt.get("semantic_hash") != canonical_hash(
+        receipt, ("semantic_hash",)
+    ):
+        raise ValueError("verifier result semantic hash mismatch")
+
+
 def _load_events(path: Path) -> List[Dict[str, Any]]:
     if not path.exists():
         return []
@@ -85,6 +134,8 @@ def read_ledger(path: Path, plan: Dict[str, Any]) -> Dict[str, Any]:
                 or "://" in reference
             ):
                 raise ValueError("unsafe verifier result reference")
+        if next_state == "locally_verified":
+            _validate_verifier_result(path, reference, plan, task_id)
         states[task_id]["state"] = next_state
         states[task_id]["events"].append(event["event_id"])
         prior_hash = event["event_hash"]
@@ -116,6 +167,13 @@ def append_event(
             or "://" in verifier_result_ref
         ):
             raise ValueError("unsafe verifier result reference")
+    if state == "locally_verified":
+        _validate_verifier_result(
+            path,
+            str(verifier_result_ref),
+            plan,
+            task_id,
+        )
     if "RESPECT Compatible" in note or "certified" in note.lower():
         raise ValueError("repair ledger cannot record a conformance verdict")
     timestamp = datetime.now(timezone.utc).isoformat()

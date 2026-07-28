@@ -502,6 +502,12 @@ def opds_executor(context: ExecutionContext, row: MatrixRow):
         )
         return _check(context, row, passed, outcomes, "Every accepted acquisition link is reachable with an accepted media type.", "An acquisition link is missing, unreachable, or has an unsupported media type.")
     if row.row_id == "OPDS-005":
+        if not acquisition:
+            return _not_applicable(
+                context,
+                row,
+                "No acquisition URL is present to evaluate.",
+            )
         prohibited = []
         for base, link in acquisition:
             parsed = urllib.parse.urlparse(_resolved(context, str(link.get("href", "")), base))
@@ -585,6 +591,11 @@ def opds_executor(context: ExecutionContext, row: MatrixRow):
         )
         if not repeats:
             return _not_applicable(context, row, "Catalog traversal encountered no repeated resolved URL.")
+        for url in repeats:
+            try:
+                _read_url(context, url)
+            except Exception:
+                pass
         observed_requests = [
             item.requested_url for item in context.target.observations
         ]
@@ -592,7 +603,14 @@ def opds_executor(context: ExecutionContext, row: MatrixRow):
             url: observed_requests.count(url)
             for url in repeats
         }
-        return _check(context, row, all(count <= 1 for count in traversal.values()), traversal, "Each resolved URL was visited at most once.", "Catalog traversal revisited a resolved URL.")
+        return _check(
+            context,
+            row,
+            all(count == 1 for count in traversal.values()),
+            traversal,
+            "Each repeated resolved URL was processed exactly once.",
+            "A repeated resolved URL was not processed exactly once.",
+        )
     if row.row_id == "OPDS-010":
         catalog_links = [
             link
@@ -602,17 +620,25 @@ def opds_executor(context: ExecutionContext, row: MatrixRow):
         if not catalog_links:
             return _not_applicable(context, row, "No catalog link is followed.")
         media_type = str(catalog_links[0].get("type", "")).split(";", 1)[0]
+        validators = {
+            "": "opds_feed",
+            "application/opds+json": "opds_feed",
+            "application/opds-publication+json": "opds_publication",
+            "application/webpub+json": "readium_webpub",
+            "application/vnd.respect.appmanifest+json": "legacy_manifest",
+        }
         dispatch = {
             "media_type": media_type or "application/opds+json",
-            "validator": {
-                "": "opds_feed",
-                "application/opds+json": "opds_feed",
-                "application/opds-publication+json": "opds_publication",
-                "application/webpub+json": "readium_webpub",
-                "application/vnd.respect.appmanifest+json": "legacy_manifest",
-            }.get(media_type, "http_only"),
+            "validator": validators.get(media_type, "http_only"),
         }
-        return _result(context, row, ResultState.PASS, dispatch, "Media type selected the source-defined validator path.")
+        return _check(
+            context,
+            row,
+            media_type in validators,
+            dispatch,
+            "The declared media type selected the supported validator.",
+            "The catalog link declared an unsupported media type.",
+        )
     relative = [
         (base, link["href"])
         for base, publication in documents
@@ -621,8 +647,36 @@ def opds_executor(context: ExecutionContext, row: MatrixRow):
     ]
     if not relative:
         return _not_applicable(context, row, "No relative OPDS link is present.")
-    observed = [{"base": base, "href": href, "resolved": _resolved(context, href, base)} for base, href in relative]
-    return _result(context, row, ResultState.PASS, observed, "Relative links resolved against their referring documents.")
+    observed = []
+    for base, href in relative:
+        resolved = _resolved(context, href, base)
+        try:
+            observation = _read_url(context, resolved)
+            observed.append(
+                {
+                    "base": base,
+                    "href": href,
+                    "resolved": resolved,
+                    "status": observation.status,
+                }
+            )
+        except Exception as error:
+            observed.append(
+                {
+                    "base": base,
+                    "href": href,
+                    "resolved": resolved,
+                    "error": type(error).__name__,
+                }
+            )
+    return _check(
+        context,
+        row,
+        all(item.get("status") == 200 for item in observed),
+        observed,
+        "Every relative link resolved and reached its declared resource.",
+        "A relative link did not reach its resolved resource.",
+    )
 
 
 def _selected_http_observation(context: ExecutionContext) -> Optional[HttpObservation]:

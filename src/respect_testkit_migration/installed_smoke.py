@@ -57,7 +57,7 @@ def main() -> int:
                 str(positive_output),
             ]
         )
-        if positive_exit != 0:
+        if positive_exit != 2:
             raise RuntimeError(f"positive reference exit {positive_exit}")
         handback_output = run_dir / "handback"
         handback_exit = kit_main(

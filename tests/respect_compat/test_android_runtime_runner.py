@@ -3,6 +3,7 @@
 
 import json
 import hashlib
+from types import SimpleNamespace
 
 import pytest
 
@@ -281,3 +282,113 @@ def test_certification_mode_does_not_reject_an_emulator_before_device_execution(
         )
     assert commands
     assert commands[0][-3:-1] == ["install", "-r"]
+
+
+def test_runtime_evidence_is_captured_before_forced_process_cleanup(
+    tmp_path, monkeypatch
+):
+    target = _catalog_target()
+    target.apk = tmp_path / "canapp.apk"
+    target.apk.write_bytes(b"canapp")
+    driver = tmp_path / "driver.apk"
+    driver.write_bytes(b"driver")
+    scenario_value = _scenario()
+    scenario_value["launch_url"] = (
+        "https://canapp.example/lessons/real/launch"
+        "?endpoint=https%3A%2F%2Flrs.example%2Fxapi%2F"
+        "&auth=Basic+local-control"
+        "&actor=%7B%22objectType%22%3A%22Agent%22%2C%22account%22%3A"
+        "%7B%22homePage%22%3A%22https%3A%2F%2Fexample.invalid%22%2C"
+        "%22name%22%3A%22control%22%7D%7D"
+        "&activity_id=https%3A%2F%2Flesson.example%2Factivity"
+        "&xapiIpcPackage=org.respect.testkit.runtime"
+    )
+    scenario = tmp_path / "scenario.json"
+    scenario.write_text(json.dumps(scenario_value))
+    monkeypatch.setattr(
+        runtime_runner,
+        "verify_runtime_driver_receipt",
+        lambda *_args: {},
+    )
+    monkeypatch.setattr(
+        runtime_runner,
+        "inspect_apk",
+        lambda path: {
+            "package_id": (
+                DRIVER_PACKAGE if path == driver else "org.example.canapp"
+            ),
+            "services": [
+                {
+                    "exported": True,
+                    "actions": ["org.openeel.action.xapioveripc"],
+                }
+            ],
+        },
+    )
+    monkeypatch.setattr(
+        runtime_runner,
+        "probe_android_device",
+        lambda *_args, **_kwargs: {
+            "healthy": True,
+            "emulator": True,
+            "device_id": "emulator-5554",
+        },
+    )
+    commands = []
+    events = "\n".join(
+        [
+            json.dumps(
+                {
+                    "kind": "driver_health",
+                    "protocol_version": "1.0.0",
+                    "package": DRIVER_PACKAGE,
+                }
+            ),
+            json.dumps(
+                {
+                    "kind": "service_unbound",
+                    "client_package": "org.example.canapp",
+                }
+            ),
+        ]
+    )
+
+    def command_runner(command, **_kwargs):
+        commands.append(command)
+        joined = " ".join(command)
+        if "pm get-app-links" in joined:
+            stdout = "canapp.example: verified"
+        elif "resolve-activity" in joined or "am start" in joined:
+            stdout = "org.example.canapp/.MainActivity"
+        elif "run-as" in joined:
+            stdout = events
+        else:
+            stdout = ""
+        return SimpleNamespace(
+            returncode=0,
+            stdout=stdout,
+            stderr="",
+        )
+
+    observations = runtime_runner.run_native_android_runtime(
+        target,
+        device_id="emulator-5554",
+        driver_apk=driver,
+        driver_receipt=tmp_path / "receipt.json",
+        scenario_path=scenario,
+        scenario_nonce="nonce",
+        adb=tmp_path / "adb",
+        command_runner=command_runner,
+        sleeper=lambda _seconds: None,
+    )
+
+    capture_index = next(
+        index for index, command in enumerate(commands) if "run-as" in command
+    )
+    cleanup_indices = [
+        index
+        for index, command in enumerate(commands)
+        if "force-stop" in command
+    ]
+    assert capture_index < cleanup_indices[-1]
+    assert observations["LIFECYCLE-001"]["state"] == "pass"

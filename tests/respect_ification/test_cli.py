@@ -4,7 +4,9 @@
 import json
 
 from respect_compat.handoff import canonical_hash
+from respect_compat.matrix_runtime import load_matrix
 from respect_ification.cli import main
+from respect_ification.publication_pack import build_publication_pack
 from respect_compat.resources import resource
 
 
@@ -51,15 +53,19 @@ def test_full_test_cli_preserves_test_suite_verdict(tmp_path):
                 str(output),
             ]
         )
-        == 0
+        == 2
     )
     report = json.loads((output / "respect-report.json").read_text())
-    assert report["verdict"]["certified"] is True
+    assert report["verdict"]["certified"] is False
+    assert report["verdict"]["display"] == (
+        "Provisional (suite fixture evidence)"
+    )
     assert (output / "respect-evidence-manifest.json").is_file()
     assert (output / "respect-ification-task-packet.json").is_file()
 
 
 def test_repair_plan_cli_writes_adapter_and_prompt(tmp_path):
+    matrix = load_matrix()
     source = tmp_path / "source"
     loader = source / "app" / "loader.py"
     loader.parent.mkdir(parents=True)
@@ -85,7 +91,7 @@ def test_repair_plan_cli_writes_adapter_and_prompt(tmp_path):
     plan = {
         "artifact_type": "respect_ification_local_work_plan",
         "profile_id": "PROFILE-NATIVE_ANDROID",
-        "matrix_semantic_hash": "matrix-hash",
+        "matrix_semantic_hash": matrix.semantic_hash,
         "target_digest": "target-digest",
         "tasks": tasks,
     }
@@ -120,6 +126,24 @@ def test_repair_plan_cli_writes_adapter_and_prompt(tmp_path):
     assert adapter["adapter_scope"] == "kit_time_only"
     assert "lessons/real.unit" in prompt
     assert "Truthful publication metadata" in prompt
+
+
+def test_truth_audit_cli_accounts_for_every_matrix_row(tmp_path):
+    output = tmp_path / "truth-audit.json"
+
+    assert main(["truth-audit", "--output", str(output)]) == 0
+
+    audit = json.loads(output.read_text())
+    assert audit["semantic_hash"] == canonical_hash(
+        audit,
+        ("semantic_hash",),
+    )
+    assert audit["summary"] == {
+        "row_count": 84,
+        "canapp_repair_row_count": 57,
+        "protected_non_canapp_row_count": 27,
+        "uncovered_row_count": 0,
+    }
 
 
 def test_publication_pack_and_verify_cli(tmp_path):
@@ -180,3 +204,64 @@ def test_publication_pack_and_verify_cli(tmp_path):
         ]
     ) == 0
     assert json.loads(receipt.read_text())["valid"] is True
+
+
+def test_production_publication_is_not_verified_without_live_origin(tmp_path):
+    source = tmp_path / "source"
+    source.mkdir()
+    (source / "real.unit").write_bytes(b"real proprietary lesson")
+    manifest = {
+        "format_version": "1.0.0",
+        "canapp": {
+            "identifier": "https://owner.example/canapps/example",
+            "title": {"en": "Example"},
+            "application_id": "example.owner.app",
+            "public_path": "/example",
+            "launch_path_prefix": "/example/launch/",
+        },
+        "default_lesson_identifier": (
+            "https://owner.example/lessons/real"
+        ),
+        "lessons": [
+            {
+                "identifier": "https://owner.example/lessons/real",
+                "title": {"en": "Real Unit"},
+                "slug": "real",
+                "source_path": "real.unit",
+                "media_type": "application/vnd.example.unit",
+            }
+        ],
+    }
+    fingerprint = "AA:" * 31 + "AA"
+    pack = tmp_path / "production-pack"
+    build_publication_pack(
+        manifest,
+        source,
+        "https://lessons.owner.example",
+        fingerprint,
+        pack,
+        provision="production",
+        signer_kind="release",
+        apk_binding={
+            "package_id": "example.owner.app",
+            "signer_sha256": fingerprint.replace(":", ""),
+            "apk_sha256": "ab" * 32,
+        },
+    )
+    receipt = tmp_path / "production-verification.json"
+
+    assert main(
+        [
+            "publication-verify",
+            "--pack",
+            str(pack),
+            "--receipt-output",
+            str(receipt),
+        ]
+    ) == 2
+    result = json.loads(receipt.read_text())
+    assert result["valid"] is False
+    assert any(
+        error.startswith("PRODUCTION_DEPLOYMENT_NOT_VERIFIED")
+        for error in result["errors"]
+    )

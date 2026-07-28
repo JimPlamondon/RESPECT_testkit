@@ -313,8 +313,8 @@ def build_publication_manifest_from_adapter(
     launch_path_prefix: str,
     lesson_identifier_root: str,
     lesson_media_type: str,
+    confirmed_inventory: Dict[str, Any],
     language: str = "en",
-    confirm_all_candidates: bool = False,
 ) -> Dict[str, Any]:
     if (
         adapter.get("artifact_type")
@@ -335,30 +335,76 @@ def build_publication_manifest_from_adapter(
     )
     if not isinstance(candidates, list) or not candidates:
         raise ValueError("repair adapter contains no lesson candidates")
-    if not confirm_all_candidates:
+    if (
+        not isinstance(confirmed_inventory, dict)
+        or confirmed_inventory.get("artifact_type")
+        != "respect_confirmed_lesson_inventory"
+        or confirmed_inventory.get("format_version") != "1.0.0"
+        or confirmed_inventory.get("source_tree_digest")
+        != analysis.get("source_tree_digest")
+        or confirmed_inventory.get("inventory_complete") is not True
+    ):
         raise ValueError(
-            "publication inventory requires explicit confirmation that "
-            "all source candidates are real selectable lessons"
+            "publication inventory requires a complete source-bound lesson "
+            "confirmation"
+        )
+    confirmed_lessons = confirmed_inventory.get("lessons")
+    if not isinstance(confirmed_lessons, list) or not confirmed_lessons:
+        raise ValueError("confirmed lesson inventory is empty")
+    if not all(isinstance(item, dict) for item in confirmed_lessons):
+        raise ValueError(
+            "confirmed lesson inventory entries must be objects"
+        )
+    candidates_by_path = {
+        item.get("path"): item
+        for item in candidates
+        if isinstance(item, dict) and isinstance(item.get("path"), str)
+    }
+    selected_paths = [item.get("source_path") for item in confirmed_lessons]
+    if not all(
+        isinstance(path, str) and path for path in selected_paths
+    ):
+        raise ValueError(
+            "confirmed lesson inventory entries require source paths"
+        )
+    if len(selected_paths) != len(set(selected_paths)):
+        raise ValueError("confirmed lesson inventory contains duplicate paths")
+    default_source_path = confirmed_inventory.get("default_source_path")
+    if default_source_path not in selected_paths:
+        raise ValueError(
+            "confirmed default lesson is not in the lesson inventory"
         )
     lessons = []
-    for candidate in sorted(
-        candidates,
-        key=lambda item: item.get("path", ""),
+    for confirmation in sorted(
+        confirmed_lessons,
+        key=lambda item: item.get("source_path", ""),
     ):
-        path = candidate.get("path")
-        _source_file(source_root, path)
-        metadata = candidate.get("metadata_hint")
-        title = (
-            metadata.get("title") or metadata.get("name")
-            if isinstance(metadata, dict)
-            else None
-        )
+        path = confirmation.get("source_path")
+        candidate = candidates_by_path.get(path)
+        if candidate is None:
+            raise ValueError(
+                f"confirmed lesson is not a source-derived candidate: {path}"
+            )
+        source = _source_file(source_root, path)
+        if (
+            confirmation.get("sha256") != candidate.get("sha256")
+            or _sha256(source) != candidate.get("sha256")
+        ):
+            raise ValueError(
+                f"confirmed lesson digest does not match source analysis: {path}"
+            )
+        title = confirmation.get("title")
         if not isinstance(title, str) or not title.strip():
             raise ValueError(
-                f"lesson candidate needs a truthful title: {path}"
+                f"confirmed lesson needs a truthful title: {path}"
             )
+        requested_slug = confirmation.get("slug")
         stem = Path(path).stem.lower()
-        slug = re.sub(r"[^a-z0-9]+", "-", stem).strip("-")
+        slug = (
+            requested_slug
+            if isinstance(requested_slug, str)
+            else re.sub(r"[^a-z0-9]+", "-", stem).strip("-")
+        )
         if not SLUG.fullmatch(slug):
             raise ValueError(
                 f"lesson candidate has no usable slug: {path}"
@@ -383,7 +429,11 @@ def build_publication_manifest_from_adapter(
             "public_path": public_path,
             "launch_path_prefix": launch_path_prefix,
         },
-        "default_lesson_identifier": lessons[0]["identifier"],
+        "default_lesson_identifier": next(
+            item["identifier"]
+            for item in lessons
+            if item["source_path"] == default_source_path
+        ),
         "lessons": lessons,
     }
     _validated_manifest(manifest, source_root)
@@ -399,6 +449,7 @@ def build_publication_pack(
     *,
     provision: str,
     signer_kind: Optional[str] = None,
+    apk_binding: Optional[Dict[str, str]] = None,
 ) -> Dict[str, Any]:
     source_root = source_root.resolve(strict=True)
     if not source_root.is_dir():
@@ -423,6 +474,21 @@ def build_publication_pack(
         )
     fingerprint = signing_fingerprint.upper()
     normalized = _validated_manifest(manifest, source_root)
+    if provision == "production":
+        normalized_signer = fingerprint.replace(":", "")
+        if (
+            not isinstance(apk_binding, dict)
+            or apk_binding.get("package_id")
+            != normalized["canapp"]["application_id"]
+            or apk_binding.get("signer_sha256") != normalized_signer
+            or not re.fullmatch(
+                r"[0-9a-f]{64}",
+                str(apk_binding.get("apk_sha256", "")),
+            )
+        ):
+            raise ValueError(
+                "production requires signing evidence bound to the submitted APK"
+            )
     output = output.resolve()
     if output.exists() and any(output.iterdir()):
         raise ValueError("publication pack output directory must be empty")
@@ -652,6 +718,7 @@ def build_publication_pack(
         "provision": provision,
         "signer_kind": signer_kind,
         "signing_fingerprint": fingerprint,
+        "apk_binding": apk_binding,
         "descriptor_path": descriptor_path,
         "catalog_path": catalog_path,
         "association_path": association_path,
@@ -698,6 +765,7 @@ def build_publication_pack(
         "provision": provision,
         "signer_kind": signer_kind,
         "signing_fingerprint": fingerprint,
+        "apk_binding": apk_binding,
         "canapp_identifier": canapp["identifier"],
         "application_id": canapp["application_id"],
         "lesson_count": len(inventory),
@@ -713,14 +781,21 @@ def build_publication_pack(
     }
     receipt = {
         **receipt_core,
-        "verification": {"valid": False, "errors": []},
+        "verification": {
+            "scope": "pack_integrity_only",
+            "valid": False,
+            "deployed_origin_verified": False,
+            "errors": [],
+        },
     }
     receipt["semantic_hash"] = canonical_hash(receipt)
     receipt_path = output / "respect-publication-receipt.json"
     _write_json(receipt_path, receipt)
     errors = verify_publication_pack(output)
     receipt["verification"] = {
+        "scope": "pack_integrity_only",
         "valid": not errors,
+        "deployed_origin_verified": False,
         "errors": errors,
     }
     receipt["semantic_hash"] = canonical_hash(
@@ -773,6 +848,45 @@ def verify_publication_pack(pack: Path) -> List[str]:
         ("semantic_hash",),
     ):
         errors.append("RECEIPT_HASH_MISMATCH")
+    provision = deployment.get("provision")
+    try:
+        _origin(str(deployment.get("origin", "")), str(provision))
+    except ValueError:
+        errors.append("DEPLOYMENT_ORIGIN_OR_PROVISION_INVALID")
+    if provision == "production":
+        binding = deployment.get("apk_binding")
+        signer = str(deployment.get("signing_fingerprint", "")).replace(
+            ":",
+            "",
+        )
+        if (
+            deployment.get("signer_kind") != "release"
+            or not isinstance(binding, dict)
+            or binding.get("package_id")
+            != manifest.get("canapp", {}).get("application_id")
+            or binding.get("signer_sha256") != signer
+            or not re.fullmatch(
+                r"[0-9a-f]{64}",
+                str(binding.get("apk_sha256", "")),
+            )
+        ):
+            errors.append("PRODUCTION_APK_BINDING_INVALID")
+    for field in (
+        "origin",
+        "provision",
+        "signer_kind",
+        "signing_fingerprint",
+        "apk_binding",
+    ):
+        if receipt.get(field) != deployment.get(field):
+            errors.append(f"RECEIPT_DEPLOYMENT_MISMATCH: {field}")
+    verification = receipt.get("verification")
+    if (
+        not isinstance(verification, dict)
+        or verification.get("scope") != "pack_integrity_only"
+        or verification.get("deployed_origin_verified") is not False
+    ):
+        errors.append("PACK_RECEIPT_SCOPE_INVALID")
     for artifact in receipt.get("artifacts", []):
         path = pack / artifact.get("path", "")
         if not path.is_file():

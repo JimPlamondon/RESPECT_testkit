@@ -90,6 +90,30 @@ def derive_provisions(
 ) -> List[CertificationProvision]:
     rows = list(selected_rows)
     provisions: List[CertificationProvision] = []
+    publication = evidence_environment.get("publication", {})
+    if publication.get("kind") == "fixture":
+        affected = sorted(
+            row.row_id for row in rows if row.owner == "canapp"
+        )
+        provisions.append(
+            CertificationProvision(
+                code="SUITE_FIXTURE_EVIDENCE",
+                label="suite fixture evidence",
+                explanation=(
+                    "The row behavior passed against a Test Suite fixture; "
+                    "the fixture proves the oracle but not an arbitrary CanApp "
+                    "or its live publication."
+                ),
+                affected_rows=affected,
+                evidence=publication,
+                clearance=(
+                    "Run the complete selected profile against the submitted "
+                    "CanApp and its live publication and runtime."
+                ),
+                rerun_scope="full_selected_profile",
+                responsible_party="canapp_owner",
+            )
+        )
     runtime = evidence_environment.get("android_runtime", {})
     if runtime.get("kind") == "emulator":
         affected = sorted(
@@ -116,7 +140,6 @@ def derive_provisions(
                     responsible_party="certification_authority",
                 )
             )
-    publication = evidence_environment.get("publication", {})
     if publication.get("kind") == "local_https":
         affected = sorted(
             row.row_id

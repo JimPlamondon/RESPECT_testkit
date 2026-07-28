@@ -1,0 +1,1 @@
+{"name":{"en":"JiMS Web Fixture"},"description":{"en":"Synthetic web RESPECT compatibility fixture."},"license":"Apache-2.0","website":"https://example.invalid/web","icon":"https://example.invalid/icon.png","learningUnits":"index.json","defaultLaunchUri":"https://example.invalid/launch","respectLaunchVersion":"0.1","web":{"url":"https://example.invalid/app"}}

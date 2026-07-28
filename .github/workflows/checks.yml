@@ -1,0 +1,62 @@
+# SPDX-FileCopyrightText: 2026 Jim Plamondon
+# SPDX-License-Identifier: Apache-2.0
+
+name: checks
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.9", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install declared test and license dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e '.[test]' reuse
+      - name: Provision source-locked standards
+        env:
+          RESPECT_STANDARDS_CACHE: ${{ runner.temp }}/respect-standards
+        run: respect-standards-bootstrap
+      - name: Validate committed migration evidence offline
+        run: python tools/validate_migration_manifest.py --manifest migration/source_manifest.json
+      - name: Validate Matrix and mutation checks
+        run: respect-matrix-validate --self-test --require-ready
+      - name: Run unit, integration, migration, privacy, and authority tests
+        env:
+          RESPECT_STANDARDS_CACHE: ${{ runner.temp }}/respect-standards
+        run: python -m pytest -q
+      - name: Build source distribution and wheel
+        run: python -m build
+      - name: Inspect wheel content and package authorities
+        run: |
+          python -m zipfile -l dist/*.whl
+          python tools/inspect_distribution.py dist/*.whl
+      - name: Run isolated installed-wheel acceptance
+        env:
+          RESPECT_STANDARDS_CACHE: ${{ runner.temp }}/respect-standards
+        run: |
+          run_root="$(mktemp -d "${RUNNER_TEMP}/respect-testkit-wheel-XXXXXXXX")"
+          python -m venv "${run_root}/venv"
+          "${run_root}/venv/bin/python" -m pip install --no-cache-dir dist/*.whl
+          cd "${run_root}"
+          env -u PYTHONPATH "${run_root}/venv/bin/python" -m respect_compat.cli --help
+          env -u PYTHONPATH "${run_root}/venv/bin/python" -m respect_ification.cli --help
+          env -u PYTHONPATH "${run_root}/venv/bin/respect-compat" --help
+          env -u PYTHONPATH "${run_root}/venv/bin/respect-ification" --help
+          env -u PYTHONPATH "${run_root}/venv/bin/respect-matrix-validate" --self-test --require-ready
+          env -u PYTHONPATH RESPECT_STANDARDS_CACHE="${RESPECT_STANDARDS_CACHE}" "${run_root}/venv/bin/python" -m respect_testkit_migration.installed_smoke --run-dir "${run_root}/run" --forbid-root "${GITHUB_WORKSPACE}"
+      - name: Validate licenses and privacy scans
+        run: |
+          reuse lint
+          ! git grep -n -E '/Users/|Path\(__file__\).*parents|licensing-public/' -- ':(glob)src/**/*.py' pyproject.toml
+          ! find . -type f \( -name '*.apk' -o -name '*.jks' -o -name '*.keystore' -o -name '.env' -o -name '.DS_Store' -o -name 'matrix_validation_report.json' \) -print -quit | grep .

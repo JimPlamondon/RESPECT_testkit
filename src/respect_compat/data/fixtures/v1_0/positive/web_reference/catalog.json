@@ -1,0 +1,45 @@
+{
+  "metadata": {
+    "title": "Reference lesson catalog"
+  },
+  "links": [
+    {
+      "rel": [
+        "self"
+      ],
+      "href": "catalog.json",
+      "type": "application/opds+json"
+    }
+  ],
+  "publications": [
+    {
+      "metadata": {
+        "identifier": "urn:jims:respect:web-reference:lesson",
+        "title": {
+          "en": "Reference lesson"
+        }
+      },
+      "links": [
+        {
+          "rel": [
+            "http://opds-spec.org/acquisition/open-access"
+          ],
+          "href": "lesson.html",
+          "type": "text/html"
+        }
+      ],
+      "images": [
+        {
+          "href": "icon.png",
+          "type": "image/png"
+        }
+      ],
+      "resources": [
+        {
+          "href": "lesson.js",
+          "type": "text/javascript"
+        }
+      ]
+    }
+  ]
+}

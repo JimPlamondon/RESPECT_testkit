@@ -1,0 +1,17 @@
+version = 1
+
+[[annotations]]
+path = [
+  ".github/**",
+  ".githooks/**",
+  "*.md",
+  "docs/**",
+  "migration/**",
+  "pyproject.toml",
+  "src/respect_compat/data/**",
+  "src/respect_ification/data/**",
+  "src/*.egg-info/**",
+]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2026 Jim Plamondon"
+SPDX-License-Identifier = "Apache-2.0"

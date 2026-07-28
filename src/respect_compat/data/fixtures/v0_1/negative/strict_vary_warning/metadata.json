@@ -1,0 +1,1 @@
+{"learning_units_response":{"url":"fixture://strict_vary_warning/index.json","status":200,"content_type":"application/json","content_length":"2","etag":"\"vary\"","revalidation_status":304,"vary":"strict"}}

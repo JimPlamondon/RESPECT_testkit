@@ -1,0 +1,214 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/JimPlamondon/RESPECT_testkit/migration/source_manifest.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "source_inventory",
+    "source_inventory_hash",
+    "manifest_hash",
+    "entries"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0.0"
+    },
+    "source_inventory": {
+      "const": "migration/source_inventory.json"
+    },
+    "source_inventory_hash": {
+      "$ref": "#/$defs/sha256"
+    },
+    "manifest_hash": {
+      "$ref": "#/$defs/sha256"
+    },
+    "entries": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/entry"
+      }
+    }
+  },
+  "$defs": {
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "entry": {
+      "type": "object",
+      "required": [
+        "source_repository",
+        "source_commit",
+        "source_path",
+        "mode",
+        "object_type",
+        "blob_oid",
+        "sha256",
+        "size",
+        "license",
+        "provenance_reference",
+        "item_class",
+        "disposition",
+        "post_cutover_jims_disposition"
+      ],
+      "properties": {
+        "source_repository": {
+          "const": "https://github.com/JimPlamondon/jims"
+        },
+        "source_commit": {
+          "const": "eccf623b1978ddcd50ef16b0353193fbf2152ede"
+        },
+        "source_path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "mode": {
+          "enum": [
+            "100644",
+            "100755"
+          ]
+        },
+        "object_type": {
+          "const": "blob"
+        },
+        "blob_oid": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{40}$"
+        },
+        "sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "size": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "license": {
+          "const": "Apache-2.0"
+        },
+        "provenance_reference": {
+          "const": "MIGRATION_PROVENANCE.md"
+        },
+        "item_class": {
+          "enum": [
+            "runtime",
+            "matrix",
+            "profile",
+            "schema",
+            "fixture",
+            "test",
+            "documentation",
+            "validator",
+            "bootstrap",
+            "generated",
+            "repository_scaffold"
+          ]
+        },
+        "disposition": {
+          "enum": [
+            "migrated",
+            "adapted",
+            "historical_only",
+            "excluded"
+          ]
+        },
+        "destination_path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "destination_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "adaptation_reason": {
+          "type": "string",
+          "minLength": 1
+        },
+        "exclusion_reason": {
+          "enum": [
+            "immutable_historical_record",
+            "jims_repository_scaffold",
+            "reproducible_generated_evidence",
+            "prohibited_private_local_material"
+          ]
+        },
+        "post_cutover_jims_disposition": {
+          "enum": [
+            "remove",
+            "preserve_historical"
+          ]
+        }
+      },
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "disposition": {
+                "enum": [
+                  "migrated",
+                  "adapted"
+                ]
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "destination_path",
+              "destination_sha256"
+            ],
+            "not": {
+              "required": [
+                "exclusion_reason"
+              ]
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "disposition": {
+                "const": "adapted"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "adaptation_reason"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "disposition": {
+                "enum": [
+                  "historical_only",
+                  "excluded"
+                ]
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "exclusion_reason"
+            ],
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "destination_path"
+                  ]
+                },
+                {
+                  "required": [
+                    "destination_sha256"
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  }
+}

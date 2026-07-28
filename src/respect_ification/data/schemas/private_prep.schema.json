@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://jims.example/schemas/respect_ification/private_prep.schema.json",
+  "title": "RESPECT-ification Private Prep Packet",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["artifact_type", "format_version", "prep_bundle_id", "public_semantic_hash", "target_digest", "profile_id", "source_root_name", "source_inventory", "row_mappings", "build_entry_points", "owner_notes", "semantic_hash"],
+  "properties": {
+    "artifact_type": {"const": "respect_ification_private_prep"},
+    "format_version": {"const": "1.0.0"},
+    "prep_bundle_id": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "public_semantic_hash": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "target_digest": {"type": "string", "minLength": 8},
+    "profile_id": {"type": "string", "minLength": 3},
+    "source_root_name": {"type": "string", "minLength": 1},
+    "source_inventory": {"type": "array", "items": {"type": "object"}},
+    "row_mappings": {"type": "object"},
+    "build_entry_points": {"type": "array", "items": {"type": "string"}},
+    "owner_notes": {"type": "array", "items": {"type": "string"}},
+    "semantic_hash": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+  }
+}

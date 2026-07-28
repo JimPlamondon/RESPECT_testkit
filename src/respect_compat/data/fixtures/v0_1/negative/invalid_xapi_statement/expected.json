@@ -1,0 +1,1 @@
+{"manifest":"appmanifest.json","xapi_statement":"statement.json","expected_results":[{"rule_id":"RCS-007","result":"fail"}]}

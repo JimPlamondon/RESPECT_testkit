@@ -1,0 +1,3789 @@
+{
+  "candidates": [
+    {
+      "candidate_id": "RCF-ANDROID-LAUNCH",
+      "disposition": "accepted",
+      "interface_family_id": "IF-ANDROID-LAUNCH",
+      "notes": "Disposition confirmed by direct primary-source crosswalk.",
+      "source_refs": [
+        "SRC-AUDIT",
+        "SRC-MATRIX-V01",
+        "SRC-RESPECT-LAUNCH"
+      ]
+    },
+    {
+      "candidate_id": "RCF-HTTP",
+      "disposition": "accepted",
+      "interface_family_id": "IF-HTTP",
+      "notes": "Disposition confirmed by direct primary-source crosswalk.",
+      "source_refs": [
+        "SRC-AUDIT",
+        "SRC-MATRIX-V01",
+        "SRC-RESPECT-HTTP"
+      ]
+    },
+    {
+      "candidate_id": "RCF-LAUNCH",
+      "disposition": "accepted",
+      "interface_family_id": "IF-LAUNCH",
+      "notes": "Disposition confirmed by direct primary-source crosswalk.",
+      "source_refs": [
+        "SRC-AUDIT",
+        "SRC-RESPECT-LAUNCH"
+      ]
+    },
+    {
+      "candidate_id": "RCF-LAUNCH-VERSION",
+      "disposition": "claim_only_non_executable",
+      "interface_family_id": "IF-LAUNCH-VERSION",
+      "notes": "Disposition confirmed by direct primary-source crosswalk.",
+      "source_refs": [
+        "SRC-AUDIT",
+        "SRC-GUIDE-LAUNCH",
+        "SRC-RESPECT-MANIFEST",
+        "SRC-RESPECT-XAPI-URL",
+        "SRC-SUITE-FAKE-LAUNCHER"
+      ]
+    },
+    {
+      "candidate_id": "RCF-LTI-AGS",
+      "disposition": "claim_only_non_executable",
+      "interface_family_id": "IF-LTI-AGS",
+      "notes": "Disposition confirmed by direct primary-source crosswalk.",
+      "source_refs": [
+        "SRC-REQUIREMENTS-INTERFACES"
+      ]
+    },
+    {
+      "candidate_id": "RCF-LTI-LAUNCH",
+      "disposition": "claim_only_non_executable",
+      "interface_family_id": "IF-LTI-LAUNCH",
+      "notes": "Disposition confirmed by direct primary-source crosswalk.",
+      "source_refs": [
+        "SRC-REQUIREMENTS-INTERFACES"
+      ]
+    },
+    {
+      "candidate_id": "RCF-MANIFEST",
+      "disposition": "accepted",
+      "interface_family_id": "IF-MANIFEST",
+      "notes": "Disposition confirmed by direct primary-source crosswalk.",
+      "source_refs": [
+        "SRC-AUDIT",
+        "SRC-GUIDE-MANIFEST",
+        "SRC-MATRIX-V01",
+        "SRC-RESPECT-HTTP",
+        "SRC-RESPECT-LAUNCH",
+        "SRC-RESPECT-MANIFEST",
+        "SRC-RESPECT-MANIFEST-VALIDATOR"
+      ]
+    },
+    {
+      "candidate_id": "RCF-MANIFEST-OPTIONAL",
+      "disposition": "accepted",
+      "interface_family_id": "IF-MANIFEST",
+      "notes": "Added during direct primary-source crosswalk.",
+      "source_refs": [
+        "SRC-GUIDE-MANIFEST",
+        "SRC-RESPECT-MANIFEST"
+      ]
+    },
+    {
+      "candidate_id": "RCF-OAUTH",
+      "disposition": "claim_only_non_executable",
+      "interface_family_id": "IF-OAUTH",
+      "notes": "Disposition confirmed by direct primary-source crosswalk.",
+      "source_refs": [
+        "SRC-REQUIREMENTS-INTERFACES"
+      ]
+    },
+    {
+      "candidate_id": "RCF-OFFLINE-HTTP-IPC",
+      "disposition": "claim_only_non_executable",
+      "interface_family_id": "IF-OFFLINE-HTTP-IPC",
+      "notes": "Disposition confirmed by direct primary-source crosswalk.",
+      "source_refs": [
+        "SRC-REQUIREMENTS-INTERFACES"
+      ]
+    },
+    {
+      "candidate_id": "RCF-ONEROSTER",
+      "disposition": "claim_only_non_executable",
+      "interface_family_id": "IF-ONEROSTER",
+      "notes": "Disposition confirmed by direct primary-source crosswalk.",
+      "source_refs": [
+        "SRC-REQUIREMENTS-INTERFACES"
+      ]
+    },
+    {
+      "candidate_id": "RCF-OPDS",
+      "disposition": "accepted",
+      "interface_family_id": "IF-OPDS",
+      "notes": "Disposition confirmed by direct primary-source crosswalk.",
+      "source_refs": [
+        "SRC-AUDIT",
+        "SRC-GUIDE-OPDS",
+        "SRC-MATRIX-V01",
+        "SRC-RESPECT-HTTP",
+        "SRC-RESPECT-OPDS"
+      ]
+    },
+    {
+      "candidate_id": "RCF-OPDS-SCOPE",
+      "disposition": "explicit_profile_boundary",
+      "interface_family_id": "IF-OPDS",
+      "notes": "Disposition confirmed by direct primary-source crosswalk.",
+      "source_refs": [
+        "SRC-AUDIT",
+        "SRC-RESPECT-OPDS"
+      ]
+    },
+    {
+      "candidate_id": "RCF-RESPECT-IFICATION",
+      "disposition": "accepted",
+      "interface_family_id": "IF-RESPECT-IFICATION",
+      "notes": "Disposition confirmed by direct primary-source crosswalk.",
+      "source_refs": [
+        "SRC-AUDIT"
+      ]
+    },
+    {
+      "candidate_id": "RCF-RUSTICI-LAUNCH",
+      "disposition": "accepted",
+      "interface_family_id": "IF-RUSTICI-LAUNCH",
+      "notes": "Disposition confirmed by direct primary-source crosswalk.",
+      "source_refs": [
+        "SRC-AUDIT",
+        "SRC-GUIDE-LAUNCH",
+        "SRC-RESPECT-IPC-INTENT",
+        "SRC-RESPECT-XAPI-URL",
+        "SRC-SUITE-FAKE-LAUNCHER"
+      ]
+    },
+    {
+      "candidate_id": "RCF-SUITE-COVERAGE",
+      "disposition": "accepted",
+      "interface_family_id": "IF-SUITE-COVERAGE",
+      "notes": "Disposition confirmed by direct primary-source crosswalk.",
+      "source_refs": [
+        "SRC-AUDIT",
+        "SRC-SUITE-TESTS"
+      ]
+    },
+    {
+      "candidate_id": "RCF-SUITE-ORACLE",
+      "disposition": "accepted",
+      "interface_family_id": "IF-SUITE-ORACLE",
+      "notes": "Disposition confirmed by direct primary-source crosswalk.",
+      "source_refs": [
+        "SRC-AUDIT",
+        "SRC-MATRIX-V01",
+        "SRC-SUITE-CLI"
+      ]
+    },
+    {
+      "candidate_id": "RCF-SUITE-TARGET",
+      "disposition": "accepted",
+      "interface_family_id": "IF-SUITE-TARGET",
+      "notes": "Disposition confirmed by direct primary-source crosswalk.",
+      "source_refs": [
+        "SRC-AUDIT",
+        "SRC-SUITE-CLI"
+      ]
+    },
+    {
+      "candidate_id": "RCF-SUITE-VERDICT",
+      "disposition": "accepted",
+      "interface_family_id": "IF-SUITE-VERDICT",
+      "notes": "Disposition confirmed by direct primary-source crosswalk.",
+      "source_refs": [
+        "SRC-AUDIT",
+        "SRC-SUITE-CLI"
+      ]
+    },
+    {
+      "candidate_id": "RCF-SUITE-XAPI-ACTOR",
+      "disposition": "accepted",
+      "interface_family_id": "IF-SUITE-XAPI-ACTOR",
+      "notes": "Disposition confirmed by direct primary-source crosswalk.",
+      "source_refs": [
+        "SRC-AUDIT",
+        "SRC-RESPECT-IPC-SERVICE",
+        "SRC-RESPECT-XAPI-HTTP",
+        "SRC-SUITE-FAKE-LRS"
+      ]
+    },
+    {
+      "candidate_id": "RCF-XAPI",
+      "disposition": "accepted",
+      "interface_family_id": "IF-XAPI",
+      "notes": "Disposition confirmed by direct primary-source crosswalk.",
+      "source_refs": [
+        "SRC-AUDIT",
+        "SRC-RESPECT-XAPI-URL",
+        "SRC-SUITE-FAKE-LRS"
+      ]
+    },
+    {
+      "candidate_id": "RCF-XAPI-ASSIGNMENT",
+      "disposition": "accepted",
+      "interface_family_id": "IF-XAPI-ASSIGNMENT",
+      "notes": "Disposition confirmed by direct primary-source crosswalk.",
+      "source_refs": [
+        "SRC-AUDIT",
+        "SRC-RESPECT-IPC-SERVICE",
+        "SRC-RESPECT-XAPI-HTTP",
+        "SRC-RESPECT-XAPI-URL"
+      ]
+    },
+    {
+      "candidate_id": "RCF-XAPI-HTTP",
+      "disposition": "accepted",
+      "interface_family_id": "IF-XAPI-HTTP",
+      "notes": "Restricted to the CanApp-owned obligation to use the supplied web xAPI endpoint.",
+      "source_refs": [
+        "SRC-AUDIT",
+        "SRC-RESPECT-XAPI-HTTP",
+        "SRC-RESPECT-XAPI-URL"
+      ]
+    },
+    {
+      "candidate_id": "RCF-XAPI-HTTP-PROXY",
+      "disposition": "accepted_non_canapp_obligation",
+      "interface_family_id": "IF-XAPI-HTTP",
+      "notes": "Split from the CanApp-owned HTTP request feature after direct owner and failure-domain review.",
+      "source_refs": [
+        "SRC-RESPECT-XAPI-HTTP",
+        "SRC-XAPI-103"
+      ]
+    },
+    {
+      "candidate_id": "RCF-XAPI-IPC",
+      "disposition": "accepted",
+      "interface_family_id": "IF-XAPI-IPC",
+      "notes": "Disposition confirmed by direct primary-source crosswalk.",
+      "source_refs": [
+        "SRC-AUDIT",
+        "SRC-RESPECT-IPC-INTENT",
+        "SRC-RESPECT-IPC-SERVICE"
+      ]
+    },
+    {
+      "candidate_id": "RCF-XAPI-IPC-UNSUPPORTED",
+      "disposition": "explicit_profile_boundary",
+      "interface_family_id": "IF-XAPI-IPC",
+      "notes": "Added during direct primary-source crosswalk.",
+      "source_refs": [
+        "SRC-RESPECT-IPC-CLIENT"
+      ]
+    },
+    {
+      "candidate_id": "RCF-XAPI-SCOPE",
+      "disposition": "explicit_profile_boundary",
+      "interface_family_id": "IF-XAPI",
+      "notes": "Disposition confirmed by direct primary-source crosswalk.",
+      "source_refs": [
+        "SRC-AUDIT",
+        "SRC-RESPECT-IPC-SERVICE",
+        "SRC-RESPECT-XAPI-HTTP"
+      ]
+    }
+  ],
+  "evidence_items": [
+    {
+      "disposition": "invoked_platform_surface",
+      "evidence_class": "accepted_direct_evidence",
+      "locator": "Verify Android App Links and add intent filters",
+      "observation": "Android App Links require a browsable HTTPS intent surface and domain association for verified direct routing.",
+      "source_lock_id": "LOCK-ANDROID-APPLINKS",
+      "source_ref": "SRC-ANDROID-APPLINKS"
+    },
+    {
+      "disposition": "diagnostic_only",
+      "evidence_class": "diagnostic_evidence",
+      "locator": "/Users/jim/Developer/JiMS/Plans/RESPECT_Test_Suite_Level_5/01_Current_State_and_RESPECT_Interaction_Audit.md",
+      "observation": "Prior interaction audit used as a search map, not as current authority.",
+      "source_lock_id": "LOCK-DIAGNOSTIC-MATRIX",
+      "source_ref": "SRC-AUDIT"
+    },
+    {
+      "disposition": "active_consumer_confirmation",
+      "evidence_class": "source_observation",
+      "locator": "app/src/main/AndroidManifest.xml:6-47",
+      "observation": "The demo declares xAPI IPC package visibility and a verified browsable HTTPS deep link.",
+      "source_lock_id": "LOCK-DEMO-CANAPP",
+      "source_ref": "SRC-DEMO-ANDROID"
+    },
+    {
+      "disposition": "accepted_candidate",
+      "evidence_class": "source_observation",
+      "locator": "app/src/main/java/org/openeel/demolaunchableapp/screens/LessonScreen.kt:60-80",
+      "observation": "The active demo selects Android IPC when xapiIpcPackage, endpoint, and auth are present and closes the IPC client when the lesson UI leaves composition.",
+      "source_lock_id": "LOCK-DEMO-CANAPP",
+      "source_ref": "SRC-DEMO-IPC-LIFECYCLE"
+    },
+    {
+      "disposition": "active_consumer_confirmation",
+      "evidence_class": "source_observation",
+      "locator": "app/src/main/java/org/openeel/demolaunchableapp/MainActivity.kt:39-50; screens/LessonScreen.kt:60-99",
+      "observation": "The active demo consumes endpoint, actor, auth, activity_id, and xapiIpcPackage.",
+      "source_lock_id": "LOCK-DEMO-CANAPP",
+      "source_ref": "SRC-DEMO-LAUNCH"
+    },
+    {
+      "disposition": "diagnostic_only",
+      "evidence_class": "diagnostic_evidence",
+      "locator": "/Users/jim/Developer/JiMS/Plans/Research/RESPECT_Level5_Matrix/20260727_direct_evidence_reuse/compatibility_matrix.json",
+      "observation": "Prior 56-row draft used only as a candidate inventory.",
+      "source_lock_id": "LOCK-DIAGNOSTIC-MATRIX",
+      "source_ref": "SRC-DIAGNOSTIC-56"
+    },
+    {
+      "disposition": "claim_not_implemented_as_testable_interface",
+      "evidence_class": "source_observation",
+      "locator": "README.md:184-216",
+      "observation": "The integration guide claims that a launched CanApp finishes the learning activity after submitting progress, but active RESPECT code does not enforce or observe CanApp completion.",
+      "source_lock_id": "LOCK-CONSUMER-GUIDE",
+      "source_ref": "SRC-GUIDE-CANAPP-LIFECYCLE"
+    },
+    {
+      "disposition": "claim_contradicted_or_partial",
+      "evidence_class": "source_observation",
+      "locator": "README.md:184-216",
+      "observation": "The guide claims respectLaunchVersion, OneRoster endpoint, auth, and Rustici launch parameters; active code emits only a subset.",
+      "source_lock_id": "LOCK-CONSUMER-GUIDE",
+      "source_ref": "SRC-GUIDE-LAUNCH"
+    },
+    {
+      "disposition": "claim_and_partial_implementation",
+      "evidence_class": "source_observation",
+      "locator": "README.md:36-75",
+      "observation": "The guide documents the legacy app manifest fields and limits.",
+      "source_lock_id": "LOCK-CONSUMER-GUIDE",
+      "source_ref": "SRC-GUIDE-MANIFEST"
+    },
+    {
+      "disposition": "claim_and_implementation",
+      "evidence_class": "source_observation",
+      "locator": "README.md:157-182,220-367",
+      "observation": "The guide documents OPDS learning units, Readium discovery, resources, and optional navigation icons.",
+      "source_lock_id": "LOCK-CONSUMER-GUIDE",
+      "source_ref": "SRC-GUIDE-OPDS"
+    },
+    {
+      "disposition": "downstream_partial_implementation",
+      "evidence_class": "rejected_or_partial_evidence",
+      "locator": "licensing-public/harness/respect_compat/web_target.py and tests at f885585aabf0c0d224db41136b8a337c358a8b18",
+      "observation": "PR 47 adds a real web-manifest target preflight and fail-closed incomplete launch result, but not full launch/xAPI conformance.",
+      "source_lock_id": "LOCK-JIMS-PR47",
+      "source_ref": "SRC-JIMS-PR47"
+    },
+    {
+      "disposition": "diagnostic_only",
+      "evidence_class": "diagnostic_evidence",
+      "locator": "licensing-public/schemas/respect_compat/compatibility_matrix_v0_1.json",
+      "observation": "The current Test Suite has an 11-requirement partial runtime projection.",
+      "source_lock_id": "LOCK-JIMS-BASE",
+      "source_ref": "SRC-MATRIX-V01"
+    },
+    {
+      "disposition": "invoked_standard_surface",
+      "evidence_class": "accepted_direct_evidence",
+      "locator": "opds-2.0.md sections 1, 2.1, 5.1, 5.3, and Appendix A",
+      "observation": "OPDS 2.0 defines the feed, publication, acquisition-link, media-type, and schema surfaces invoked by RESPECT.",
+      "source_lock_id": "LOCK-OPDS-20",
+      "source_ref": "SRC-OPDS-20"
+    },
+    {
+      "disposition": "invoked_standard_surface",
+      "evidence_class": "accepted_direct_evidence",
+      "locator": "README.md sections 2.1 and 5",
+      "observation": "Readium defines publication resources and HTML or HTTP Link-header discovery of a web publication manifest.",
+      "source_lock_id": "LOCK-READIUM-WEBPUB",
+      "source_ref": "SRC-READIUM-WEBPUB"
+    },
+    {
+      "disposition": "claim_only",
+      "evidence_class": "source_observation",
+      "locator": "README.md:32-40,59-75",
+      "observation": "Requirements claim OAuth single sign-on, LTI launch and grade services, OneRoster, optional xAPI, and HTTP over IPC.",
+      "source_lock_id": "LOCK-REQUIREMENTS",
+      "source_ref": "SRC-REQUIREMENTS-INTERFACES"
+    },
+    {
+      "disposition": "accepted_candidate",
+      "evidence_class": "source_observation",
+      "locator": "respect-app-compose/src/androidMain/AndroidManifest.xml:121-133",
+      "observation": "RESPECT exports XapiIpcService under org.openeel.action.xapioveripc.",
+      "source_lock_id": "LOCK-RESPECT-SOURCE",
+      "source_ref": "SRC-RESPECT-ANDROID-MANIFEST"
+    },
+    {
+      "disposition": "accepted_candidate",
+      "evidence_class": "source_observation",
+      "locator": "respect-lib-shared/src/commonMain/kotlin/world/respect/shared/viewmodel/apps/launcher/AppLauncherViewModel.kt:115-217",
+      "observation": "RESPECT derives the installed app list from xAPI listed-app statements, opens the app descriptor or default lesson catalog, and removes an app by voiding the most recent listing statement.",
+      "source_lock_id": "LOCK-RESPECT-SOURCE",
+      "source_ref": "SRC-RESPECT-APP-LAUNCHER"
+    },
+    {
+      "disposition": "accepted_candidate",
+      "evidence_class": "source_observation",
+      "locator": "respect-lib-shared/src/commonMain/kotlin/world/respect/shared/domain/xapi/XapiAppListingExt.kt:17-61; respect-lib-shared/src/commonMain/kotlin/world/respect/shared/viewmodel/apps/detail/AppsDetailViewModel.kt:131-216; respect-lib-shared/src/commonMain/kotlin/world/respect/shared/viewmodel/apps/launcher/AppLauncherViewModel.kt:185-217",
+      "observation": "RESPECT creates, queries, and voids xAPI listed-app statements to represent app registration and removal.",
+      "source_lock_id": "LOCK-RESPECT-SOURCE",
+      "source_ref": "SRC-RESPECT-APP-LISTING"
+    },
+    {
+      "disposition": "accepted_candidate",
+      "evidence_class": "source_observation",
+      "locator": "respect-lib-shared/src/commonMain/kotlin/world/respect/shared/viewmodel/apps/detail/AppsDetailViewModel.kt:84-216",
+      "observation": "RESPECT loads an app OPDS Publication, resolves the default lesson catalog, renders publications, navigation, and groups, and opens selected publications or navigation feeds.",
+      "source_lock_id": "LOCK-RESPECT-SOURCE",
+      "source_ref": "SRC-RESPECT-APPS-DETAIL"
+    },
+    {
+      "disposition": "accepted_candidate",
+      "evidence_class": "source_observation",
+      "locator": "respect-app-compose/src/androidMain/kotlin/world/respect/AppKoinModule.kt:326-355,458-482",
+      "observation": "RESPECT routes HTTP and WebView requests through UstadCacheInterceptor and OkHttpWebViewClient backed by a 100,000,000-byte cache.",
+      "source_lock_id": "LOCK-RESPECT-SOURCE",
+      "source_ref": "SRC-RESPECT-CACHE-WIRING"
+    },
+    {
+      "disposition": "accepted_candidate",
+      "evidence_class": "source_observation",
+      "locator": "respect-cli/src/main/java/world/respect/clitools/RespectCLI.kt:27-115",
+      "observation": "The upstream CLI exposes manifest, OPDS feed, and OPDS publication validation with optional traversal and RESPECT-specific checks.",
+      "source_lock_id": "LOCK-RESPECT-SOURCE",
+      "source_ref": "SRC-RESPECT-CLI"
+    },
+    {
+      "disposition": "accepted_candidate",
+      "evidence_class": "source_observation",
+      "locator": "respect-lib-shared/src/jvmMain/kotlin/world/respect/shared/domain/validator/ValidateHttpResponseForUrlUseCase.kt:44-176",
+      "observation": "The active validator requires HTTP 200, selected media types, content length, a cache validator, and HTTP 304 on conditional revalidation.",
+      "source_lock_id": "LOCK-RESPECT-SOURCE",
+      "source_ref": "SRC-RESPECT-HTTP"
+    },
+    {
+      "disposition": "claim_not_implemented_as_canapp_interface",
+      "evidence_class": "source_observation",
+      "locator": "respect-lib-ihttp-core, respect-lib-ihttp-iostreams, respect-lib-ihttp-okhttp, and respect-lib-ihttp-nanohttpd",
+      "observation": "The pinned repository contains generic HTTP adapter types but no active general HTTP-over-IPC CanApp route or Android binding.",
+      "source_lock_id": "LOCK-RESPECT-SOURCE",
+      "source_ref": "SRC-RESPECT-IHTTP-ADAPTERS"
+    },
+    {
+      "disposition": "accepted_candidate",
+      "evidence_class": "source_observation",
+      "locator": "respect-lib-xapi-ipc-client/src/main/kotlin/world/respect/xapi/ipc/client/XapiStatementsResourceIpcClient.kt:30-143",
+      "observation": "The client implements statement POST, GET, and flow; assignment summary APIs explicitly throw unsupported.",
+      "source_lock_id": "LOCK-RESPECT-SOURCE",
+      "source_ref": "SRC-RESPECT-IPC-CLIENT"
+    },
+    {
+      "disposition": "diagnostic_only",
+      "evidence_class": "source_observation",
+      "locator": "respect-lib-xapi-ipc-client/src/main/kotlin/world/respect/xapi/ipc/client/XapiIpcMessageBridgeServiceConnectionImpl.kt:35-91; XapiMessageBridgeMessengerImpl.kt:32-124; XapiResourceIpcClient.kt:20-50",
+      "observation": "The Android IPC client handles service connection, disconnection, unbinding, channel closure, and resource closure.",
+      "source_lock_id": "LOCK-RESPECT-SOURCE",
+      "source_ref": "SRC-RESPECT-IPC-CLIENT-LIFECYCLE"
+    },
+    {
+      "disposition": "accepted_candidate",
+      "evidence_class": "source_observation",
+      "locator": "respect-lib-xapi-ipc-shared/src/main/kotlin/world/respect/xapi/ipc/shared/messages/XapiIpcIntent.kt:3-17",
+      "observation": "The native transport uses action org.openeel.action.xapioveripc and launch parameter xapiIpcPackage.",
+      "source_lock_id": "LOCK-RESPECT-SOURCE",
+      "source_ref": "SRC-RESPECT-IPC-INTENT"
+    },
+    {
+      "disposition": "accepted_candidate",
+      "evidence_class": "source_observation",
+      "locator": "respect-lib-xapi-ipc-server/src/main/kotlin/world/respect/xapi/ipc/server/XapiIpcService.kt:46-260",
+      "observation": "The bound Messenger service supports correlated statement POST, GET, and flow requests, with assignment transformation and error replies.",
+      "source_lock_id": "LOCK-RESPECT-SOURCE",
+      "source_ref": "SRC-RESPECT-IPC-SERVICE"
+    },
+    {
+      "disposition": "diagnostic_only",
+      "evidence_class": "source_observation",
+      "locator": "respect-lib-xapi-ipc-shared/src/main/kotlin/world/respect/xapi/ipc/shared/messages/; respect-lib-xapi-ipc-server/src/main/kotlin/world/respect/xapi/ipc/server/XapiIpcService.kt:40-259",
+      "observation": "Android IPC uses implementation-specific Bundle keys, resource flags, message flags, correlation identifiers, flow emissions, and service lifecycle mechanics.",
+      "source_lock_id": "LOCK-RESPECT-SOURCE",
+      "source_ref": "SRC-RESPECT-IPC-WIRE"
+    },
+    {
+      "disposition": "accepted_candidate",
+      "evidence_class": "source_observation",
+      "locator": "respect-app-compose/src/androidMain/kotlin/world/respect/AppKoinModule.kt:282-288; respect-lib-opds-model/src/commonMain/kotlin/world/respect/lib/opds/model/OpdsPublication.kt:17-29; ReadiumLink.kt:11-34",
+      "observation": "The active Android JSON decoder ignores unknown keys; OPDS Publication requires metadata and links and accepts optional images, readingOrder, resources, and toc; Readium links require href and accept optional relation and metadata fields.",
+      "source_lock_id": "LOCK-RESPECT-SOURCE",
+      "source_ref": "SRC-RESPECT-JSON-CONFIG"
+    },
+    {
+      "disposition": "accepted_candidate",
+      "evidence_class": "source_observation",
+      "locator": "respect-lib-shared/src/androidMain/kotlin/world/respect/shared/domain/launchapp/LaunchAppUseCaseAndroid.kt:29-129",
+      "observation": "Android launch attempts a non-browser native route first and otherwise opens the URL in the RESPECT WebView activity.",
+      "source_lock_id": "LOCK-RESPECT-SOURCE",
+      "source_ref": "SRC-RESPECT-LAUNCH"
+    },
+    {
+      "disposition": "accepted_candidate",
+      "evidence_class": "source_observation",
+      "locator": "respect-lib-shared/src/commonMain/kotlin/world/respect/shared/domain/opds/getxapiactivityid/GetXapiActivityForPublicationUseCase.kt:21-39",
+      "observation": "RESPECT derives the xAPI activity identifier from publication metadata or the first acquisition URL and supplies title plus the web publication manifest extension.",
+      "source_lock_id": "LOCK-RESPECT-SOURCE",
+      "source_ref": "SRC-RESPECT-LAUNCH-ACTIVITY"
+    },
+    {
+      "disposition": "accepted_candidate",
+      "evidence_class": "source_observation",
+      "locator": "respect-datalayer/src/commonMain/kotlin/world/respect/datalayer/school/opds/ext/RespectAppManifestExt.kt:9-24",
+      "observation": "Legacy manifest conversion preserves the title, default lesson-catalog link, and optional icon in an OPDS Publication.",
+      "source_lock_id": "LOCK-RESPECT-SOURCE",
+      "source_ref": "SRC-RESPECT-LEGACY-CONVERSION"
+    },
+    {
+      "disposition": "accepted_candidate",
+      "evidence_class": "source_observation",
+      "locator": "respect-datalayer/src/commonMain/kotlin/world/respect/datalayer/compatibleapps/model/RespectAppManifest.kt:29-80",
+      "observation": "The serializable legacy manifest model defines name, description, license, website, icon, learningUnits, defaultLaunchUri, Android, web, and screenshots fields.",
+      "source_lock_id": "LOCK-RESPECT-SOURCE",
+      "source_ref": "SRC-RESPECT-MANIFEST"
+    },
+    {
+      "disposition": "accepted_candidate",
+      "evidence_class": "source_observation",
+      "locator": "respect-datalayer-http/src/commonMain/kotlin/world/respect/datalayer/http/school/opds/OpdsPublicationDataSourceHttp.kt:28-42",
+      "observation": "The runtime data source labels RespectAppManifest deprecated and converts it to an OPDS publication when defaultLaunchUri is present.",
+      "source_lock_id": "LOCK-RESPECT-SOURCE",
+      "source_ref": "SRC-RESPECT-MANIFEST-DEPRECATED"
+    },
+    {
+      "disposition": "accepted_candidate",
+      "evidence_class": "source_observation",
+      "locator": "respect-lib-shared/src/jvmMain/kotlin/world/respect/shared/domain/respectappmanifest/validator/RespectAppManifestValidator.kt:31-180",
+      "observation": "The active command-line validator checks manifest media type, parsing, localized lengths, license, website, icon fallback, learningUnits, and Android package characters.",
+      "source_lock_id": "LOCK-RESPECT-SOURCE",
+      "source_ref": "SRC-RESPECT-MANIFEST-VALIDATOR"
+    },
+    {
+      "disposition": "accepted_candidate",
+      "evidence_class": "source_observation",
+      "locator": "settings.gradle.kts:36-64",
+      "observation": "The pinned build includes app, server, data, HTTP, OPDS, iHTTP, xAPI HTTP proxy, and xAPI IPC modules.",
+      "source_lock_id": "LOCK-RESPECT-SOURCE",
+      "source_ref": "SRC-RESPECT-MODULES"
+    },
+    {
+      "disposition": "accepted_candidate",
+      "evidence_class": "source_observation",
+      "locator": "LaunchAppUseCaseAndroid.kt:42-113; WebViewActivity.kt:28-125; PinPublicationPrepareUseCase.kt:29-163; XapiSessionEntity.kt:8-34; XapiIpcService.kt:40-259; XapiNanoHttpdApp.kt; AppKoinModule.kt:326-355",
+      "observation": "The inspected pinned call paths do not define stable CanApp-facing contracts for launch cancellation or timeout, xAPI binding timeout or unavailability, credential expiry or renewal or revocation, WebView suspension or resumption, corrupt or stale offline launch outcomes, or a RESPECT-specific redirect policy.",
+      "source_lock_id": "LOCK-RESPECT-SOURCE",
+      "source_ref": "SRC-RESPECT-NEGATIVE-SURFACES"
+    },
+    {
+      "disposition": "accepted_candidate",
+      "evidence_class": "source_observation",
+      "locator": "respect-lib-shared/src/jvmMain/kotlin/world/respect/shared/domain/opds/validator/ValidateOpdsPublicationUseCase.kt:42-253",
+      "observation": "The active RESPECT-specific OPDS checks require acquisition and image links, safe learning-unit URLs, acceptable media, Readium discovery, and resource traversal.",
+      "source_lock_id": "LOCK-RESPECT-SOURCE",
+      "source_ref": "SRC-RESPECT-OPDS"
+    },
+    {
+      "disposition": "accepted_candidate",
+      "evidence_class": "source_observation",
+      "locator": "respect-lib-opds-model/src/commonMain/kotlin/world/respect/lib/opds/model/OpdsPublicationExt.kt:3-32",
+      "observation": "RESPECT defines the default lesson-catalog relation, accepted acquisition media types, acquisition-link prefix, self links, icons, and app default lesson list.",
+      "source_lock_id": "LOCK-RESPECT-SOURCE",
+      "source_ref": "SRC-RESPECT-OPDS-APP-MODEL"
+    },
+    {
+      "disposition": "accepted_candidate",
+      "evidence_class": "source_observation",
+      "locator": "respect-lib-shared/src/jvmMain/kotlin/world/respect/shared/domain/opds/validator/OpdsFeedValidator.kt:35-97",
+      "observation": "The OPDS feed validator validates configured schema, top-level and grouped publications, navigation, facets, links, optional navigation icons, discovered manifests, and followed links.",
+      "source_lock_id": "LOCK-RESPECT-SOURCE",
+      "source_ref": "SRC-RESPECT-OPDS-FEED-VALIDATOR"
+    },
+    {
+      "disposition": "accepted_candidate",
+      "evidence_class": "source_observation",
+      "locator": "respect-lib-shared/src/jvmMain/kotlin/world/respect/shared/domain/opds/validator/ValidateLinkUseCaseImpl.kt:27-92",
+      "observation": "The link validator suppresses repeated URLs, validates HTTP first, defaults missing media type to OPDS feed, and dispatches validation by media type.",
+      "source_lock_id": "LOCK-RESPECT-SOURCE",
+      "source_ref": "SRC-RESPECT-OPDS-LINK-VALIDATOR"
+    },
+    {
+      "disposition": "accepted_candidate",
+      "evidence_class": "source_observation",
+      "locator": "respect-datalayer-repository/src/commonMain/kotlin/world/respect/datalayer/repository/opds/OpdsPublicationDataSourceRepository.kt:14-55",
+      "observation": "The OPDS publication repository combines local and remote data and stores successful remote publications locally.",
+      "source_lock_id": "LOCK-RESPECT-SOURCE",
+      "source_ref": "SRC-RESPECT-OPDS-REPOSITORY"
+    },
+    {
+      "disposition": "accepted_candidate",
+      "evidence_class": "source_observation",
+      "locator": "respect-lib-shared/src/jvmMain/kotlin/world/respect/shared/domain/opds/validator/OpdsFeedValidator.kt:17-96; OpdsPublicationValidator.kt:12-53",
+      "observation": "The validators load OPDS feed and publication schemas and traverse publications, navigation, links, and discovered manifests.",
+      "source_lock_id": "LOCK-RESPECT-SOURCE",
+      "source_ref": "SRC-RESPECT-OPDS-SCHEMA"
+    },
+    {
+      "disposition": "accepted_candidate",
+      "evidence_class": "source_observation",
+      "locator": "respect-lib-cache/src/commonMain/kotlin/com/ustadmobile/libcache/downloader/PinPublicationPrepareUseCase.kt:29-163; respect-lib-shared/src/commonMain/kotlin/world/respect/shared/viewmodel/learningunit/detail/LearningUnitDetailViewModel.kt:96-147",
+      "observation": "RESPECT allows users to pin or unpin publications, downloads declared resources and acquisition links, obtains missing sizes with HEAD, adds retention locks, and queues downloads.",
+      "source_lock_id": "LOCK-RESPECT-SOURCE",
+      "source_ref": "SRC-RESPECT-PINNING"
+    },
+    {
+      "disposition": "accepted_candidate",
+      "evidence_class": "source_observation",
+      "locator": "respect-lib-shared/src/jvmMain/kotlin/world/respect/shared/domain/opds/validator/ValidateOpdsPublicationUseCase.kt:42-244",
+      "observation": "Publication validation enforces acquisition relations and media types, images, safe learning-resource URLs, HTML or XHTML parsing, Readium manifest discovery, and manifest resource traversal.",
+      "source_lock_id": "LOCK-RESPECT-SOURCE",
+      "source_ref": "SRC-RESPECT-RESOURCE-VALIDATOR"
+    },
+    {
+      "disposition": "accepted_candidate",
+      "evidence_class": "source_observation",
+      "locator": "respect-lib-shared/src/commonMain/kotlin/world/respect/shared/domain/xapi/getxapilaunchurl/GetXapiLaunchUrlUseCase.kt:6-24",
+      "observation": "The launch URL interface explicitly cites the Rustici launch method.",
+      "source_lock_id": "LOCK-RESPECT-SOURCE",
+      "source_ref": "SRC-RESPECT-RUSTICI"
+    },
+    {
+      "disposition": "accepted_candidate",
+      "evidence_class": "source_observation",
+      "locator": "respect-app-compose/src/androidMain/kotlin/world/respect/WebViewActivity.kt:28-125",
+      "observation": "The hosted WebView enables JavaScript, DOM storage, gesture-free media playback, mixed HTTPS-to-loopback HTTP requests, cached request interception, console diagnostics, navigation back, and close.",
+      "source_lock_id": "LOCK-RESPECT-SOURCE",
+      "source_ref": "SRC-RESPECT-WEBVIEW"
+    },
+    {
+      "disposition": "accepted_candidate",
+      "evidence_class": "source_observation",
+      "locator": "respect-lib-shared/src/androidMain/kotlin/world/respect/shared/domain/xapi/xapinanohttpd/XapiResourceProviderAndroid.kt:17-46; respect-datalayer-db/src/commonMain/kotlin/world/respect/datalayer/db/school/xapi/entities/XapiSessionEntity.kt:8-34",
+      "observation": "RESPECT creates session-scoped Basic credentials, rejects missing or invalid session credentials with status 403, and selects the authenticated account data source.",
+      "source_lock_id": "LOCK-RESPECT-SOURCE",
+      "source_ref": "SRC-RESPECT-XAPI-AUTH"
+    },
+    {
+      "disposition": "accepted_candidate",
+      "evidence_class": "source_observation",
+      "locator": "respect-datalayer-db/src/commonMain/kotlin/world/respect/datalayer/db/school/xapi/XapiStatementsResourceDb.kt:266-360",
+      "observation": "Statement storage validates object type, IRIs, score bounds, authenticated actor, duplicate identifiers, and voiding semantics.",
+      "source_lock_id": "LOCK-RESPECT-SOURCE",
+      "source_ref": "SRC-RESPECT-XAPI-DB"
+    },
+    {
+      "disposition": "accepted_candidate",
+      "evidence_class": "source_observation",
+      "locator": "respect-datalayer-db/src/commonMain/kotlin/world/respect/datalayer/db/school/xapi/XapiStatementsResourceDb.kt:247-264,449-458",
+      "observation": "xAPI retrieval returns Last-Modified, X-Experience-API-Version, and X-Experience-API-Consistent-Through metadata.",
+      "source_lock_id": "LOCK-RESPECT-SOURCE",
+      "source_ref": "SRC-RESPECT-XAPI-HEADERS"
+    },
+    {
+      "disposition": "accepted_candidate",
+      "evidence_class": "source_observation",
+      "locator": "respect-lib-xapi-nanohttpd/src/commonMain/kotlin/world/respect/lib/xapi/nanohttpd/XapiNanoHttpdApp.kt:43-235",
+      "observation": "The local HTTP proxy supports OPTIONS, GET, POST, and PUT for statements, CORS, authorization forwarding, and assignment transformation.",
+      "source_lock_id": "LOCK-RESPECT-SOURCE",
+      "source_ref": "SRC-RESPECT-XAPI-HTTP"
+    },
+    {
+      "disposition": "accepted_candidate",
+      "evidence_class": "source_observation",
+      "locator": "respect-datalayer-db/src/commonMain/kotlin/world/respect/datalayer/db/school/xapi/XapiStatementsResourceDb.kt:390-533",
+      "observation": "The xAPI store implements statement and voided-statement identifiers, agent, verb, activity, related-agent, related-activity, since, until, ordering, limit, and exact, canonical, or ids formats.",
+      "source_lock_id": "LOCK-RESPECT-SOURCE",
+      "source_ref": "SRC-RESPECT-XAPI-QUERY"
+    },
+    {
+      "disposition": "accepted_candidate",
+      "evidence_class": "source_observation",
+      "locator": "respect-lib-shared/src/androidMain/kotlin/world/respect/shared/domain/xapi/getxapilaunchurl/GetXapiLaunchUrlUseCaseAndroid.kt:39-97",
+      "observation": "Launch URLs emit endpoint, activity_id, Basic auth, serialized actor, and native-only xapiIpcPackage parameters.",
+      "source_lock_id": "LOCK-RESPECT-SOURCE",
+      "source_ref": "SRC-RESPECT-XAPI-URL"
+    },
+    {
+      "disposition": "accepted_candidate",
+      "evidence_class": "source_observation",
+      "locator": "respect-datalayer-db/src/commonMain/kotlin/world/respect/datalayer/db/school/xapi/XapiStatementsResourceDb.kt:247-360",
+      "observation": "The xAPI store assigns missing identifiers, validates object type, IRIs, extension IRIs, score bounds, actor authorization, duplicates, and voiding.",
+      "source_lock_id": "LOCK-RESPECT-SOURCE",
+      "source_ref": "SRC-RESPECT-XAPI-VALIDATION"
+    },
+    {
+      "disposition": "invoked_standard_surface",
+      "evidence_class": "accepted_direct_evidence",
+      "locator": "RFC 9110 sections 8, 13, and 15",
+      "observation": "HTTP semantics define representation metadata, conditional requests, and response status behavior used by the RESPECT validator.",
+      "source_lock_id": "LOCK-RFC9110",
+      "source_ref": "SRC-RFC9110"
+    },
+    {
+      "disposition": "invoked_standard_surface",
+      "evidence_class": "accepted_direct_evidence",
+      "locator": "RFC 9111 sections 4.3 and 8.8",
+      "observation": "HTTP caching semantics define cache validators and successful 304 revalidation used by the RESPECT validator.",
+      "source_lock_id": "LOCK-RFC9111",
+      "source_ref": "SRC-RFC9111"
+    },
+    {
+      "disposition": "accepted_runtime_limitation",
+      "evidence_class": "diagnostic_evidence",
+      "locator": "2026-07-27 curl --fail https://drafts.opds.io/schema/feed.schema.json and publication.schema.json; both returned HTTP 404",
+      "observation": "The exact live schema URLs hard-coded by the pinned RESPECT validators returned HTTP 404 during the Phase 4 direct check.",
+      "source_lock_id": "LOCK-RESPECT-SOURCE",
+      "source_ref": "SRC-RUNTIME-OPDS-SCHEMA-404"
+    },
+    {
+      "disposition": "invoked_standard_surface",
+      "evidence_class": "accepted_direct_evidence",
+      "locator": "lms_lrs.md:105-170",
+      "observation": "The launch method defines endpoint, auth, actor, activity_id, and optional parameters; RESPECT emits a proved subset.",
+      "source_lock_id": "LOCK-RUSTICI-LAUNCH",
+      "source_ref": "SRC-RUSTICI-LAUNCH"
+    },
+    {
+      "disposition": "suite_current_state",
+      "evidence_class": "source_observation",
+      "locator": "licensing-public/harness/respect_compat/cli.py",
+      "observation": "The current suite CLI drives fixture-oriented validators and report generation.",
+      "source_lock_id": "LOCK-JIMS-BASE",
+      "source_ref": "SRC-SUITE-CLI"
+    },
+    {
+      "disposition": "accepted_candidate",
+      "evidence_class": "source_observation",
+      "locator": "licensing-public/harness/respect_compat/cli.py; fake_launcher.py; fake_lrs.py; tests/test_respect_compat.py; licensing-public/schemas/respect_compat/compatibility_matrix_v0_1.json",
+      "observation": "The current Test Suite package supplies fixture validators, a fake launcher, an in-memory xAPI receiver, reports, and an 11-row legacy projection but no end-to-end arbitrary-CanApp conformance runner.",
+      "source_lock_id": "LOCK-JIMS-BASE",
+      "source_ref": "SRC-SUITE-CURRENT-PACKAGE"
+    },
+    {
+      "disposition": "suite_current_state",
+      "evidence_class": "source_observation",
+      "locator": "licensing-public/harness/respect_compat/fake_launcher.py",
+      "observation": "The suite contains a fake launch-parameter generator.",
+      "source_lock_id": "LOCK-JIMS-BASE",
+      "source_ref": "SRC-SUITE-FAKE-LAUNCHER"
+    },
+    {
+      "disposition": "suite_current_state",
+      "evidence_class": "source_observation",
+      "locator": "licensing-public/harness/respect_compat/fake_lrs.py",
+      "observation": "The suite contains an in-memory xAPI statement receiver.",
+      "source_lock_id": "LOCK-JIMS-BASE",
+      "source_ref": "SRC-SUITE-FAKE-LRS"
+    },
+    {
+      "disposition": "suite_current_state",
+      "evidence_class": "source_observation",
+      "locator": "licensing-public/harness/respect_compat/tests/test_respect_compat.py",
+      "observation": "The package tests cover current fixture validators and report behavior.",
+      "source_lock_id": "LOCK-JIMS-BASE",
+      "source_ref": "SRC-SUITE-TESTS"
+    },
+    {
+      "disposition": "invoked_standard_surface",
+      "evidence_class": "accepted_direct_evidence",
+      "locator": "xAPI-Communication.md:442-791; xAPI-Data.md statement, IRI, score, actor, and voiding sections",
+      "observation": "xAPI 1.0.3 defines the invoked Statements Resource lifecycle and statement constraints implemented by RESPECT.",
+      "source_lock_id": "LOCK-XAPI-103",
+      "source_ref": "SRC-XAPI-103"
+    }
+  ],
+  "generated_at": "2026-07-27T09:25:19Z",
+  "index_id": "respect-source-interaction-index-v0.1",
+  "index_version": "0.2.0",
+  "interactions": [
+    {
+      "actors": [
+        {
+          "actor": "CanApp publisher",
+          "responsibility": "Serves the descriptor and catalog."
+        },
+        {
+          "actor": "RESPECT",
+          "responsibility": "Loads and displays catalog content."
+        }
+      ],
+      "binding_id": "BIND-CONTENT-HTTP",
+      "branch_predicate": "The descriptor and default catalog resolve successfully.",
+      "entry_point": "A user opens a registered CanApp.",
+      "evidence_status": "accepted_source_observation",
+      "exclusion": null,
+      "feature_ids": [
+        "RCF-OPDS"
+      ],
+      "inspection_method": "Direct inspection of the pinned source file and adjacent call path.",
+      "interaction_id": "INT-CATALOG-DETAIL-LOAD",
+      "inventory_class_ids": [
+        "DISC-03",
+        "DISC-12"
+      ],
+      "locator": "AppsDetailViewModel.kt:84-120",
+      "observable_result": "The user can inspect CanApp learning content.",
+      "record_type": "production_boundary",
+      "row_ids": [
+        "OPDS-001",
+        "OPDS-003"
+      ],
+      "semantic_contract_id": "SC-CATALOG",
+      "source_lock_id": "LOCK-RESPECT-SOURCE",
+      "source_ref": "SRC-RESPECT-APPS-DETAIL",
+      "symbol": "AppsDetailViewModel initialization",
+      "terminal_effect": "RESPECT resolves and displays top-level publications, navigation entries, and groups."
+    },
+    {
+      "actors": [
+        {
+          "actor": "CanApp publisher",
+          "responsibility": "Supplies linked content."
+        },
+        {
+          "actor": "RESPECT validator",
+          "responsibility": "Tracks visited URLs and dispatches validation."
+        }
+      ],
+      "binding_id": "BIND-CONTENT-HTTP",
+      "branch_predicate": "The URL has not already been visited.",
+      "entry_point": "A followed OPDS or manifest link enters validation.",
+      "evidence_status": "accepted_source_observation",
+      "exclusion": null,
+      "feature_ids": [
+        "RCF-OPDS"
+      ],
+      "inspection_method": "Direct inspection of the pinned source file and adjacent call path.",
+      "interaction_id": "INT-CATALOG-LINK-DISPATCH",
+      "inventory_class_ids": [
+        "DISC-03",
+        "DISC-04",
+        "DISC-12",
+        "DISC-16"
+      ],
+      "locator": "ValidateLinkUseCaseImpl.kt:27-92",
+      "observable_result": "The validator suppresses cycles and reports unsupported or failed links.",
+      "record_type": "production_boundary",
+      "row_ids": [
+        "OPDS-001",
+        "OPDS-002",
+        "OPDS-009",
+        "OPDS-010",
+        "OPDS-011"
+      ],
+      "semantic_contract_id": "SC-CATALOG",
+      "source_lock_id": "LOCK-RESPECT-SOURCE",
+      "source_ref": "SRC-RESPECT-OPDS-LINK-VALIDATOR",
+      "symbol": "ValidateLinkUseCaseImpl.invoke",
+      "terminal_effect": "RESPECT validates the HTTP response and dispatches OPDS feed, OPDS publication, or legacy manifest validation according to media type."
+    },
+    {
+      "actors": [
+        {
+          "actor": "CanApp publisher",
+          "responsibility": "Supplies resolvable catalog links."
+        },
+        {
+          "actor": "RESPECT",
+          "responsibility": "Resolves and routes the selection."
+        }
+      ],
+      "binding_id": "BIND-CONTENT-HTTP",
+      "branch_predicate": "The selected link resolves against the descriptor URL and a publication exposes a self link.",
+      "entry_point": "A user selects a lesson list, publication, or navigation entry.",
+      "evidence_status": "accepted_source_observation",
+      "exclusion": null,
+      "feature_ids": [
+        "RCF-OPDS"
+      ],
+      "inspection_method": "Direct inspection of the pinned source file and adjacent call path.",
+      "interaction_id": "INT-CATALOG-NAVIGATION",
+      "inventory_class_ids": [
+        "DISC-03",
+        "DISC-13"
+      ],
+      "locator": "AppsDetailViewModel.kt:148-197",
+      "observable_result": "The selected catalog branch or publication opens.",
+      "record_type": "production_boundary",
+      "row_ids": [
+        "OPDS-003"
+      ],
+      "semantic_contract_id": "SC-CATALOG",
+      "source_lock_id": "LOCK-RESPECT-SOURCE",
+      "source_ref": "SRC-RESPECT-APPS-DETAIL",
+      "symbol": "AppsDetailViewModel.onClickLessonList, onClickPublication, and onClickNavigation",
+      "terminal_effect": "RESPECT opens the selected feed or publication and propagates the expected identifier."
+    },
+    {
+      "actors": [
+        {
+          "actor": "CanApp publisher",
+          "responsibility": "Supplies the OPDS feed."
+        },
+        {
+          "actor": "RESPECT validator",
+          "responsibility": "Validates and traverses the feed."
+        }
+      ],
+      "binding_id": "BIND-CONTENT-HTTP",
+      "branch_predicate": "RESPECT-specific checks and optional link following are enabled.",
+      "entry_point": "The RESPECT command-line validator validates an OPDS feed.",
+      "evidence_status": "accepted_source_observation",
+      "exclusion": null,
+      "feature_ids": [
+        "RCF-OPDS",
+        "RCF-OPDS-SCOPE"
+      ],
+      "inspection_method": "Direct inspection of the pinned source file and adjacent call path.",
+      "interaction_id": "INT-CATALOG-VALIDATE-FEED",
+      "inventory_class_ids": [
+        "DISC-03",
+        "DISC-04",
+        "DISC-12",
+        "DISC-16"
+      ],
+      "locator": "OpdsFeedValidator.kt:35-97",
+      "observable_result": "The validator emits source-attributed errors and navigation-icon warnings.",
+      "record_type": "production_boundary",
+      "row_ids": [
+        "OPDS-002",
+        "OPDS-003"
+      ],
+      "semantic_contract_id": "SC-CATALOG",
+      "source_lock_id": "LOCK-RESPECT-SOURCE",
+      "source_ref": "SRC-RESPECT-OPDS-FEED-VALIDATOR",
+      "symbol": "OpdsFeedValidator.validate",
+      "terminal_effect": "The validator checks schema, grouped and top-level publications, navigation, facets, links, optional navigation icons, and discovered manifests."
+    },
+    {
+      "actors": [
+        {
+          "actor": "CanApp",
+          "responsibility": "Would finish after completion under the guide claim."
+        },
+        {
+          "actor": "RESPECT implementation",
+          "responsibility": "Does not currently observe or enforce the claimed completion."
+        }
+      ],
+      "binding_id": null,
+      "branch_predicate": "The guide instructs the CanApp to finish, but active RESPECT code does not enforce or observe completion.",
+      "entry_point": "A launched learning unit completes.",
+      "evidence_status": "accepted_source_observation",
+      "exclusion": null,
+      "feature_ids": [
+        "RCF-CANAPP-COMPLETION-CLAIM"
+      ],
+      "inspection_method": "Direct inspection of the pinned source file and adjacent call path.",
+      "interaction_id": "INT-CLAIM-CANAPP-FINISH",
+      "inventory_class_ids": [
+        "DISC-12",
+        "DISC-13",
+        "DISC-14"
+      ],
+      "locator": "README.md:208-216",
+      "observable_result": "The Matrix preserves the lifecycle claim without creating a current executable failure.",
+      "record_type": "documentation_claim",
+      "row_ids": [],
+      "semantic_contract_id": "SC-LIFECYCLE",
+      "source_lock_id": "LOCK-CONSUMER-GUIDE",
+      "source_ref": "SRC-GUIDE-CANAPP-LIFECYCLE",
+      "symbol": "Integration guide CanApp completion claim",
+      "terminal_effect": "The claim remains documented but not currently testable by RESPECT."
+    },
+    {
+      "actors": [
+        {
+          "actor": "Integration guide",
+          "responsibility": "Claims respectLaunchVersion."
+        },
+        {
+          "actor": "RESPECT implementation",
+          "responsibility": "Does not emit the parameter."
+        }
+      ],
+      "binding_id": null,
+      "branch_predicate": "Active launch code does not emit respectLaunchVersion.",
+      "entry_point": "The guide describes launch parameters.",
+      "evidence_status": "accepted_source_observation",
+      "exclusion": null,
+      "feature_ids": [
+        "RCF-LAUNCH-VERSION"
+      ],
+      "inspection_method": "Direct inspection of the pinned source file and adjacent call path.",
+      "interaction_id": "INT-CLAIM-LAUNCH-VERSION",
+      "inventory_class_ids": [
+        "DISC-05",
+        "DISC-14"
+      ],
+      "locator": "README.md:184-216",
+      "observable_result": "The Matrix records the documented-versus-implemented contradiction.",
+      "record_type": "documentation_claim",
+      "row_ids": [],
+      "semantic_contract_id": "SC-CAPABILITY",
+      "source_lock_id": "LOCK-CONSUMER-GUIDE",
+      "source_ref": "SRC-GUIDE-LAUNCH",
+      "symbol": "Integration guide respectLaunchVersion claim",
+      "terminal_effect": "The claim remains contradicted and cannot create a current CanApp failure."
+    },
+    {
+      "actors": [
+        {
+          "actor": "RESPECT requirements",
+          "responsibility": "Claims LTI Assignment and Grade Services."
+        },
+        {
+          "actor": "RESPECT implementation",
+          "responsibility": "Does not currently expose the claimed CanApp interface."
+        }
+      ],
+      "binding_id": null,
+      "branch_predicate": "No active CanApp-facing LTI Assignment and Grade Services route appears in the pinned RESPECT call paths.",
+      "entry_point": "The requirements claim assignment and grade storage.",
+      "evidence_status": "accepted_source_observation",
+      "exclusion": null,
+      "feature_ids": [
+        "RCF-LTI-AGS"
+      ],
+      "inspection_method": "Direct inspection of the pinned source file and adjacent call path.",
+      "interaction_id": "INT-CLAIM-LTI-AGS",
+      "inventory_class_ids": [
+        "DISC-09",
+        "DISC-14"
+      ],
+      "locator": "README.md:59-75",
+      "observable_result": "The Matrix records the grade-service claim without executable rows.",
+      "record_type": "requirement_claim",
+      "row_ids": [],
+      "semantic_contract_id": "SC-GRADE",
+      "source_lock_id": "LOCK-REQUIREMENTS",
+      "source_ref": "SRC-REQUIREMENTS-INTERFACES",
+      "symbol": "RESPECT requirements LTI Assignment and Grade Services claim",
+      "terminal_effect": "The claim remains an upstream gap and cannot create a current CanApp failure."
+    },
+    {
+      "actors": [
+        {
+          "actor": "RESPECT requirements",
+          "responsibility": "Claims LTI launch."
+        },
+        {
+          "actor": "RESPECT implementation",
+          "responsibility": "Implements a different current launch contract."
+        }
+      ],
+      "binding_id": null,
+      "branch_predicate": "Active launch code emits a Rustici-compatible subset and does not implement LTI launch.",
+      "entry_point": "The requirements describe launch as LTI.",
+      "evidence_status": "accepted_source_observation",
+      "exclusion": null,
+      "feature_ids": [
+        "RCF-LTI-LAUNCH"
+      ],
+      "inspection_method": "Direct inspection of the pinned source file and adjacent call path.",
+      "interaction_id": "INT-CLAIM-LTI-LAUNCH",
+      "inventory_class_ids": [
+        "DISC-05",
+        "DISC-06",
+        "DISC-14"
+      ],
+      "locator": "README.md:36-40,59-75",
+      "observable_result": "The Matrix records LTI launch as claimed but not implemented.",
+      "record_type": "requirement_claim",
+      "row_ids": [],
+      "semantic_contract_id": "SC-LAUNCH",
+      "source_lock_id": "LOCK-REQUIREMENTS",
+      "source_ref": "SRC-REQUIREMENTS-INTERFACES",
+      "symbol": "RESPECT requirements LTI launch claim",
+      "terminal_effect": "The claim remains contradicted or unimplemented and cannot create a current CanApp failure."
+    },
+    {
+      "actors": [
+        {
+          "actor": "RESPECT requirements",
+          "responsibility": "Claims OAuth support."
+        },
+        {
+          "actor": "RESPECT implementation",
+          "responsibility": "Does not currently expose the claimed CanApp interface."
+        }
+      ],
+      "binding_id": null,
+      "branch_predicate": "No active CanApp-facing OAuth implementation appears in the pinned RESPECT call paths.",
+      "entry_point": "The requirements define RESPECT ecosystem authentication.",
+      "evidence_status": "accepted_source_observation",
+      "exclusion": null,
+      "feature_ids": [
+        "RCF-OAUTH"
+      ],
+      "inspection_method": "Direct inspection of the pinned source file and adjacent call path.",
+      "interaction_id": "INT-CLAIM-OAUTH",
+      "inventory_class_ids": [
+        "DISC-11",
+        "DISC-14"
+      ],
+      "locator": "README.md:32-40,59-75",
+      "observable_result": "The Matrix records OAuth as claimed but not implemented or testable.",
+      "record_type": "requirement_claim",
+      "row_ids": [],
+      "semantic_contract_id": "SC-IDENTITY",
+      "source_lock_id": "LOCK-REQUIREMENTS",
+      "source_ref": "SRC-REQUIREMENTS-INTERFACES",
+      "symbol": "RESPECT requirements OAuth claim",
+      "terminal_effect": "The claim remains an upstream gap and cannot create a current CanApp failure."
+    },
+    {
+      "actors": [
+        {
+          "actor": "RESPECT requirements",
+          "responsibility": "Claims optional HTTP-over-IPC."
+        },
+        {
+          "actor": "RESPECT implementation",
+          "responsibility": "Contains adapters without an active CanApp route."
+        }
+      ],
+      "binding_id": null,
+      "branch_predicate": "The pinned repository contains generic adapters but no active general CanApp route.",
+      "entry_point": "The requirements claim offline REST delivery over HTTP-over-IPC.",
+      "evidence_status": "accepted_source_observation",
+      "exclusion": null,
+      "feature_ids": [
+        "RCF-OFFLINE-HTTP-IPC"
+      ],
+      "inspection_method": "Direct inspection of the pinned source file and adjacent call path.",
+      "interaction_id": "INT-CLAIM-OFFLINE-HTTP-IPC",
+      "inventory_class_ids": [
+        "DISC-08",
+        "DISC-10",
+        "DISC-14",
+        "DISC-16"
+      ],
+      "locator": "README.md:34,40,61,66-75",
+      "observable_result": "The Matrix records the claim without treating adapter modules as an implemented interface.",
+      "record_type": "requirement_claim",
+      "row_ids": [],
+      "semantic_contract_id": "SC-OFFLINE",
+      "source_lock_id": "LOCK-REQUIREMENTS",
+      "source_ref": "SRC-REQUIREMENTS-INTERFACES",
+      "symbol": "RESPECT requirements general HTTP-over-IPC claim",
+      "terminal_effect": "The claim remains an upstream gap and cannot create a current CanApp failure."
+    },
+    {
+      "actors": [
+        {
+          "actor": "RESPECT requirements",
+          "responsibility": "Claims OneRoster support."
+        },
+        {
+          "actor": "RESPECT implementation",
+          "responsibility": "Does not currently expose the claimed CanApp interface."
+        }
+      ],
+      "binding_id": null,
+      "branch_predicate": "No active CanApp-facing OneRoster route appears in the pinned RESPECT call paths.",
+      "entry_point": "The requirements claim roster retrieval.",
+      "evidence_status": "accepted_source_observation",
+      "exclusion": null,
+      "feature_ids": [
+        "RCF-ONEROSTER"
+      ],
+      "inspection_method": "Direct inspection of the pinned source file and adjacent call path.",
+      "interaction_id": "INT-CLAIM-ONEROSTER",
+      "inventory_class_ids": [
+        "DISC-11",
+        "DISC-14"
+      ],
+      "locator": "README.md:59-75",
+      "observable_result": "The Matrix records OneRoster as claimed but not implemented.",
+      "record_type": "requirement_claim",
+      "row_ids": [],
+      "semantic_contract_id": "SC-ROSTER",
+      "source_lock_id": "LOCK-REQUIREMENTS",
+      "source_ref": "SRC-REQUIREMENTS-INTERFACES",
+      "symbol": "RESPECT requirements OneRoster claim",
+      "terminal_effect": "The claim remains an upstream gap and cannot create a current CanApp failure."
+    },
+    {
+      "actors": [
+        {
+          "actor": "Demo CanApp",
+          "responsibility": "Closes the IPC client."
+        },
+        {
+          "actor": "Android",
+          "responsibility": "Unbinds the service connection."
+        }
+      ],
+      "binding_id": "BIND-XAPI-ANDROID-IPC",
+      "branch_predicate": "An IPC client exists.",
+      "entry_point": "The demo lesson UI leaves composition.",
+      "evidence_status": "accepted_source_observation",
+      "exclusion": null,
+      "feature_ids": [
+        "RCF-CANAPP-LIFECYCLE"
+      ],
+      "inspection_method": "Direct inspection of the pinned source file and adjacent call path.",
+      "interaction_id": "INT-CONSUMER-IPC-CLOSE",
+      "inventory_class_ids": [
+        "DISC-10",
+        "DISC-13",
+        "DISC-16"
+      ],
+      "locator": "LessonScreen.kt:60-80",
+      "observable_result": "The active consumer releases the Android IPC binding.",
+      "record_type": "active_consumer",
+      "row_ids": [
+        "LIFECYCLE-001"
+      ],
+      "semantic_contract_id": "SC-LIFECYCLE",
+      "source_lock_id": "LOCK-DEMO-CANAPP",
+      "source_ref": "SRC-DEMO-IPC-LIFECYCLE",
+      "symbol": "DemoLaunchableApp IPC client lifecycle",
+      "terminal_effect": "The demo closes the client and the client unbinds from the service."
+    },
+    {
+      "actors": [
+        {
+          "actor": "RESPECT",
+          "responsibility": "Produces launch data."
+        },
+        {
+          "actor": "Demo CanApp",
+          "responsibility": "Consumes the implemented launch data."
+        }
+      ],
+      "binding_id": "BIND-LAUNCH-ANDROID-INTENT",
+      "branch_predicate": "The URL contains the implemented launch parameters.",
+      "entry_point": "Android opens the demo learning-unit URL.",
+      "evidence_status": "accepted_source_observation",
+      "exclusion": null,
+      "feature_ids": [
+        "RCF-RUSTICI-LAUNCH"
+      ],
+      "inspection_method": "Direct inspection of the pinned source file and adjacent call path.",
+      "interaction_id": "INT-CONSUMER-LAUNCH-DATA",
+      "inventory_class_ids": [
+        "DISC-05",
+        "DISC-06",
+        "DISC-10",
+        "DISC-13"
+      ],
+      "locator": "MainActivity.kt:43-50; LessonScreen.kt:60-100",
+      "observable_result": "The active consumer confirms the current launch-data subset.",
+      "record_type": "active_consumer",
+      "row_ids": [
+        "LAUNCH-003",
+        "LAUNCH-004",
+        "LAUNCH-005",
+        "LAUNCH-006",
+        "LAUNCH-007"
+      ],
+      "semantic_contract_id": "SC-LAUNCH",
+      "source_lock_id": "LOCK-DEMO-CANAPP",
+      "source_ref": "SRC-DEMO-LAUNCH",
+      "symbol": "DemoLaunchableApp LessonDestination and LessonScreen",
+      "terminal_effect": "The demo consumes endpoint, actor, auth, activity_id, and xapiIpcPackage and constructs an IPC client when native IPC data is complete."
+    },
+    {
+      "actors": [
+        {
+          "actor": "CanApp publisher",
+          "responsibility": "Serves descriptor JSON."
+        },
+        {
+          "actor": "RESPECT",
+          "responsibility": "Loads and decodes the current descriptor."
+        }
+      ],
+      "binding_id": "BIND-CONTENT-HTTP",
+      "branch_predicate": "The returned JSON does not contain legacy defaultLaunchUri.",
+      "entry_point": "RESPECT loads a CanApp descriptor URL.",
+      "evidence_status": "accepted_source_observation",
+      "exclusion": null,
+      "feature_ids": [
+        "RCF-DESCRIPTOR"
+      ],
+      "inspection_method": "Direct inspection of the pinned source file and adjacent call path.",
+      "interaction_id": "INT-DESCRIPTOR-CURRENT-LOAD",
+      "inventory_class_ids": [
+        "DISC-02",
+        "DISC-12",
+        "DISC-14"
+      ],
+      "locator": "respect-app-compose/src/androidMain/kotlin/world/respect/AppKoinModule.kt:282-288; respect-lib-opds-model/src/commonMain/kotlin/world/respect/lib/opds/model/OpdsPublication.kt:17-29; ReadiumLink.kt:11-34",
+      "observable_result": "RESPECT exposes an OPDS Publication as the CanApp descriptor.",
+      "record_type": "production_boundary",
+      "row_ids": [
+        "DESC-001",
+        "DESC-002",
+        "DESC-004",
+        "DESC-005"
+      ],
+      "semantic_contract_id": "SC-DESCRIPTOR",
+      "source_lock_id": "LOCK-RESPECT-SOURCE",
+      "source_ref": "SRC-RESPECT-JSON-CONFIG",
+      "symbol": "OpdsPublicationDataSourceHttp.asPublicationIfRespectAppManifest",
+      "terminal_effect": "RESPECT decodes the JSON as an OPDS Publication and records the absolute self URL."
+    },
+    {
+      "actors": [
+        {
+          "actor": "CanApp publisher",
+          "responsibility": "Declares the default catalog relation."
+        },
+        {
+          "actor": "RESPECT",
+          "responsibility": "Selects the relation."
+        }
+      ],
+      "binding_id": "BIND-CONTENT-HTTP",
+      "branch_predicate": "The descriptor contains a link with the RESPECT default-lesson-catalog relation.",
+      "entry_point": "RESPECT needs the CanApp default lesson catalog.",
+      "evidence_status": "accepted_source_observation",
+      "exclusion": null,
+      "feature_ids": [
+        "RCF-DESCRIPTOR"
+      ],
+      "inspection_method": "Direct inspection of the pinned source file and adjacent call path.",
+      "interaction_id": "INT-DESCRIPTOR-DEFAULT-CATALOG",
+      "inventory_class_ids": [
+        "DISC-02",
+        "DISC-03"
+      ],
+      "locator": "OpdsPublicationExt.kt:29-32",
+      "observable_result": "RESPECT can resolve and open the default lesson catalog.",
+      "record_type": "production_boundary",
+      "row_ids": [
+        "DESC-003"
+      ],
+      "semantic_contract_id": "SC-DESCRIPTOR",
+      "source_lock_id": "LOCK-RESPECT-SOURCE",
+      "source_ref": "SRC-RESPECT-OPDS-APP-MODEL",
+      "symbol": "OpdsPublication.respectAppDefaultLessonList",
+      "terminal_effect": "RESPECT selects the first matching relation."
+    },
+    {
+      "actors": [
+        {
+          "actor": "CanApp publisher",
+          "responsibility": "Serves a legacy descriptor."
+        },
+        {
+          "actor": "RESPECT",
+          "responsibility": "Converts the legacy descriptor."
+        }
+      ],
+      "binding_id": "BIND-CONTENT-HTTP",
+      "branch_predicate": "The JSON decodes as RespectAppManifest.",
+      "entry_point": "RESPECT loads JSON containing legacy defaultLaunchUri.",
+      "evidence_status": "accepted_source_observation",
+      "exclusion": null,
+      "feature_ids": [
+        "RCF-MANIFEST",
+        "RCF-MANIFEST-OPTIONAL"
+      ],
+      "inspection_method": "Direct inspection of the pinned source file and adjacent call path.",
+      "interaction_id": "INT-DESCRIPTOR-LEGACY-CONVERT",
+      "inventory_class_ids": [
+        "DISC-02",
+        "DISC-14"
+      ],
+      "locator": "RespectAppManifestExt.kt:9-24; OpdsPublicationDataSourceHttp.kt:28-42",
+      "observable_result": "Legacy descriptors remain loadable through a deprecated compatibility conversion.",
+      "record_type": "production_boundary",
+      "row_ids": [
+        "MANIFEST-001",
+        "MANIFEST-002",
+        "MANIFEST-003",
+        "MANIFEST-004",
+        "MANIFEST-005",
+        "MANIFEST-006",
+        "MANIFEST-007",
+        "MANIFEST-008",
+        "MANIFEST-009"
+      ],
+      "semantic_contract_id": "SC-DESCRIPTOR",
+      "source_lock_id": "LOCK-RESPECT-SOURCE",
+      "source_ref": "SRC-RESPECT-LEGACY-CONVERSION",
+      "symbol": "RespectAppManifest.asOpdsPublication",
+      "terminal_effect": "RESPECT converts legacy name, learningUnits, and optional icon into OPDS Publication fields."
+    },
+    {
+      "actors": [
+        {
+          "actor": "RESPECT",
+          "responsibility": "Configures cache internals."
+        },
+        {
+          "actor": "CanApp",
+          "responsibility": "Observes only delivered content behavior."
+        }
+      ],
+      "binding_id": "BIND-CONTENT-HTTP",
+      "branch_predicate": "The Android dependency graph supplies cache storage.",
+      "entry_point": "RESPECT initializes networking.",
+      "evidence_status": "diagnostic_evidence",
+      "exclusion": {
+        "rationale": "The fact explains observed behavior but is not itself a CanApp semantic requirement.",
+        "status": "non_canapp_obligation"
+      },
+      "feature_ids": [],
+      "inspection_method": "Direct inspection of the pinned source file and adjacent call path.",
+      "interaction_id": "INT-DIAGNOSTIC-CACHE-INTERNALS",
+      "inventory_class_ids": [
+        "DISC-07",
+        "DISC-08",
+        "DISC-16"
+      ],
+      "locator": "AppKoinModule.kt:326-355,458-482",
+      "observable_result": "Only externally observable offline and freshness behavior can become CanApp requirements.",
+      "record_type": "production_boundary",
+      "row_ids": [],
+      "semantic_contract_id": "SC-OFFLINE",
+      "source_lock_id": "LOCK-RESPECT-SOURCE",
+      "source_ref": "SRC-RESPECT-CACHE-WIRING",
+      "symbol": "RESPECT cache implementation configuration",
+      "terminal_effect": "Internal interceptors and the 100,000,000-byte limit implement cached delivery."
+    },
+    {
+      "actors": [
+        {
+          "actor": "RESPECT IPC library",
+          "responsibility": "Implements message framing."
+        },
+        {
+          "actor": "CanApp IPC library",
+          "responsibility": "Implements matching framing."
+        }
+      ],
+      "binding_id": "BIND-XAPI-ANDROID-IPC",
+      "branch_predicate": "The IPC library serializes a supported logical xAPI operation.",
+      "entry_point": "A native CanApp library and RESPECT exchange Android Messages.",
+      "evidence_status": "diagnostic_evidence",
+      "exclusion": {
+        "rationale": "The fact explains observed behavior but is not itself a CanApp semantic requirement.",
+        "status": "non_canapp_obligation"
+      },
+      "feature_ids": [],
+      "inspection_method": "Direct inspection of the pinned source file and adjacent call path.",
+      "interaction_id": "INT-DIAGNOSTIC-IPC-WIRE",
+      "inventory_class_ids": [
+        "DISC-10",
+        "DISC-12",
+        "DISC-13",
+        "DISC-16"
+      ],
+      "locator": "IPC shared message files and XapiIpcService implementation",
+      "observable_result": "Logical xAPI behavior is observable; internal framing remains diagnostic unless a CanApp directly implements the wire protocol.",
+      "record_type": "production_boundary",
+      "row_ids": [],
+      "semantic_contract_id": "SC-XAPI",
+      "source_lock_id": "LOCK-RESPECT-SOURCE",
+      "source_ref": "SRC-RESPECT-IPC-WIRE",
+      "symbol": "Android IPC message implementation",
+      "terminal_effect": "Bundle keys, flags, correlation identifiers, flow emissions, and handler lifecycle carry the operation."
+    },
+    {
+      "actors": [
+        {
+          "actor": "RESPECT profile owner",
+          "responsibility": "Defines and versions any future contract."
+        },
+        {
+          "actor": "Test Suite",
+          "responsibility": "Reports the gap without promoting it to CanApp conformance."
+        }
+      ],
+      "binding_id": null,
+      "branch_predicate": "The pinned source exposes no explicit implemented result contract for the named behavior.",
+      "entry_point": "The source inventory searches for the required CanApp-facing contract.",
+      "evidence_status": "accepted_source_observation",
+      "exclusion": null,
+      "feature_ids": [
+        "RCF-CREDENTIAL-LIFECYCLE-GAPS"
+      ],
+      "inspection_method": "Direct negative-surface audit of the pinned production call paths named by the source evidence.",
+      "interaction_id": "INT-GAP-CREDENTIAL-LIFECYCLE-GAPS",
+      "inventory_class_ids": [
+        "DISC-11",
+        "DISC-13",
+        "DISC-14"
+      ],
+      "locator": "LaunchAppUseCaseAndroid.kt:42-113; WebViewActivity.kt:28-125; PinPublicationPrepareUseCase.kt:29-163; XapiSessionEntity.kt:8-34; XapiIpcService.kt:40-259; XapiNanoHttpdApp.kt; AppKoinModule.kt:326-355",
+      "observable_result": "The Test Suite does not fail a CanApp for the absent contract.",
+      "record_type": "owner_decision",
+      "row_ids": [],
+      "semantic_contract_id": "SC-IDENTITY",
+      "source_lock_id": "LOCK-RESPECT-SOURCE",
+      "source_ref": "SRC-RESPECT-NEGATIVE-SURFACES",
+      "symbol": "Undefined xAPI credential expiry, renewal, and revocation",
+      "terminal_effect": "The behavior remains an upstream RESPECT specification and implementation gap."
+    },
+    {
+      "actors": [
+        {
+          "actor": "RESPECT profile owner",
+          "responsibility": "Defines and versions any future contract."
+        },
+        {
+          "actor": "Test Suite",
+          "responsibility": "Reports the gap without promoting it to CanApp conformance."
+        }
+      ],
+      "binding_id": null,
+      "branch_predicate": "The pinned source exposes no explicit implemented result contract for the named behavior.",
+      "entry_point": "The source inventory searches for the required CanApp-facing contract.",
+      "evidence_status": "accepted_source_observation",
+      "exclusion": null,
+      "feature_ids": [
+        "RCF-LAUNCH-OUTCOME-GAPS"
+      ],
+      "inspection_method": "Direct negative-surface audit of the pinned production call paths named by the source evidence.",
+      "interaction_id": "INT-GAP-LAUNCH-OUTCOME-GAPS",
+      "inventory_class_ids": [
+        "DISC-05",
+        "DISC-06",
+        "DISC-12",
+        "DISC-13"
+      ],
+      "locator": "LaunchAppUseCaseAndroid.kt:42-113; WebViewActivity.kt:28-125; PinPublicationPrepareUseCase.kt:29-163; XapiSessionEntity.kt:8-34; XapiIpcService.kt:40-259; XapiNanoHttpdApp.kt; AppKoinModule.kt:326-355",
+      "observable_result": "The Test Suite does not fail a CanApp for the absent contract.",
+      "record_type": "owner_decision",
+      "row_ids": [],
+      "semantic_contract_id": "SC-LAUNCH",
+      "source_lock_id": "LOCK-RESPECT-SOURCE",
+      "source_ref": "SRC-RESPECT-NEGATIVE-SURFACES",
+      "symbol": "Undefined launch cancellation, timeout, and terminal failure outcomes",
+      "terminal_effect": "The behavior remains an upstream RESPECT specification and implementation gap."
+    },
+    {
+      "actors": [
+        {
+          "actor": "RESPECT profile owner",
+          "responsibility": "Defines and versions any future contract."
+        },
+        {
+          "actor": "Test Suite",
+          "responsibility": "Reports the gap without promoting it to CanApp conformance."
+        }
+      ],
+      "binding_id": null,
+      "branch_predicate": "The pinned source exposes no explicit implemented result contract for the named behavior.",
+      "entry_point": "The source inventory searches for the required CanApp-facing contract.",
+      "evidence_status": "accepted_source_observation",
+      "exclusion": null,
+      "feature_ids": [
+        "RCF-LIFECYCLE-STATE-GAPS"
+      ],
+      "inspection_method": "Direct negative-surface audit of the pinned production call paths named by the source evidence.",
+      "interaction_id": "INT-GAP-LIFECYCLE-STATE-GAPS",
+      "inventory_class_ids": [
+        "DISC-13",
+        "DISC-14"
+      ],
+      "locator": "LaunchAppUseCaseAndroid.kt:42-113; WebViewActivity.kt:28-125; PinPublicationPrepareUseCase.kt:29-163; XapiSessionEntity.kt:8-34; XapiIpcService.kt:40-259; XapiNanoHttpdApp.kt; AppKoinModule.kt:326-355",
+      "observable_result": "The Test Suite does not fail a CanApp for the absent contract.",
+      "record_type": "owner_decision",
+      "row_ids": [],
+      "semantic_contract_id": "SC-LIFECYCLE",
+      "source_lock_id": "LOCK-RESPECT-SOURCE",
+      "source_ref": "SRC-RESPECT-NEGATIVE-SURFACES",
+      "symbol": "Undefined abandoned-session, concurrent-launch, process-restart, and device-restart semantics",
+      "terminal_effect": "The behavior remains an upstream RESPECT specification and implementation gap."
+    },
+    {
+      "actors": [
+        {
+          "actor": "RESPECT profile owner",
+          "responsibility": "Defines and versions any future contract."
+        },
+        {
+          "actor": "Test Suite",
+          "responsibility": "Reports the gap without promoting it to CanApp conformance."
+        }
+      ],
+      "binding_id": null,
+      "branch_predicate": "The pinned source exposes no explicit implemented result contract for the named behavior.",
+      "entry_point": "The source inventory searches for the required CanApp-facing contract.",
+      "evidence_status": "accepted_source_observation",
+      "exclusion": null,
+      "feature_ids": [
+        "RCF-OFFLINE-FAILURE-GAPS"
+      ],
+      "inspection_method": "Direct negative-surface audit of the pinned production call paths named by the source evidence.",
+      "interaction_id": "INT-GAP-OFFLINE-FAILURE-GAPS",
+      "inventory_class_ids": [
+        "DISC-08",
+        "DISC-12",
+        "DISC-13"
+      ],
+      "locator": "LaunchAppUseCaseAndroid.kt:42-113; WebViewActivity.kt:28-125; PinPublicationPrepareUseCase.kt:29-163; XapiSessionEntity.kt:8-34; XapiIpcService.kt:40-259; XapiNanoHttpdApp.kt; AppKoinModule.kt:326-355",
+      "observable_result": "The Test Suite does not fail a CanApp for the absent contract.",
+      "record_type": "owner_decision",
+      "row_ids": [],
+      "semantic_contract_id": "SC-OFFLINE",
+      "source_lock_id": "LOCK-RESPECT-SOURCE",
+      "source_ref": "SRC-RESPECT-NEGATIVE-SURFACES",
+      "symbol": "Undefined stale, incomplete, or corrupt offline launch outcomes",
+      "terminal_effect": "The behavior remains an upstream RESPECT specification and implementation gap."
+    },
+    {
+      "actors": [
+        {
+          "actor": "RESPECT profile owner",
+          "responsibility": "Defines and versions any future contract."
+        },
+        {
+          "actor": "Test Suite",
+          "responsibility": "Reports the gap without promoting it to CanApp conformance."
+        }
+      ],
+      "binding_id": null,
+      "branch_predicate": "The pinned source exposes no explicit implemented result contract for the named behavior.",
+      "entry_point": "The source inventory searches for the required CanApp-facing contract.",
+      "evidence_status": "accepted_source_observation",
+      "exclusion": null,
+      "feature_ids": [
+        "RCF-RESOURCE-REDIRECT-GAP"
+      ],
+      "inspection_method": "Direct negative-surface audit of the pinned production call paths named by the source evidence.",
+      "interaction_id": "INT-GAP-RESOURCE-REDIRECT-GAP",
+      "inventory_class_ids": [
+        "DISC-04",
+        "DISC-12",
+        "DISC-14"
+      ],
+      "locator": "LaunchAppUseCaseAndroid.kt:42-113; WebViewActivity.kt:28-125; PinPublicationPrepareUseCase.kt:29-163; XapiSessionEntity.kt:8-34; XapiIpcService.kt:40-259; XapiNanoHttpdApp.kt; AppKoinModule.kt:326-355",
+      "observable_result": "The Test Suite does not fail a CanApp for the absent contract.",
+      "record_type": "owner_decision",
+      "row_ids": [],
+      "semantic_contract_id": "SC-RESOURCE",
+      "source_lock_id": "LOCK-RESPECT-SOURCE",
+      "source_ref": "SRC-RESPECT-NEGATIVE-SURFACES",
+      "symbol": "Undefined RESPECT-specific redirect policy",
+      "terminal_effect": "The behavior remains an upstream RESPECT specification and implementation gap."
+    },
+    {
+      "actors": [
+        {
+          "actor": "RESPECT profile owner",
+          "responsibility": "Defines and versions any future contract."
+        },
+        {
+          "actor": "Test Suite",
+          "responsibility": "Reports the gap without promoting it to CanApp conformance."
+        }
+      ],
+      "binding_id": null,
+      "branch_predicate": "The pinned source exposes no explicit implemented result contract for the named behavior.",
+      "entry_point": "The source inventory searches for the required CanApp-facing contract.",
+      "evidence_status": "accepted_source_observation",
+      "exclusion": null,
+      "feature_ids": [
+        "RCF-WEB-LIFECYCLE-GAPS"
+      ],
+      "inspection_method": "Direct negative-surface audit of the pinned production call paths named by the source evidence.",
+      "interaction_id": "INT-GAP-WEB-LIFECYCLE-GAPS",
+      "inventory_class_ids": [
+        "DISC-07",
+        "DISC-13"
+      ],
+      "locator": "LaunchAppUseCaseAndroid.kt:42-113; WebViewActivity.kt:28-125; PinPublicationPrepareUseCase.kt:29-163; XapiSessionEntity.kt:8-34; XapiIpcService.kt:40-259; XapiNanoHttpdApp.kt; AppKoinModule.kt:326-355",
+      "observable_result": "The Test Suite does not fail a CanApp for the absent contract.",
+      "record_type": "owner_decision",
+      "row_ids": [],
+      "semantic_contract_id": "SC-WEB-RUNTIME",
+      "source_lock_id": "LOCK-RESPECT-SOURCE",
+      "source_ref": "SRC-RESPECT-NEGATIVE-SURFACES",
+      "symbol": "Undefined hosted web suspension and resumption events",
+      "terminal_effect": "The behavior remains an upstream RESPECT specification and implementation gap."
+    },
+    {
+      "actors": [
+        {
+          "actor": "RESPECT profile owner",
+          "responsibility": "Defines and versions any future contract."
+        },
+        {
+          "actor": "Test Suite",
+          "responsibility": "Reports the gap without promoting it to CanApp conformance."
+        }
+      ],
+      "binding_id": null,
+      "branch_predicate": "The pinned source exposes no explicit implemented result contract for the named behavior.",
+      "entry_point": "The source inventory searches for the required CanApp-facing contract.",
+      "evidence_status": "accepted_source_observation",
+      "exclusion": null,
+      "feature_ids": [
+        "RCF-XAPI-BINDING-OUTCOME-GAPS"
+      ],
+      "inspection_method": "Direct negative-surface audit of the pinned production call paths named by the source evidence.",
+      "interaction_id": "INT-GAP-XAPI-BINDING-OUTCOME-GAPS",
+      "inventory_class_ids": [
+        "DISC-09",
+        "DISC-10",
+        "DISC-12"
+      ],
+      "locator": "LaunchAppUseCaseAndroid.kt:42-113; WebViewActivity.kt:28-125; PinPublicationPrepareUseCase.kt:29-163; XapiSessionEntity.kt:8-34; XapiIpcService.kt:40-259; XapiNanoHttpdApp.kt; AppKoinModule.kt:326-355",
+      "observable_result": "The Test Suite does not fail a CanApp for the absent contract.",
+      "record_type": "owner_decision",
+      "row_ids": [],
+      "semantic_contract_id": "SC-XAPI",
+      "source_lock_id": "LOCK-RESPECT-SOURCE",
+      "source_ref": "SRC-RESPECT-NEGATIVE-SURFACES",
+      "symbol": "Undefined cross-binding xAPI timeout and unavailability outcomes",
+      "terminal_effect": "The behavior remains an upstream RESPECT specification and implementation gap."
+    },
+    {
+      "actors": [
+        {
+          "actor": "CanApp publisher",
+          "responsibility": "Supplies publication identity and links."
+        },
+        {
+          "actor": "RESPECT",
+          "responsibility": "Derives the xAPI activity."
+        }
+      ],
+      "binding_id": null,
+      "branch_predicate": "The publication has an absolute self URL and either a metadata identifier or acquisition link.",
+      "entry_point": "RESPECT constructs launch context for a publication.",
+      "evidence_status": "accepted_source_observation",
+      "exclusion": null,
+      "feature_ids": [
+        "RCF-RUSTICI-LAUNCH"
+      ],
+      "inspection_method": "Direct inspection of the pinned source file and adjacent call path.",
+      "interaction_id": "INT-LAUNCH-ACTIVITY-DERIVATION",
+      "inventory_class_ids": [
+        "DISC-05",
+        "DISC-12"
+      ],
+      "locator": "GetXapiActivityForPublicationUseCase.kt:21-39",
+      "observable_result": "The CanApp receives a stable logical activity identity in launch data.",
+      "record_type": "production_boundary",
+      "row_ids": [
+        "LAUNCH-004"
+      ],
+      "semantic_contract_id": "SC-LAUNCH",
+      "source_lock_id": "LOCK-RESPECT-SOURCE",
+      "source_ref": "SRC-RESPECT-LAUNCH-ACTIVITY",
+      "symbol": "GetXapiActivityForPublicationUseCase.invoke",
+      "terminal_effect": "RESPECT derives activity_id and activity definition title plus web publication manifest extension."
+    },
+    {
+      "actors": [
+        {
+          "actor": "RESPECT",
+          "responsibility": "Constructs and starts the Android Intent."
+        },
+        {
+          "actor": "Android",
+          "responsibility": "Resolves the native handler."
+        },
+        {
+          "actor": "CanApp",
+          "responsibility": "Receives the launch URL."
+        }
+      ],
+      "binding_id": "BIND-LAUNCH-ANDROID-INTENT",
+      "branch_predicate": "Android can resolve a non-browser handler for the native launch URL.",
+      "entry_point": "RESPECT launches a publication on Android.",
+      "evidence_status": "accepted_source_observation",
+      "exclusion": null,
+      "feature_ids": [
+        "RCF-LAUNCH",
+        "RCF-ANDROID-LAUNCH"
+      ],
+      "inspection_method": "Direct inspection of the pinned source file and adjacent call path.",
+      "interaction_id": "INT-LAUNCH-ANDROID-INTENT",
+      "inventory_class_ids": [
+        "DISC-05",
+        "DISC-06",
+        "DISC-12",
+        "DISC-13"
+      ],
+      "locator": "LaunchAppUseCaseAndroid.kt:42-87",
+      "observable_result": "Android opens a native CanApp with the shared launch data.",
+      "record_type": "production_boundary",
+      "row_ids": [
+        "ANDROID-001",
+        "ANDROID-002",
+        "LAUNCH-001",
+        "LAUNCH-009"
+      ],
+      "semantic_contract_id": "SC-LAUNCH",
+      "source_lock_id": "LOCK-RESPECT-SOURCE",
+      "source_ref": "SRC-RESPECT-LAUNCH",
+      "symbol": "LaunchAppUseCaseAndroid native route",
+      "terminal_effect": "RESPECT sends ACTION_VIEW with BROWSABLE category and required non-browser or filtered package selection."
+    },
+    {
+      "actors": [
+        {
+          "actor": "RESPECT",
+          "responsibility": "Creates session and launch data."
+        },
+        {
+          "actor": "CanApp",
+          "responsibility": "Consumes launch data."
+        },
+        {
+          "actor": "RESPECT xAPI service",
+          "responsibility": "Authenticates the supplied session credentials."
+        }
+      ],
+      "binding_id": "BIND-LAUNCH-RUSTICI",
+      "branch_predicate": "An active person, acquisition link, and xAPI activity exist.",
+      "entry_point": "RESPECT launches the first accepted acquisition link.",
+      "evidence_status": "accepted_source_observation",
+      "exclusion": null,
+      "feature_ids": [
+        "RCF-RUSTICI-LAUNCH"
+      ],
+      "inspection_method": "Direct inspection of the pinned source file and adjacent call path.",
+      "interaction_id": "INT-LAUNCH-DATA-CONSTRUCTION",
+      "inventory_class_ids": [
+        "DISC-05",
+        "DISC-06",
+        "DISC-10",
+        "DISC-11",
+        "DISC-12",
+        "DISC-13"
+      ],
+      "locator": "GetXapiLaunchUrlUseCaseAndroid.kt:39-97",
+      "observable_result": "The CanApp receives the implemented launch-data subset.",
+      "record_type": "production_boundary",
+      "row_ids": [
+        "LAUNCH-003",
+        "LAUNCH-004",
+        "LAUNCH-005",
+        "LAUNCH-006",
+        "LAUNCH-007"
+      ],
+      "semantic_contract_id": "SC-LAUNCH",
+      "source_lock_id": "LOCK-RESPECT-SOURCE",
+      "source_ref": "SRC-RESPECT-XAPI-URL",
+      "symbol": "GetXapiLaunchUrlUseCaseAndroid.invoke",
+      "terminal_effect": "RESPECT creates an xAPI session and appends endpoint, activity_id, Basic auth, actor, optional assignment path, and native-only xapiIpcPackage."
+    },
+    {
+      "actors": [
+        {
+          "actor": "RESPECT",
+          "responsibility": "Selects fallback and starts WebViewActivity."
+        },
+        {
+          "actor": "CanApp web content",
+          "responsibility": "Receives the shared launch data."
+        }
+      ],
+      "binding_id": "BIND-LAUNCH-WEB-NAVIGATION",
+      "branch_predicate": "RESPECT can derive the WebView launch URL.",
+      "entry_point": "Native launch throws or no eligible pre-Android-30 native package exists.",
+      "evidence_status": "accepted_source_observation",
+      "exclusion": null,
+      "feature_ids": [
+        "RCF-LAUNCH"
+      ],
+      "inspection_method": "Direct inspection of the pinned source file and adjacent call path.",
+      "interaction_id": "INT-LAUNCH-WEBVIEW-FALLBACK",
+      "inventory_class_ids": [
+        "DISC-05",
+        "DISC-06",
+        "DISC-07",
+        "DISC-08",
+        "DISC-12",
+        "DISC-13"
+      ],
+      "locator": "LaunchAppUseCaseAndroid.kt:85-113",
+      "observable_result": "RESPECT opens the learning unit in the hosted web runtime.",
+      "record_type": "production_boundary",
+      "row_ids": [
+        "LAUNCH-002"
+      ],
+      "semantic_contract_id": "SC-LAUNCH",
+      "source_lock_id": "LOCK-RESPECT-SOURCE",
+      "source_ref": "SRC-RESPECT-LAUNCH",
+      "symbol": "LaunchAppUseCaseAndroid WebView fallback",
+      "terminal_effect": "RESPECT removes launch parameters for cache variance, stores No-Vary-Search metadata, and starts WebViewActivity with the launch URL."
+    },
+    {
+      "actors": [
+        {
+          "actor": "RESPECT user",
+          "responsibility": "Requests pin or unpin."
+        },
+        {
+          "actor": "CanApp publisher",
+          "responsibility": "Declares downloadable resources."
+        },
+        {
+          "actor": "RESPECT cache",
+          "responsibility": "Downloads and retains content."
+        }
+      ],
+      "binding_id": "BIND-CONTENT-HTTP",
+      "branch_predicate": "The publication manifest loads and declared resources resolve.",
+      "entry_point": "A user requests publication download or removal.",
+      "evidence_status": "accepted_source_observation",
+      "exclusion": null,
+      "feature_ids": [
+        "RCF-OFFLINE"
+      ],
+      "inspection_method": "Direct inspection of the pinned source file and adjacent call path.",
+      "interaction_id": "INT-OFFLINE-PIN-PUBLICATION",
+      "inventory_class_ids": [
+        "DISC-04",
+        "DISC-08",
+        "DISC-12",
+        "DISC-13",
+        "DISC-16"
+      ],
+      "locator": "LearningUnitDetailViewModel.kt:96-147; PinPublicationPrepareUseCase.kt:58-153",
+      "observable_result": "RESPECT exposes NOT_PINNED, transfer, or READY pin state and cached content availability.",
+      "record_type": "production_boundary",
+      "row_ids": [
+        "OFFLINE-001"
+      ],
+      "semantic_contract_id": "SC-OFFLINE",
+      "source_lock_id": "LOCK-RESPECT-SOURCE",
+      "source_ref": "SRC-RESPECT-PINNING",
+      "symbol": "LearningUnitDetailViewModel.onClickDownload and PinPublicationPrepareUseCase.invoke",
+      "terminal_effect": "RESPECT downloads acquisition links and resources, obtains missing sizes, applies retention locks, records pin state, and queues transfer."
+    },
+    {
+      "actors": [
+        {
+          "actor": "RESPECT repository",
+          "responsibility": "Combines local and remote publication state."
+        },
+        {
+          "actor": "CanApp publisher",
+          "responsibility": "Serves current remote publication data."
+        }
+      ],
+      "binding_id": "BIND-CONTENT-HTTP",
+      "branch_predicate": "Local data may exist and a remote response may succeed or fail.",
+      "entry_point": "RESPECT requests a publication through the repository.",
+      "evidence_status": "accepted_source_observation",
+      "exclusion": null,
+      "feature_ids": [
+        "RCF-OFFLINE"
+      ],
+      "inspection_method": "Direct inspection of the pinned source file and adjacent call path.",
+      "interaction_id": "INT-OFFLINE-REPOSITORY-CACHE",
+      "inventory_class_ids": [
+        "DISC-04",
+        "DISC-08",
+        "DISC-13",
+        "DISC-16"
+      ],
+      "locator": "OpdsPublicationDataSourceRepository.kt:19-55",
+      "observable_result": "Previously stored publication metadata can remain available when remote access is unavailable.",
+      "record_type": "production_boundary",
+      "row_ids": [
+        "OFFLINE-002"
+      ],
+      "semantic_contract_id": "SC-OFFLINE",
+      "source_lock_id": "LOCK-RESPECT-SOURCE",
+      "source_ref": "SRC-RESPECT-OPDS-REPOSITORY",
+      "symbol": "OpdsPublicationDataSourceRepository get operations",
+      "terminal_effect": "RESPECT emits local data, combines remote data, and persists successful remote publication data."
+    },
+    {
+      "actors": [
+        {
+          "actor": "RESPECT administrator",
+          "responsibility": "Selects the CanApp for registration."
+        },
+        {
+          "actor": "RESPECT",
+          "responsibility": "Creates and stores the listed-app statement."
+        },
+        {
+          "actor": "CanApp publisher",
+          "responsibility": "Keeps the descriptor URL resolvable."
+        }
+      ],
+      "binding_id": null,
+      "branch_predicate": "RESPECT has an active actor and a loaded descriptor title.",
+      "entry_point": "An administrator selects Add for a loaded CanApp descriptor.",
+      "evidence_status": "accepted_source_observation",
+      "exclusion": null,
+      "feature_ids": [
+        "RCF-REGISTRATION"
+      ],
+      "inspection_method": "Direct inspection of the pinned source file and adjacent call path.",
+      "interaction_id": "INT-REGISTRATION-CREATE",
+      "inventory_class_ids": [
+        "DISC-01",
+        "DISC-12",
+        "DISC-13"
+      ],
+      "locator": "XapiAppListingExt.kt:22-61; AppsDetailViewModel.kt:203-216",
+      "observable_result": "The app appears in RESPECT app-list queries.",
+      "record_type": "production_boundary",
+      "row_ids": [
+        "REG-001",
+        "REG-004",
+        "REG-005"
+      ],
+      "semantic_contract_id": "SC-REGISTRATION",
+      "source_lock_id": "LOCK-RESPECT-SOURCE",
+      "source_ref": "SRC-RESPECT-APP-LISTING",
+      "symbol": "createBlankAppListingStatement and AppsDetailViewModel.onClickAdd",
+      "terminal_effect": "RESPECT posts a listed-app xAPI statement containing the descriptor URL and app-listing category."
+    },
+    {
+      "actors": [
+        {
+          "actor": "RESPECT",
+          "responsibility": "Queries listed-app statements and resolves CanApp descriptors."
+        },
+        {
+          "actor": "CanApp publisher",
+          "responsibility": "Serves the descriptor and default lesson catalog."
+        }
+      ],
+      "binding_id": null,
+      "branch_predicate": "A non-voided listed-app statement matches the app-listing recipe.",
+      "entry_point": "RESPECT displays or opens registered apps.",
+      "evidence_status": "accepted_source_observation",
+      "exclusion": null,
+      "feature_ids": [
+        "RCF-REGISTRATION"
+      ],
+      "inspection_method": "Direct inspection of the pinned source file and adjacent call path.",
+      "interaction_id": "INT-REGISTRATION-LIST",
+      "inventory_class_ids": [
+        "DISC-01",
+        "DISC-03",
+        "DISC-13"
+      ],
+      "locator": "AppLauncherViewModel.kt:115-178",
+      "observable_result": "The registered CanApp appears and opens through the descriptor URL.",
+      "record_type": "production_boundary",
+      "row_ids": [
+        "REG-002"
+      ],
+      "semantic_contract_id": "SC-REGISTRATION",
+      "source_lock_id": "LOCK-RESPECT-SOURCE",
+      "source_ref": "SRC-RESPECT-APP-LAUNCHER",
+      "symbol": "AppLauncherViewModel app-list flow and onClickApp",
+      "terminal_effect": "RESPECT resolves each statement object as an OPDS Publication descriptor and opens the descriptor or default lesson catalog."
+    },
+    {
+      "actors": [
+        {
+          "actor": "RESPECT administrator",
+          "responsibility": "Selects removal."
+        },
+        {
+          "actor": "RESPECT",
+          "responsibility": "Finds and voids the listing statement."
+        }
+      ],
+      "binding_id": null,
+      "branch_predicate": "A most-recent listed-app statement and active actor exist.",
+      "entry_point": "An administrator removes a registered CanApp.",
+      "evidence_status": "accepted_source_observation",
+      "exclusion": null,
+      "feature_ids": [
+        "RCF-REGISTRATION"
+      ],
+      "inspection_method": "Direct inspection of the pinned source file and adjacent call path.",
+      "interaction_id": "INT-REGISTRATION-REMOVE",
+      "inventory_class_ids": [
+        "DISC-01",
+        "DISC-12",
+        "DISC-13"
+      ],
+      "locator": "AppLauncherViewModel.kt:185-217",
+      "observable_result": "The removed CanApp no longer appears as an active listing.",
+      "record_type": "production_boundary",
+      "row_ids": [
+        "REG-003"
+      ],
+      "semantic_contract_id": "SC-REGISTRATION",
+      "source_lock_id": "LOCK-RESPECT-SOURCE",
+      "source_ref": "SRC-RESPECT-APP-LISTING",
+      "symbol": "AppLauncherViewModel.onClickRemove",
+      "terminal_effect": "RESPECT posts a voiding statement referencing the listing statement."
+    },
+    {
+      "actors": [
+        {
+          "actor": "CanApp publisher",
+          "responsibility": "Serves the selected HTTP resource."
+        },
+        {
+          "actor": "RESPECT validator",
+          "responsibility": "Applies caller-selected HTTP checks."
+        }
+      ],
+      "binding_id": "BIND-CONTENT-HTTP",
+      "branch_predicate": "The caller selects accepted media types and enables or disables content-length and cache validation.",
+      "entry_point": "A RESPECT validator explicitly invokes HTTP response validation for a selected URL.",
+      "evidence_status": "accepted_source_observation",
+      "exclusion": null,
+      "feature_ids": [
+        "RCF-HTTP"
+      ],
+      "inspection_method": "Direct inspection of the pinned source file and adjacent call path.",
+      "interaction_id": "INT-RESOURCE-HTTP-VALIDATION",
+      "inventory_class_ids": [
+        "DISC-04",
+        "DISC-12"
+      ],
+      "locator": "ValidateHttpResponseForUrlUseCase.kt:44-176",
+      "observable_result": "The validator emits URL-attributed errors for each enabled check.",
+      "record_type": "production_boundary",
+      "row_ids": [
+        "HTTP-001",
+        "HTTP-002",
+        "HTTP-003",
+        "HTTP-004",
+        "HTTP-005"
+      ],
+      "semantic_contract_id": "SC-RESOURCE",
+      "source_lock_id": "LOCK-RESPECT-SOURCE",
+      "source_ref": "SRC-RESPECT-HTTP",
+      "symbol": "ValidateHttpResponseForUrlUseCase.invoke",
+      "terminal_effect": "RESPECT checks status 200, selected media type, Content-Length, ETag or Last-Modified, and conditional status 304 according to caller options."
+    },
+    {
+      "actors": [
+        {
+          "actor": "CanApp publisher",
+          "responsibility": "Supplies the publication and resources."
+        },
+        {
+          "actor": "RESPECT validator",
+          "responsibility": "Validates publication requirements."
+        }
+      ],
+      "binding_id": "BIND-CONTENT-HTTP",
+      "branch_predicate": "RESPECT-specific checks are enabled.",
+      "entry_point": "RESPECT validates an OPDS Publication.",
+      "evidence_status": "accepted_source_observation",
+      "exclusion": null,
+      "feature_ids": [
+        "RCF-OPDS"
+      ],
+      "inspection_method": "Direct inspection of the pinned source file and adjacent call path.",
+      "interaction_id": "INT-RESOURCE-PUBLICATION-VALIDATE",
+      "inventory_class_ids": [
+        "DISC-04",
+        "DISC-12",
+        "DISC-14"
+      ],
+      "locator": "ValidateOpdsPublicationUseCase.kt:42-154",
+      "observable_result": "The validator emits deterministic errors for missing or invalid publication elements.",
+      "record_type": "production_boundary",
+      "row_ids": [
+        "OPDS-004",
+        "OPDS-005",
+        "OPDS-008"
+      ],
+      "semantic_contract_id": "SC-RESOURCE",
+      "source_lock_id": "LOCK-RESPECT-SOURCE",
+      "source_ref": "SRC-RESPECT-RESOURCE-VALIDATOR",
+      "symbol": "ValidateOpdsPublicationUseCase.invoke",
+      "terminal_effect": "RESPECT enforces acquisition relation prefix, accepted learning media type, at least one image, reachable images, and safe acquisition URLs."
+    },
+    {
+      "actors": [
+        {
+          "actor": "CanApp publisher",
+          "responsibility": "Serves the learning resource and discoverable manifest."
+        },
+        {
+          "actor": "RESPECT validator",
+          "responsibility": "Discovers and validates the manifest link."
+        }
+      ],
+      "binding_id": "BIND-CONTENT-HTTP",
+      "branch_predicate": "The learning-resource response supplies a manifest Link header or valid HTML or XHTML with a manifest link.",
+      "entry_point": "RESPECT validates each acquisition URL.",
+      "evidence_status": "accepted_source_observation",
+      "exclusion": null,
+      "feature_ids": [
+        "RCF-OPDS"
+      ],
+      "inspection_method": "Direct inspection of the pinned source file and adjacent call path.",
+      "interaction_id": "INT-RESOURCE-WEBPUB-DISCOVERY",
+      "inventory_class_ids": [
+        "DISC-04",
+        "DISC-12"
+      ],
+      "locator": "ValidateOpdsPublicationUseCase.kt:146-244",
+      "observable_result": "The validator reports missing, invalid, or self-referential manifest discovery.",
+      "record_type": "production_boundary",
+      "row_ids": [
+        "OPDS-006",
+        "OPDS-007"
+      ],
+      "semantic_contract_id": "SC-RESOURCE",
+      "source_lock_id": "LOCK-RESPECT-SOURCE",
+      "source_ref": "SRC-RESPECT-RESOURCE-VALIDATOR",
+      "symbol": "ValidateOpdsPublicationUseCase manifest discovery",
+      "terminal_effect": "RESPECT discovers a Readium Web Publication manifest and queues manifest validation."
+    },
+    {
+      "actors": [
+        {
+          "actor": "RESPECT validator",
+          "responsibility": "Requests the hard-coded schema URL."
+        },
+        {
+          "actor": "drafts.opds.io",
+          "responsibility": "Returns the current HTTP result for the URL."
+        }
+      ],
+      "binding_id": "BIND-CONTENT-HTTP",
+      "branch_predicate": "The schema is not already available from another cache layer.",
+      "entry_point": "The JVM validator lazily loads its configured schema.",
+      "evidence_status": "diagnostic_evidence",
+      "exclusion": {
+        "rationale": "Availability of RESPECT's schema dependency is owned by RESPECT and the schema host; the Test Suite uses the pinned standard lock for deterministic CanApp checks.",
+        "status": "non_canapp_obligation"
+      },
+      "feature_ids": [
+        "RCF-OPDS-SCOPE"
+      ],
+      "inspection_method": "Direct HTTP GET with curl --fail against both exact URLs on 2026-07-27.",
+      "interaction_id": "INT-RUNTIME-OPDS-SCHEMA-404",
+      "inventory_class_ids": [
+        "DISC-03",
+        "DISC-04",
+        "DISC-12",
+        "DISC-14",
+        "DISC-16"
+      ],
+      "locator": "2026-07-27 curl --fail https://drafts.opds.io/schema/feed.schema.json and publication.schema.json; both returned HTTP 404",
+      "observable_result": "The source-coded live-schema validation path cannot presently obtain either configured schema from its origin.",
+      "record_type": "runtime_observation",
+      "row_ids": [],
+      "semantic_contract_id": "SC-CATALOG",
+      "source_lock_id": "LOCK-RESPECT-SOURCE",
+      "source_ref": "SRC-RUNTIME-OPDS-SCHEMA-404",
+      "symbol": "OpdsFeedValidator and OpdsPublicationValidator live schema URLs",
+      "terminal_effect": "The external schema request returns HTTP 404."
+    },
+    {
+      "actors": [
+        {
+          "actor": "CanApp or CanApp publisher",
+          "responsibility": "Produces or consumes the semantic value governed by the invoked clause."
+        },
+        {
+          "actor": "RESPECT",
+          "responsibility": "Invokes only the recorded subset of the external standard."
+        }
+      ],
+      "binding_id": null,
+      "branch_predicate": "The pinned RESPECT call path invokes the named standard surface.",
+      "entry_point": "RESPECT attempts native launch for an HTTPS acquisition URL.",
+      "evidence_status": "accepted_source_observation",
+      "exclusion": null,
+      "feature_ids": [
+        "RCF-ANDROID-LAUNCH",
+        "RCF-LAUNCH"
+      ],
+      "inspection_method": "Direct comparison of the pinned RESPECT call path with the pinned external-standard text.",
+      "interaction_id": "INT-STANDARD-ANDROID-APP-LINKS",
+      "inventory_class_ids": [
+        "DISC-05",
+        "DISC-06",
+        "DISC-12",
+        "DISC-15"
+      ],
+      "locator": "Verify Android App Links and add intent filters",
+      "observable_result": "RESPECT launches the attributed native CanApp or follows its recorded fallback path.",
+      "record_type": "standard_clause",
+      "row_ids": [
+        "ANDROID-001",
+        "ANDROID-002",
+        "LAUNCH-001",
+        "LAUNCH-009"
+      ],
+      "semantic_contract_id": "SC-LAUNCH",
+      "source_lock_id": "LOCK-ANDROID-APPLINKS",
+      "source_ref": "SRC-ANDROID-APPLINKS",
+      "symbol": "Android browsable HTTPS intent and verified-domain requirements",
+      "terminal_effect": "Android resolves the URL to the intended non-browser CanApp when declarations and domain association are valid."
+    },
+    {
+      "actors": [
+        {
+          "actor": "CanApp or CanApp publisher",
+          "responsibility": "Produces or consumes the semantic value governed by the invoked clause."
+        },
+        {
+          "actor": "RESPECT",
+          "responsibility": "Invokes only the recorded subset of the external standard."
+        }
+      ],
+      "binding_id": null,
+      "branch_predicate": "The pinned RESPECT call path invokes the named standard surface.",
+      "entry_point": "RESPECT validates or caches a selected publication resource.",
+      "evidence_status": "accepted_source_observation",
+      "exclusion": null,
+      "feature_ids": [
+        "RCF-HTTP"
+      ],
+      "inspection_method": "Direct comparison of the pinned RESPECT call path with the pinned external-standard text.",
+      "interaction_id": "INT-STANDARD-HTTP",
+      "inventory_class_ids": [
+        "DISC-04",
+        "DISC-08",
+        "DISC-12",
+        "DISC-15"
+      ],
+      "locator": "RFC 9110 sections 8, 13, and 15",
+      "observable_result": "The selected resource is accepted, rejected, or reused according to the implemented subset.",
+      "record_type": "standard_clause",
+      "row_ids": [
+        "HTTP-001",
+        "HTTP-002",
+        "HTTP-003",
+        "HTTP-004",
+        "HTTP-005"
+      ],
+      "semantic_contract_id": "SC-RESOURCE",
+      "source_lock_id": "LOCK-RFC9110",
+      "source_ref": "SRC-RFC9110",
+      "symbol": "Invoked HTTP status, representation metadata, and conditional-request clauses",
+      "terminal_effect": "RESPECT evaluates status, media type, content length, validators, and conditional response."
+    },
+    {
+      "actors": [
+        {
+          "actor": "CanApp or CanApp publisher",
+          "responsibility": "Produces or consumes the semantic value governed by the invoked clause."
+        },
+        {
+          "actor": "RESPECT",
+          "responsibility": "Invokes only the recorded subset of the external standard."
+        }
+      ],
+      "binding_id": null,
+      "branch_predicate": "The pinned RESPECT call path invokes the named standard surface.",
+      "entry_point": "RESPECT validates or caches a selected publication resource.",
+      "evidence_status": "accepted_source_observation",
+      "exclusion": null,
+      "feature_ids": [
+        "RCF-OFFLINE"
+      ],
+      "inspection_method": "Direct comparison of the pinned RESPECT call path with the pinned external-standard text.",
+      "interaction_id": "INT-STANDARD-HTTP-CACHE",
+      "inventory_class_ids": [
+        "DISC-04",
+        "DISC-08",
+        "DISC-12",
+        "DISC-15"
+      ],
+      "locator": "RFC 9111 sections 4.3 and 8.8",
+      "observable_result": "The selected resource is accepted, rejected, or reused according to the implemented subset.",
+      "record_type": "standard_clause",
+      "row_ids": [
+        "OFFLINE-003"
+      ],
+      "semantic_contract_id": "SC-OFFLINE",
+      "source_lock_id": "LOCK-RFC9111",
+      "source_ref": "SRC-RFC9111",
+      "symbol": "Invoked HTTP cache-validator and revalidation clauses",
+      "terminal_effect": "RESPECT evaluates status, media type, content length, validators, and conditional response."
+    },
+    {
+      "actors": [
+        {
+          "actor": "CanApp publisher",
+          "responsibility": "Serves the descriptor and catalog."
+        },
+        {
+          "actor": "RESPECT",
+          "responsibility": "Loads and displays catalog content."
+        }
+      ],
+      "binding_id": "BIND-CONTENT-HTTP",
+      "branch_predicate": "The descriptor and default catalog resolve successfully.",
+      "entry_point": "A user opens a registered CanApp.",
+      "evidence_status": "accepted_source_observation",
+      "exclusion": null,
+      "feature_ids": [
+        "RCF-OPDS",
+        "RCF-OPDS-SCOPE"
+      ],
+      "inspection_method": "Direct inspection of the pinned source file and adjacent call path.",
+      "interaction_id": "INT-STANDARD-OPDS-CATALOG",
+      "inventory_class_ids": [
+        "DISC-03",
+        "DISC-12"
+      ],
+      "locator": "opds-2.0.md sections 1, 2.1, 5.1, 5.3, and Appendix A",
+      "observable_result": "The user can inspect CanApp learning content.",
+      "record_type": "standard_clause",
+      "row_ids": [
+        "OPDS-001",
+        "OPDS-002",
+        "OPDS-003"
+      ],
+      "semantic_contract_id": "SC-CATALOG",
+      "source_lock_id": "LOCK-OPDS-20",
+      "source_ref": "SRC-OPDS-20",
+      "symbol": "Invoked OPDS feed, group, navigation, relation, and media-type clauses",
+      "terminal_effect": "RESPECT resolves and displays top-level publications, navigation entries, and groups."
+    },
+    {
+      "actors": [
+        {
+          "actor": "CanApp publisher",
+          "responsibility": "Serves the descriptor and catalog."
+        },
+        {
+          "actor": "RESPECT",
+          "responsibility": "Loads and displays catalog content."
+        }
+      ],
+      "binding_id": "BIND-CONTENT-HTTP",
+      "branch_predicate": "The descriptor and default catalog resolve successfully.",
+      "entry_point": "A user opens a registered CanApp.",
+      "evidence_status": "accepted_source_observation",
+      "exclusion": null,
+      "feature_ids": [
+        "RCF-DESCRIPTOR"
+      ],
+      "inspection_method": "Direct inspection of the pinned source file and adjacent call path.",
+      "interaction_id": "INT-STANDARD-OPDS-DESCRIPTOR",
+      "inventory_class_ids": [
+        "DISC-03",
+        "DISC-12"
+      ],
+      "locator": "opds-2.0.md sections 1, 2.1, 5.1, 5.3, and Appendix A",
+      "observable_result": "The user can inspect CanApp learning content.",
+      "record_type": "standard_clause",
+      "row_ids": [
+        "DESC-001",
+        "DESC-002",
+        "DESC-003"
+      ],
+      "semantic_contract_id": "SC-DESCRIPTOR",
+      "source_lock_id": "LOCK-OPDS-20",
+      "source_ref": "SRC-OPDS-20",
+      "symbol": "Invoked OPDS Publication descriptor clauses",
+      "terminal_effect": "RESPECT resolves and displays top-level publications, navigation entries, and groups."
+    },
+    {
+      "actors": [
+        {
+          "actor": "CanApp publisher",
+          "responsibility": "Serves the descriptor and catalog."
+        },
+        {
+          "actor": "RESPECT",
+          "responsibility": "Loads and displays catalog content."
+        }
+      ],
+      "binding_id": "BIND-CONTENT-HTTP",
+      "branch_predicate": "The descriptor and default catalog resolve successfully.",
+      "entry_point": "A user opens a registered CanApp.",
+      "evidence_status": "accepted_source_observation",
+      "exclusion": null,
+      "feature_ids": [
+        "RCF-OPDS"
+      ],
+      "inspection_method": "Direct inspection of the pinned source file and adjacent call path.",
+      "interaction_id": "INT-STANDARD-OPDS-RESOURCE",
+      "inventory_class_ids": [
+        "DISC-03",
+        "DISC-12"
+      ],
+      "locator": "opds-2.0.md sections 1, 2.1, 5.1, 5.3, and Appendix A",
+      "observable_result": "The user can inspect CanApp learning content.",
+      "record_type": "standard_clause",
+      "row_ids": [
+        "OPDS-004",
+        "OPDS-005",
+        "OPDS-008"
+      ],
+      "semantic_contract_id": "SC-RESOURCE",
+      "source_lock_id": "LOCK-OPDS-20",
+      "source_ref": "SRC-OPDS-20",
+      "symbol": "Invoked OPDS acquisition-link and publication-resource clauses",
+      "terminal_effect": "RESPECT resolves and displays top-level publications, navigation entries, and groups."
+    },
+    {
+      "actors": [
+        {
+          "actor": "CanApp or CanApp publisher",
+          "responsibility": "Produces or consumes the semantic value governed by the invoked clause."
+        },
+        {
+          "actor": "RESPECT",
+          "responsibility": "Invokes only the recorded subset of the external standard."
+        }
+      ],
+      "binding_id": null,
+      "branch_predicate": "The pinned RESPECT call path invokes the named standard surface.",
+      "entry_point": "RESPECT validates an HTML or XHTML acquisition or a discovered publication manifest.",
+      "evidence_status": "accepted_source_observation",
+      "exclusion": null,
+      "feature_ids": [
+        "RCF-OPDS"
+      ],
+      "inspection_method": "Direct comparison of the pinned RESPECT call path with the pinned external-standard text.",
+      "interaction_id": "INT-STANDARD-READIUM-WEBPUB",
+      "inventory_class_ids": [
+        "DISC-04",
+        "DISC-14",
+        "DISC-15"
+      ],
+      "locator": "README.md sections 2.1 and 5",
+      "observable_result": "Required resources are accepted, rejected, or selected for later acquisition.",
+      "record_type": "standard_clause",
+      "row_ids": [
+        "OPDS-006",
+        "OPDS-007"
+      ],
+      "semantic_contract_id": "SC-RESOURCE",
+      "source_lock_id": "LOCK-READIUM-WEBPUB",
+      "source_ref": "SRC-READIUM-WEBPUB",
+      "symbol": "Invoked Web Publication Manifest discovery and resource clauses",
+      "terminal_effect": "RESPECT discovers and traverses the supported publication resource set."
+    },
+    {
+      "actors": [
+        {
+          "actor": "CanApp or CanApp publisher",
+          "responsibility": "Produces or consumes the semantic value governed by the invoked clause."
+        },
+        {
+          "actor": "RESPECT",
+          "responsibility": "Invokes only the recorded subset of the external standard."
+        }
+      ],
+      "binding_id": null,
+      "branch_predicate": "The pinned RESPECT call path invokes the named standard surface.",
+      "entry_point": "RESPECT constructs a CanApp launch URL.",
+      "evidence_status": "accepted_source_observation",
+      "exclusion": null,
+      "feature_ids": [
+        "RCF-RUSTICI-LAUNCH"
+      ],
+      "inspection_method": "Direct comparison of the pinned RESPECT call path with the pinned external-standard text.",
+      "interaction_id": "INT-STANDARD-RUSTICI-LAUNCH",
+      "inventory_class_ids": [
+        "DISC-05",
+        "DISC-06",
+        "DISC-11",
+        "DISC-14",
+        "DISC-15"
+      ],
+      "locator": "lms_lrs.md:105-170",
+      "observable_result": "The CanApp receives the implemented logical launch values.",
+      "record_type": "standard_clause",
+      "row_ids": [
+        "LAUNCH-003",
+        "LAUNCH-004",
+        "LAUNCH-005",
+        "LAUNCH-006",
+        "LAUNCH-007"
+      ],
+      "semantic_contract_id": "SC-LAUNCH",
+      "source_lock_id": "LOCK-RUSTICI-LAUNCH",
+      "source_ref": "SRC-RUSTICI-LAUNCH",
+      "symbol": "Rustici Tin Can launch parameter subset",
+      "terminal_effect": "RESPECT supplies endpoint, activity_id, auth, actor, and the native IPC package extension when applicable."
+    },
+    {
+      "actors": [
+        {
+          "actor": "CanApp",
+          "responsibility": "Submits statements."
+        },
+        {
+          "actor": "RESPECT xAPI store",
+          "responsibility": "Validates and stores statements."
+        }
+      ],
+      "binding_id": null,
+      "branch_predicate": "The session authenticates and the statements deserialize.",
+      "entry_point": "RESPECT receives logical xAPI statements through any supported binding.",
+      "evidence_status": "accepted_source_observation",
+      "exclusion": null,
+      "feature_ids": [
+        "RCF-XAPI-AUTH",
+        "RCF-XAPI-AUTH-ENFORCEMENT"
+      ],
+      "inspection_method": "Direct inspection of the pinned source file and adjacent call path.",
+      "interaction_id": "INT-STANDARD-XAPI-IDENTITY",
+      "inventory_class_ids": [
+        "DISC-09",
+        "DISC-11",
+        "DISC-12",
+        "DISC-14"
+      ],
+      "locator": "xAPI-Communication.md:442-791; xAPI-Data.md invoked statement clauses",
+      "observable_result": "RESPECT stores valid statements or returns 400, 403, or 409 xAPI failures.",
+      "record_type": "standard_clause",
+      "row_ids": [
+        "AUTH-001",
+        "AUTH-002",
+        "AUTH-003"
+      ],
+      "semantic_contract_id": "SC-IDENTITY",
+      "source_lock_id": "LOCK-XAPI-103",
+      "source_ref": "SRC-XAPI-103",
+      "symbol": "xAPI authenticated actor and authorization constraints invoked by RESPECT",
+      "terminal_effect": "RESPECT assigns missing IDs and validates object type, IRIs, extension keys, score bounds, actor authorization, duplicates, and voiding."
+    },
+    {
+      "actors": [
+        {
+          "actor": "CanApp",
+          "responsibility": "Submits statements."
+        },
+        {
+          "actor": "RESPECT xAPI store",
+          "responsibility": "Validates and stores statements."
+        }
+      ],
+      "binding_id": null,
+      "branch_predicate": "The session authenticates and the statements deserialize.",
+      "entry_point": "RESPECT receives logical xAPI statements through any supported binding.",
+      "evidence_status": "accepted_source_observation",
+      "exclusion": null,
+      "feature_ids": [
+        "RCF-REGISTRATION"
+      ],
+      "inspection_method": "Direct inspection of the pinned source file and adjacent call path.",
+      "interaction_id": "INT-STANDARD-XAPI-REGISTRATION",
+      "inventory_class_ids": [
+        "DISC-09",
+        "DISC-11",
+        "DISC-12",
+        "DISC-14"
+      ],
+      "locator": "xAPI-Communication.md:442-791; xAPI-Data.md invoked statement clauses",
+      "observable_result": "RESPECT stores valid statements or returns 400, 403, or 409 xAPI failures.",
+      "record_type": "standard_clause",
+      "row_ids": [
+        "REG-001",
+        "REG-003"
+      ],
+      "semantic_contract_id": "SC-REGISTRATION",
+      "source_lock_id": "LOCK-XAPI-103",
+      "source_ref": "SRC-XAPI-103",
+      "symbol": "xAPI statement envelope used by RESPECT listed-app and voiding statements",
+      "terminal_effect": "RESPECT assigns missing IDs and validates object type, IRIs, extension keys, score bounds, actor authorization, duplicates, and voiding."
+    },
+    {
+      "actors": [
+        {
+          "actor": "CanApp",
+          "responsibility": "Submits statements."
+        },
+        {
+          "actor": "RESPECT xAPI store",
+          "responsibility": "Validates and stores statements."
+        }
+      ],
+      "binding_id": null,
+      "branch_predicate": "The session authenticates and the statements deserialize.",
+      "entry_point": "RESPECT receives logical xAPI statements through any supported binding.",
+      "evidence_status": "accepted_source_observation",
+      "exclusion": null,
+      "feature_ids": [
+        "RCF-XAPI",
+        "RCF-XAPI-ASSIGNMENT",
+        "RCF-XAPI-HTTP",
+        "RCF-XAPI-HTTP-PROXY",
+        "RCF-XAPI-IPC",
+        "RCF-XAPI-RESULT-METADATA"
+      ],
+      "inspection_method": "Direct inspection of the pinned source file and adjacent call path.",
+      "interaction_id": "INT-STANDARD-XAPI-STATEMENTS",
+      "inventory_class_ids": [
+        "DISC-09",
+        "DISC-11",
+        "DISC-12",
+        "DISC-14"
+      ],
+      "locator": "xAPI-Communication.md:442-791; xAPI-Data.md invoked statement clauses",
+      "observable_result": "RESPECT stores valid statements or returns 400, 403, or 409 xAPI failures.",
+      "record_type": "standard_clause",
+      "row_ids": [
+        "XAPI-001",
+        "XAPI-002",
+        "XAPI-003",
+        "XAPI-004",
+        "XAPI-005",
+        "XAPI-006",
+        "XAPI-007",
+        "XAPI-008",
+        "XAPI-009",
+        "XAPI-010",
+        "XAPI-011",
+        "XAPI-012",
+        "XAPI-013",
+        "XAPI-014",
+        "XAPI-015",
+        "XAPI-016",
+        "XAPI-017",
+        "XAPI-018",
+        "XAPI-019",
+        "XAPI-020"
+      ],
+      "semantic_contract_id": "SC-XAPI",
+      "source_lock_id": "LOCK-XAPI-103",
+      "source_ref": "SRC-XAPI-103",
+      "symbol": "Invoked xAPI Statements Resource clauses",
+      "terminal_effect": "RESPECT assigns missing IDs and validates object type, IRIs, extension keys, score bounds, actor authorization, duplicates, and voiding."
+    },
+    {
+      "actors": [
+        {
+          "actor": "Test Suite",
+          "responsibility": "Runs current fixture validators."
+        },
+        {
+          "actor": "CanApp submitter",
+          "responsibility": "Supplies currently supported inputs."
+        }
+      ],
+      "binding_id": null,
+      "branch_predicate": "The user supplies supported fixture-oriented inputs.",
+      "entry_point": "A user invokes the current suite package.",
+      "evidence_status": "accepted_source_observation",
+      "exclusion": null,
+      "feature_ids": [
+        "RCF-SUITE-TARGET",
+        "RCF-SUITE-ORACLE",
+        "RCF-SUITE-COVERAGE",
+        "RCF-SUITE-VERDICT",
+        "RCF-RESPECT-IFICATION"
+      ],
+      "inspection_method": "Direct inspection of the pinned source file and adjacent call path.",
+      "interaction_id": "INT-SUITE-CURRENT-STATE",
+      "inventory_class_ids": [
+        "DISC-12",
+        "DISC-14",
+        "DISC-15"
+      ],
+      "locator": "Current harness package and legacy 11-row projection",
+      "observable_result": "The package produces partial evidence and cannot yet issue a Level 5 conformance verdict.",
+      "record_type": "test",
+      "row_ids": [
+        "SUITE-001",
+        "SUITE-002",
+        "SUITE-003",
+        "SUITE-004",
+        "SUITE-005",
+        "SUITE-007"
+      ],
+      "semantic_contract_id": "SC-CONFORMANCE",
+      "source_lock_id": "LOCK-JIMS-BASE",
+      "source_ref": "SRC-SUITE-CURRENT-PACKAGE",
+      "symbol": "RESPECT Compatible Test Suite current package",
+      "terminal_effect": "The package runs fixture validators and report behavior but does not execute all Matrix requirements against an arbitrary CanApp."
+    },
+    {
+      "actors": [
+        {
+          "actor": "Test Suite",
+          "responsibility": "Runs current fixture validators."
+        },
+        {
+          "actor": "CanApp submitter",
+          "responsibility": "Supplies currently supported inputs."
+        }
+      ],
+      "binding_id": null,
+      "branch_predicate": "The user supplies supported fixture-oriented inputs.",
+      "entry_point": "A user invokes the current suite package.",
+      "evidence_status": "accepted_source_observation",
+      "exclusion": null,
+      "feature_ids": [
+        "RCF-SUITE-XAPI-ACTOR"
+      ],
+      "inspection_method": "Direct inspection of the pinned source file and adjacent call path.",
+      "interaction_id": "INT-SUITE-XAPI-ACTOR-DESIGN",
+      "inventory_class_ids": [
+        "DISC-12",
+        "DISC-14",
+        "DISC-15"
+      ],
+      "locator": "Current harness package and legacy 11-row projection",
+      "observable_result": "The package produces partial evidence and cannot yet issue a Level 5 conformance verdict.",
+      "record_type": "test",
+      "row_ids": [
+        "SUITE-006"
+      ],
+      "semantic_contract_id": "SC-XAPI",
+      "source_lock_id": "LOCK-JIMS-BASE",
+      "source_ref": "SRC-SUITE-CURRENT-PACKAGE",
+      "symbol": "Current Test Suite xAPI actor coverage gap",
+      "terminal_effect": "The package runs fixture validators and report behavior but does not execute all Matrix requirements against an arbitrary CanApp."
+    },
+    {
+      "actors": [
+        {
+          "actor": "RESPECT",
+          "responsibility": "Configures the cache and clients."
+        },
+        {
+          "actor": "CanApp web content",
+          "responsibility": "Receives cached or network responses."
+        }
+      ],
+      "binding_id": "BIND-CONTENT-HTTP",
+      "branch_predicate": "The Android application dependency graph starts.",
+      "entry_point": "RESPECT initializes Android networking.",
+      "evidence_status": "accepted_source_observation",
+      "exclusion": null,
+      "feature_ids": [
+        "RCF-OFFLINE"
+      ],
+      "inspection_method": "Direct inspection of the pinned source file and adjacent call path.",
+      "interaction_id": "INT-WEB-RUNTIME-CACHE",
+      "inventory_class_ids": [
+        "DISC-07",
+        "DISC-08",
+        "DISC-16"
+      ],
+      "locator": "AppKoinModule.kt:326-355,458-482",
+      "observable_result": "Hosted content can use cached responses according to cache policy.",
+      "record_type": "production_boundary",
+      "row_ids": [
+        "OFFLINE-003"
+      ],
+      "semantic_contract_id": "SC-OFFLINE",
+      "source_lock_id": "LOCK-RESPECT-SOURCE",
+      "source_ref": "SRC-RESPECT-CACHE-WIRING",
+      "symbol": "Android dependency injection for HTTP and WebView cache",
+      "terminal_effect": "RESPECT routes Ktor and WebView requests through a shared 100,000,000-byte cache."
+    },
+    {
+      "actors": [
+        {
+          "actor": "RESPECT hosted runtime",
+          "responsibility": "Configures and hosts the WebView."
+        },
+        {
+          "actor": "CanApp web content",
+          "responsibility": "Uses the exposed browser capabilities."
+        }
+      ],
+      "binding_id": "BIND-LAUNCH-WEB-NAVIGATION",
+      "branch_predicate": "The launch Intent contains the URL.",
+      "entry_point": "RESPECT starts hosted web launch.",
+      "evidence_status": "accepted_source_observation",
+      "exclusion": null,
+      "feature_ids": [
+        "RCF-WEB-RUNTIME"
+      ],
+      "inspection_method": "Direct inspection of the pinned source file and adjacent call path.",
+      "interaction_id": "INT-WEB-RUNTIME-CAPABILITIES",
+      "inventory_class_ids": [
+        "DISC-07",
+        "DISC-12",
+        "DISC-13",
+        "DISC-16"
+      ],
+      "locator": "WebViewActivity.kt:28-125",
+      "observable_result": "The hosted CanApp can execute with the named browser capabilities and user navigation.",
+      "record_type": "production_boundary",
+      "row_ids": [
+        "WEB-001",
+        "WEB-002",
+        "WEB-003",
+        "WEB-004",
+        "WEB-005"
+      ],
+      "semantic_contract_id": "SC-WEB-RUNTIME",
+      "source_lock_id": "LOCK-RESPECT-SOURCE",
+      "source_ref": "SRC-RESPECT-WEBVIEW",
+      "symbol": "WebViewActivity.onCreate and navigation handlers",
+      "terminal_effect": "RESPECT enables JavaScript, DOM storage, gesture-free media, mixed HTTPS-to-loopback HTTP, cached request interception, console logging, back navigation, and close."
+    },
+    {
+      "actors": [
+        {
+          "actor": "CanApp",
+          "responsibility": "Submits a logical statement."
+        },
+        {
+          "actor": "RESPECT binding",
+          "responsibility": "Extracts assignment scope."
+        },
+        {
+          "actor": "RESPECT xAPI store",
+          "responsibility": "Stores transformed assignment context."
+        }
+      ],
+      "binding_id": null,
+      "branch_predicate": "The assignment identifier parses from the endpoint.",
+      "entry_point": "A CanApp submits statements to a launch endpoint containing an assignment activity segment.",
+      "evidence_status": "accepted_source_observation",
+      "exclusion": null,
+      "feature_ids": [
+        "RCF-XAPI-ASSIGNMENT"
+      ],
+      "inspection_method": "Direct inspection of the pinned source file and adjacent call path.",
+      "interaction_id": "INT-XAPI-ASSIGNMENT-TRANSFORM",
+      "inventory_class_ids": [
+        "DISC-05",
+        "DISC-09",
+        "DISC-10",
+        "DISC-12"
+      ],
+      "locator": "XapiIpcService.kt:103-174; XapiNanoHttpdApp.kt assignment endpoint handling",
+      "observable_result": "Stored statements preserve the RESPECT assignment context.",
+      "record_type": "production_boundary",
+      "row_ids": [
+        "XAPI-012"
+      ],
+      "semantic_contract_id": "SC-XAPI",
+      "source_lock_id": "LOCK-RESPECT-SOURCE",
+      "source_ref": "SRC-RESPECT-IPC-SERVICE",
+      "symbol": "Assignment-scoped xAPI request transformation",
+      "terminal_effect": "RESPECT adds assignment-recipe context before storing the statement."
+    },
+    {
+      "actors": [
+        {
+          "actor": "CanApp",
+          "responsibility": "Sends a logical xAPI request."
+        },
+        {
+          "actor": "RESPECT HTTP binding",
+          "responsibility": "Carries the request and response."
+        },
+        {
+          "actor": "RESPECT xAPI resource",
+          "responsibility": "Executes xAPI semantics."
+        }
+      ],
+      "binding_id": "BIND-XAPI-HTTP",
+      "branch_predicate": "The request targets the statements resource and carries supported parameters and authorization.",
+      "entry_point": "A web CanApp sends OPTIONS, GET, POST, or PUT to the supplied endpoint.",
+      "evidence_status": "accepted_source_observation",
+      "exclusion": null,
+      "feature_ids": [
+        "RCF-XAPI-HTTP",
+        "RCF-XAPI-HTTP-PROXY"
+      ],
+      "inspection_method": "Direct inspection of the pinned source file and adjacent call path.",
+      "interaction_id": "INT-XAPI-HTTP-BINDING",
+      "inventory_class_ids": [
+        "DISC-09",
+        "DISC-10",
+        "DISC-11",
+        "DISC-12"
+      ],
+      "locator": "XapiNanoHttpdApp.kt:43-235",
+      "observable_result": "The web CanApp receives the logical xAPI result over HTTP.",
+      "record_type": "production_boundary",
+      "row_ids": [
+        "XAPI-001",
+        "XAPI-002"
+      ],
+      "semantic_contract_id": "SC-XAPI",
+      "source_lock_id": "LOCK-RESPECT-SOURCE",
+      "source_ref": "SRC-RESPECT-XAPI-HTTP",
+      "symbol": "XapiNanoHttpdApp HTTP request handler",
+      "terminal_effect": "RESPECT forwards the logical xAPI operation, assignment transformation, status, headers, and serialized result."
+    },
+    {
+      "actors": [
+        {
+          "actor": "CanApp",
+          "responsibility": "Sends a logical xAPI request."
+        },
+        {
+          "actor": "RESPECT Android IPC binding",
+          "responsibility": "Carries the request and response."
+        },
+        {
+          "actor": "RESPECT xAPI resource",
+          "responsibility": "Executes xAPI semantics."
+        }
+      ],
+      "binding_id": "BIND-XAPI-ANDROID-IPC",
+      "branch_predicate": "The launch supplies endpoint, auth, and xapiIpcPackage and the native CanApp selects a supported logical operation.",
+      "entry_point": "A native CanApp submits POST, GET, or observation request through the selected RESPECT package.",
+      "evidence_status": "accepted_source_observation",
+      "exclusion": null,
+      "feature_ids": [
+        "RCF-XAPI-IPC",
+        "RCF-XAPI-IPC-UNSUPPORTED"
+      ],
+      "inspection_method": "Direct inspection of the pinned source file and adjacent call path.",
+      "interaction_id": "INT-XAPI-IPC-BINDING",
+      "inventory_class_ids": [
+        "DISC-09",
+        "DISC-10",
+        "DISC-11",
+        "DISC-12",
+        "DISC-13"
+      ],
+      "locator": "XapiIpcService.kt:103-234; XapiStatementsResourceIpcClient.kt:30-143",
+      "observable_result": "The native CanApp receives the logical xAPI result over Android IPC.",
+      "record_type": "production_boundary",
+      "row_ids": [
+        "XAPI-003",
+        "XAPI-004",
+        "XAPI-005",
+        "XAPI-013"
+      ],
+      "semantic_contract_id": "SC-XAPI",
+      "source_lock_id": "LOCK-RESPECT-SOURCE",
+      "source_ref": "SRC-RESPECT-IPC-SERVICE",
+      "symbol": "XapiIpcService request handling and XapiStatementsResourceIpcClient",
+      "terminal_effect": "RESPECT executes the same statements resource and returns the logical result or attributable error."
+    },
+    {
+      "actors": [
+        {
+          "actor": "CanApp",
+          "responsibility": "Requests statements."
+        },
+        {
+          "actor": "RESPECT xAPI store",
+          "responsibility": "Filters and returns visible statements."
+        }
+      ],
+      "binding_id": null,
+      "branch_predicate": "The request uses a supported identifier, filter, ordering, limit, or result format.",
+      "entry_point": "RESPECT receives a logical xAPI statement retrieval request through any supported binding.",
+      "evidence_status": "accepted_source_observation",
+      "exclusion": null,
+      "feature_ids": [
+        "RCF-XAPI"
+      ],
+      "inspection_method": "Direct inspection of the pinned source file and adjacent call path.",
+      "interaction_id": "INT-XAPI-QUERY-STATEMENTS",
+      "inventory_class_ids": [
+        "DISC-09",
+        "DISC-11",
+        "DISC-12",
+        "DISC-14"
+      ],
+      "locator": "XapiStatementsResourceDb.kt:390-533",
+      "observable_result": "The CanApp receives the supported filtered statement result.",
+      "record_type": "production_boundary",
+      "row_ids": [
+        "XAPI-011",
+        "XAPI-014",
+        "XAPI-015",
+        "XAPI-016",
+        "XAPI-017",
+        "XAPI-018",
+        "XAPI-019"
+      ],
+      "semantic_contract_id": "SC-XAPI",
+      "source_lock_id": "LOCK-RESPECT-SOURCE",
+      "source_ref": "SRC-RESPECT-XAPI-QUERY",
+      "symbol": "XapiStatementsResourceDb.get and getAsFlow",
+      "terminal_effect": "RESPECT applies visibility rules and returns matching exact, canonical, or ids-format statements."
+    },
+    {
+      "actors": [
+        {
+          "actor": "RESPECT xAPI store",
+          "responsibility": "Creates result metadata."
+        },
+        {
+          "actor": "CanApp",
+          "responsibility": "Consumes metadata when the selected binding exposes metadata."
+        }
+      ],
+      "binding_id": null,
+      "branch_predicate": "The statement query completes.",
+      "entry_point": "RESPECT returns an xAPI statement retrieval result.",
+      "evidence_status": "accepted_source_observation",
+      "exclusion": null,
+      "feature_ids": [
+        "RCF-XAPI-RESULT-METADATA"
+      ],
+      "inspection_method": "Direct inspection of the pinned source file and adjacent call path.",
+      "interaction_id": "INT-XAPI-RESULT-HEADERS",
+      "inventory_class_ids": [
+        "DISC-09",
+        "DISC-10",
+        "DISC-12"
+      ],
+      "locator": "XapiStatementsResourceDb.kt:247-264,449-458",
+      "observable_result": "Bindings capable of carrying headers expose the retrieval metadata.",
+      "record_type": "production_boundary",
+      "row_ids": [
+        "XAPI-020"
+      ],
+      "semantic_contract_id": "SC-XAPI",
+      "source_lock_id": "LOCK-RESPECT-SOURCE",
+      "source_ref": "SRC-RESPECT-XAPI-HEADERS",
+      "symbol": "XapiStatementsResourceDb.makeXapiHeadersForStatementResult",
+      "terminal_effect": "RESPECT attaches Last-Modified, xAPI version, and consistent-through metadata."
+    },
+    {
+      "actors": [
+        {
+          "actor": "CanApp",
+          "responsibility": "Presents launch credentials."
+        },
+        {
+          "actor": "RESPECT",
+          "responsibility": "Validates the xAPI session."
+        },
+        {
+          "actor": "RESPECT account data source",
+          "responsibility": "Executes authorized operations."
+        }
+      ],
+      "binding_id": null,
+      "branch_predicate": "The credential decodes to an existing unexpired session identifier and matching random secret.",
+      "entry_point": "A CanApp uses the Basic credential supplied at launch.",
+      "evidence_status": "accepted_source_observation",
+      "exclusion": null,
+      "feature_ids": [
+        "RCF-XAPI-AUTH",
+        "RCF-XAPI-AUTH-ENFORCEMENT"
+      ],
+      "inspection_method": "Direct inspection of the pinned source file and adjacent call path.",
+      "interaction_id": "INT-XAPI-SESSION-AUTH",
+      "inventory_class_ids": [
+        "DISC-05",
+        "DISC-09",
+        "DISC-10",
+        "DISC-11",
+        "DISC-12",
+        "DISC-13"
+      ],
+      "locator": "XapiResourceProviderAndroid.kt:17-46; XapiSessionEntity.kt:8-34",
+      "observable_result": "The CanApp gains session-scoped xAPI access or receives an attributable authentication failure.",
+      "record_type": "production_boundary",
+      "row_ids": [
+        "AUTH-001",
+        "AUTH-002",
+        "AUTH-003"
+      ],
+      "semantic_contract_id": "SC-IDENTITY",
+      "source_lock_id": "LOCK-RESPECT-SOURCE",
+      "source_ref": "SRC-RESPECT-XAPI-AUTH",
+      "symbol": "XapiResourceProviderAndroid.provideXapiResource",
+      "terminal_effect": "RESPECT selects the authenticated account xAPI resource; missing or invalid credentials return status 403."
+    },
+    {
+      "actors": [
+        {
+          "actor": "CanApp",
+          "responsibility": "Submits statements."
+        },
+        {
+          "actor": "RESPECT xAPI store",
+          "responsibility": "Validates and stores statements."
+        }
+      ],
+      "binding_id": null,
+      "branch_predicate": "The session authenticates and the statements deserialize.",
+      "entry_point": "RESPECT receives logical xAPI statements through any supported binding.",
+      "evidence_status": "accepted_source_observation",
+      "exclusion": null,
+      "feature_ids": [
+        "RCF-XAPI",
+        "RCF-XAPI-SCOPE"
+      ],
+      "inspection_method": "Direct inspection of the pinned source file and adjacent call path.",
+      "interaction_id": "INT-XAPI-VALIDATE-POST",
+      "inventory_class_ids": [
+        "DISC-09",
+        "DISC-11",
+        "DISC-12",
+        "DISC-14"
+      ],
+      "locator": "XapiStatementsResourceDb.kt:266-360",
+      "observable_result": "RESPECT stores valid statements or returns 400, 403, or 409 xAPI failures.",
+      "record_type": "production_boundary",
+      "row_ids": [
+        "XAPI-006",
+        "XAPI-007",
+        "XAPI-008",
+        "XAPI-009",
+        "XAPI-010",
+        "XAPI-011"
+      ],
+      "semantic_contract_id": "SC-XAPI",
+      "source_lock_id": "LOCK-RESPECT-SOURCE",
+      "source_ref": "SRC-RESPECT-XAPI-VALIDATION",
+      "symbol": "XapiStatementsResourceDb.post",
+      "terminal_effect": "RESPECT assigns missing IDs and validates object type, IRIs, extension keys, score bounds, actor authorization, duplicates, and voiding."
+    }
+  ],
+  "inventory_classes": [
+    {
+      "inspected_source_areas": [
+        "XapiAppListingExt",
+        "AppsDetailViewModel",
+        "AppLauncherViewModel",
+        "XapiStatementsResourceDb"
+      ],
+      "interaction_ids": [
+        "INT-REGISTRATION-CREATE",
+        "INT-REGISTRATION-LIST",
+        "INT-REGISTRATION-REMOVE"
+      ],
+      "inventory_class_id": "DISC-01",
+      "notes": "Direct source inventory completed. Unresolved interaction records require Phase 3 Matrix rows or explicit exclusions before source closure.",
+      "status": "complete",
+      "title": "CanApp registration and removal"
+    },
+    {
+      "inspected_source_areas": [
+        "OpdsPublicationDataSourceHttp",
+        "RespectAppManifestExt",
+        "OpdsPublicationExt",
+        "RespectAppManifestValidator"
+      ],
+      "interaction_ids": [
+        "INT-DESCRIPTOR-CURRENT-LOAD",
+        "INT-DESCRIPTOR-DEFAULT-CATALOG",
+        "INT-DESCRIPTOR-LEGACY-CONVERT"
+      ],
+      "inventory_class_id": "DISC-02",
+      "notes": "Direct source inventory completed. Unresolved interaction records require Phase 3 Matrix rows or explicit exclusions before source closure.",
+      "status": "complete",
+      "title": "CanApp descriptor"
+    },
+    {
+      "inspected_source_areas": [
+        "AppsDetailViewModel",
+        "AppLauncherViewModel",
+        "OpdsFeedValidator",
+        "ValidateLinkUseCaseImpl"
+      ],
+      "interaction_ids": [
+        "INT-CATALOG-DETAIL-LOAD",
+        "INT-CATALOG-LINK-DISPATCH",
+        "INT-CATALOG-NAVIGATION",
+        "INT-CATALOG-VALIDATE-FEED",
+        "INT-DESCRIPTOR-DEFAULT-CATALOG",
+        "INT-REGISTRATION-LIST",
+        "INT-RUNTIME-OPDS-SCHEMA-404",
+        "INT-STANDARD-OPDS-CATALOG",
+        "INT-STANDARD-OPDS-DESCRIPTOR",
+        "INT-STANDARD-OPDS-RESOURCE"
+      ],
+      "inventory_class_id": "DISC-03",
+      "notes": "Direct source inventory completed. Unresolved interaction records require Phase 3 Matrix rows or explicit exclusions before source closure.",
+      "status": "complete",
+      "title": "Catalog and learning-content discovery"
+    },
+    {
+      "inspected_source_areas": [
+        "ValidateOpdsPublicationUseCase",
+        "ValidateHttpResponseForUrlUseCase",
+        "PinPublicationPrepareUseCase",
+        "OpdsPublicationDataSourceRepository"
+      ],
+      "interaction_ids": [
+        "INT-CATALOG-LINK-DISPATCH",
+        "INT-CATALOG-VALIDATE-FEED",
+        "INT-GAP-RESOURCE-REDIRECT-GAP",
+        "INT-OFFLINE-PIN-PUBLICATION",
+        "INT-OFFLINE-REPOSITORY-CACHE",
+        "INT-RESOURCE-HTTP-VALIDATION",
+        "INT-RESOURCE-PUBLICATION-VALIDATE",
+        "INT-RESOURCE-WEBPUB-DISCOVERY",
+        "INT-RUNTIME-OPDS-SCHEMA-404",
+        "INT-STANDARD-HTTP",
+        "INT-STANDARD-HTTP-CACHE",
+        "INT-STANDARD-READIUM-WEBPUB"
+      ],
+      "inventory_class_id": "DISC-04",
+      "notes": "Direct source inventory completed. Unresolved interaction records require Phase 3 Matrix rows or explicit exclusions before source closure.",
+      "status": "complete",
+      "title": "Publication and resource acquisition"
+    },
+    {
+      "inspected_source_areas": [
+        "LaunchAppUseCaseAndroid",
+        "GetXapiLaunchUrlUseCaseAndroid",
+        "GetXapiActivityForPublicationUseCase",
+        "DemoLaunchableApp"
+      ],
+      "interaction_ids": [
+        "INT-CLAIM-LAUNCH-VERSION",
+        "INT-CLAIM-LTI-LAUNCH",
+        "INT-CONSUMER-LAUNCH-DATA",
+        "INT-GAP-LAUNCH-OUTCOME-GAPS",
+        "INT-LAUNCH-ACTIVITY-DERIVATION",
+        "INT-LAUNCH-ANDROID-INTENT",
+        "INT-LAUNCH-DATA-CONSTRUCTION",
+        "INT-LAUNCH-WEBVIEW-FALLBACK",
+        "INT-STANDARD-ANDROID-APP-LINKS",
+        "INT-STANDARD-RUSTICI-LAUNCH",
+        "INT-XAPI-ASSIGNMENT-TRANSFORM",
+        "INT-XAPI-SESSION-AUTH"
+      ],
+      "inventory_class_id": "DISC-05",
+      "notes": "Direct source inventory completed. Unresolved interaction records require Phase 3 Matrix rows or explicit exclusions before source closure.",
+      "status": "complete",
+      "title": "Launch semantic contract"
+    },
+    {
+      "inspected_source_areas": [
+        "LaunchAppUseCaseAndroid",
+        "Android manifests",
+        "DemoLaunchableApp",
+        "integration guide launch claims"
+      ],
+      "interaction_ids": [
+        "INT-CLAIM-LTI-LAUNCH",
+        "INT-CONSUMER-LAUNCH-DATA",
+        "INT-GAP-LAUNCH-OUTCOME-GAPS",
+        "INT-LAUNCH-ANDROID-INTENT",
+        "INT-LAUNCH-DATA-CONSTRUCTION",
+        "INT-LAUNCH-WEBVIEW-FALLBACK",
+        "INT-STANDARD-ANDROID-APP-LINKS",
+        "INT-STANDARD-RUSTICI-LAUNCH"
+      ],
+      "inventory_class_id": "DISC-06",
+      "notes": "Direct source inventory completed. Unresolved interaction records require Phase 3 Matrix rows or explicit exclusions before source closure.",
+      "status": "complete",
+      "title": "Launch bindings"
+    },
+    {
+      "inspected_source_areas": [
+        "WebViewActivity",
+        "AppKoinModule",
+        "OkHttpWebViewClient wiring"
+      ],
+      "interaction_ids": [
+        "INT-DIAGNOSTIC-CACHE-INTERNALS",
+        "INT-GAP-WEB-LIFECYCLE-GAPS",
+        "INT-LAUNCH-WEBVIEW-FALLBACK",
+        "INT-WEB-RUNTIME-CACHE",
+        "INT-WEB-RUNTIME-CAPABILITIES"
+      ],
+      "inventory_class_id": "DISC-07",
+      "notes": "Direct source inventory completed. Unresolved interaction records require Phase 3 Matrix rows or explicit exclusions before source closure.",
+      "status": "complete",
+      "title": "Hosted web runtime"
+    },
+    {
+      "inspected_source_areas": [
+        "LearningUnitDetailViewModel",
+        "PinPublicationPrepareUseCase",
+        "UstadCache wiring",
+        "OPDS repository"
+      ],
+      "interaction_ids": [
+        "INT-CLAIM-OFFLINE-HTTP-IPC",
+        "INT-DIAGNOSTIC-CACHE-INTERNALS",
+        "INT-GAP-OFFLINE-FAILURE-GAPS",
+        "INT-LAUNCH-WEBVIEW-FALLBACK",
+        "INT-OFFLINE-PIN-PUBLICATION",
+        "INT-OFFLINE-REPOSITORY-CACHE",
+        "INT-STANDARD-HTTP",
+        "INT-STANDARD-HTTP-CACHE",
+        "INT-WEB-RUNTIME-CACHE"
+      ],
+      "inventory_class_id": "DISC-08",
+      "notes": "Direct source inventory completed. Unresolved interaction records require Phase 3 Matrix rows or explicit exclusions before source closure.",
+      "status": "complete",
+      "title": "Offline availability and caching"
+    },
+    {
+      "inspected_source_areas": [
+        "XapiStatementsResourceDb",
+        "XapiNanoHttpdApp",
+        "XapiIpcService",
+        "XapiStatementsResource interface and tests"
+      ],
+      "interaction_ids": [
+        "INT-CLAIM-LTI-AGS",
+        "INT-GAP-XAPI-BINDING-OUTCOME-GAPS",
+        "INT-STANDARD-XAPI-IDENTITY",
+        "INT-STANDARD-XAPI-REGISTRATION",
+        "INT-STANDARD-XAPI-STATEMENTS",
+        "INT-XAPI-ASSIGNMENT-TRANSFORM",
+        "INT-XAPI-HTTP-BINDING",
+        "INT-XAPI-IPC-BINDING",
+        "INT-XAPI-QUERY-STATEMENTS",
+        "INT-XAPI-RESULT-HEADERS",
+        "INT-XAPI-SESSION-AUTH",
+        "INT-XAPI-VALIDATE-POST"
+      ],
+      "inventory_class_id": "DISC-09",
+      "notes": "Direct source inventory completed. Unresolved interaction records require Phase 3 Matrix rows or explicit exclusions before source closure.",
+      "status": "complete",
+      "title": "Transport-independent xAPI semantics"
+    },
+    {
+      "inspected_source_areas": [
+        "GetXapiLaunchUrlUseCaseAndroid",
+        "XapiNanoHttpdApp",
+        "xAPI IPC client, server, and shared modules",
+        "DemoLaunchableApp"
+      ],
+      "interaction_ids": [
+        "INT-CLAIM-OFFLINE-HTTP-IPC",
+        "INT-CONSUMER-IPC-CLOSE",
+        "INT-CONSUMER-LAUNCH-DATA",
+        "INT-DIAGNOSTIC-IPC-WIRE",
+        "INT-GAP-XAPI-BINDING-OUTCOME-GAPS",
+        "INT-LAUNCH-DATA-CONSTRUCTION",
+        "INT-XAPI-ASSIGNMENT-TRANSFORM",
+        "INT-XAPI-HTTP-BINDING",
+        "INT-XAPI-IPC-BINDING",
+        "INT-XAPI-RESULT-HEADERS",
+        "INT-XAPI-SESSION-AUTH"
+      ],
+      "inventory_class_id": "DISC-10",
+      "notes": "Direct source inventory completed. Unresolved interaction records require Phase 3 Matrix rows or explicit exclusions before source closure.",
+      "status": "complete",
+      "title": "xAPI delivery bindings"
+    },
+    {
+      "inspected_source_areas": [
+        "XapiSessionEntity",
+        "XapiResourceProviderAndroid",
+        "XapiStatementsResourceDb actor authorization",
+        "OAuth and OneRoster claims"
+      ],
+      "interaction_ids": [
+        "INT-CLAIM-OAUTH",
+        "INT-CLAIM-ONEROSTER",
+        "INT-GAP-CREDENTIAL-LIFECYCLE-GAPS",
+        "INT-LAUNCH-DATA-CONSTRUCTION",
+        "INT-STANDARD-RUSTICI-LAUNCH",
+        "INT-STANDARD-XAPI-IDENTITY",
+        "INT-STANDARD-XAPI-REGISTRATION",
+        "INT-STANDARD-XAPI-STATEMENTS",
+        "INT-XAPI-HTTP-BINDING",
+        "INT-XAPI-IPC-BINDING",
+        "INT-XAPI-QUERY-STATEMENTS",
+        "INT-XAPI-SESSION-AUTH",
+        "INT-XAPI-VALIDATE-POST"
+      ],
+      "inventory_class_id": "DISC-11",
+      "notes": "Direct source inventory completed. Unresolved interaction records require Phase 3 Matrix rows or explicit exclusions before source closure.",
+      "status": "complete",
+      "title": "Identity, authentication, authorization, and credentials"
+    },
+    {
+      "inspected_source_areas": [
+        "ValidatorMessage paths",
+        "XapiException paths",
+        "launch fallback",
+        "IPC error replies",
+        "current Test Suite reports"
+      ],
+      "interaction_ids": [
+        "INT-CATALOG-DETAIL-LOAD",
+        "INT-CATALOG-LINK-DISPATCH",
+        "INT-CATALOG-VALIDATE-FEED",
+        "INT-CLAIM-CANAPP-FINISH",
+        "INT-DESCRIPTOR-CURRENT-LOAD",
+        "INT-DIAGNOSTIC-IPC-WIRE",
+        "INT-GAP-LAUNCH-OUTCOME-GAPS",
+        "INT-GAP-OFFLINE-FAILURE-GAPS",
+        "INT-GAP-RESOURCE-REDIRECT-GAP",
+        "INT-GAP-XAPI-BINDING-OUTCOME-GAPS",
+        "INT-LAUNCH-ACTIVITY-DERIVATION",
+        "INT-LAUNCH-ANDROID-INTENT",
+        "INT-LAUNCH-DATA-CONSTRUCTION",
+        "INT-LAUNCH-WEBVIEW-FALLBACK",
+        "INT-OFFLINE-PIN-PUBLICATION",
+        "INT-REGISTRATION-CREATE",
+        "INT-REGISTRATION-REMOVE",
+        "INT-RESOURCE-HTTP-VALIDATION",
+        "INT-RESOURCE-PUBLICATION-VALIDATE",
+        "INT-RESOURCE-WEBPUB-DISCOVERY",
+        "INT-RUNTIME-OPDS-SCHEMA-404",
+        "INT-STANDARD-ANDROID-APP-LINKS",
+        "INT-STANDARD-HTTP",
+        "INT-STANDARD-HTTP-CACHE",
+        "INT-STANDARD-OPDS-CATALOG",
+        "INT-STANDARD-OPDS-DESCRIPTOR",
+        "INT-STANDARD-OPDS-RESOURCE",
+        "INT-STANDARD-XAPI-IDENTITY",
+        "INT-STANDARD-XAPI-REGISTRATION",
+        "INT-STANDARD-XAPI-STATEMENTS",
+        "INT-SUITE-CURRENT-STATE",
+        "INT-SUITE-XAPI-ACTOR-DESIGN",
+        "INT-WEB-RUNTIME-CAPABILITIES",
+        "INT-XAPI-ASSIGNMENT-TRANSFORM",
+        "INT-XAPI-HTTP-BINDING",
+        "INT-XAPI-IPC-BINDING",
+        "INT-XAPI-QUERY-STATEMENTS",
+        "INT-XAPI-RESULT-HEADERS",
+        "INT-XAPI-SESSION-AUTH",
+        "INT-XAPI-VALIDATE-POST"
+      ],
+      "inventory_class_id": "DISC-12",
+      "notes": "Direct source inventory completed. Unresolved interaction records require Phase 3 Matrix rows or explicit exclusions before source closure.",
+      "status": "complete",
+      "title": "Errors and diagnostics"
+    },
+    {
+      "inspected_source_areas": [
+        "App listing lifecycle",
+        "LearningUnitDetailViewModel",
+        "WebViewActivity",
+        "IPC client and service lifecycle",
+        "guide completion claim"
+      ],
+      "interaction_ids": [
+        "INT-CATALOG-NAVIGATION",
+        "INT-CLAIM-CANAPP-FINISH",
+        "INT-CONSUMER-IPC-CLOSE",
+        "INT-CONSUMER-LAUNCH-DATA",
+        "INT-DIAGNOSTIC-IPC-WIRE",
+        "INT-GAP-CREDENTIAL-LIFECYCLE-GAPS",
+        "INT-GAP-LAUNCH-OUTCOME-GAPS",
+        "INT-GAP-LIFECYCLE-STATE-GAPS",
+        "INT-GAP-OFFLINE-FAILURE-GAPS",
+        "INT-GAP-WEB-LIFECYCLE-GAPS",
+        "INT-LAUNCH-ANDROID-INTENT",
+        "INT-LAUNCH-DATA-CONSTRUCTION",
+        "INT-LAUNCH-WEBVIEW-FALLBACK",
+        "INT-OFFLINE-PIN-PUBLICATION",
+        "INT-OFFLINE-REPOSITORY-CACHE",
+        "INT-REGISTRATION-CREATE",
+        "INT-REGISTRATION-LIST",
+        "INT-REGISTRATION-REMOVE",
+        "INT-WEB-RUNTIME-CAPABILITIES",
+        "INT-XAPI-IPC-BINDING",
+        "INT-XAPI-SESSION-AUTH"
+      ],
+      "inventory_class_id": "DISC-13",
+      "notes": "Direct source inventory completed. Unresolved interaction records require Phase 3 Matrix rows or explicit exclusions before source closure.",
+      "status": "complete",
+      "title": "Lifecycle and state"
+    },
+    {
+      "inspected_source_areas": [
+        "RESPECT requirements",
+        "integration guide",
+        "active implementation contradictions",
+        "profile boundaries"
+      ],
+      "interaction_ids": [
+        "INT-CLAIM-CANAPP-FINISH",
+        "INT-CLAIM-LAUNCH-VERSION",
+        "INT-CLAIM-LTI-AGS",
+        "INT-CLAIM-LTI-LAUNCH",
+        "INT-CLAIM-OAUTH",
+        "INT-CLAIM-OFFLINE-HTTP-IPC",
+        "INT-CLAIM-ONEROSTER",
+        "INT-DESCRIPTOR-CURRENT-LOAD",
+        "INT-DESCRIPTOR-LEGACY-CONVERT",
+        "INT-GAP-CREDENTIAL-LIFECYCLE-GAPS",
+        "INT-GAP-LIFECYCLE-STATE-GAPS",
+        "INT-GAP-RESOURCE-REDIRECT-GAP",
+        "INT-RESOURCE-PUBLICATION-VALIDATE",
+        "INT-RUNTIME-OPDS-SCHEMA-404",
+        "INT-STANDARD-READIUM-WEBPUB",
+        "INT-STANDARD-RUSTICI-LAUNCH",
+        "INT-STANDARD-XAPI-IDENTITY",
+        "INT-STANDARD-XAPI-REGISTRATION",
+        "INT-STANDARD-XAPI-STATEMENTS",
+        "INT-SUITE-CURRENT-STATE",
+        "INT-SUITE-XAPI-ACTOR-DESIGN",
+        "INT-XAPI-QUERY-STATEMENTS",
+        "INT-XAPI-VALIDATE-POST"
+      ],
+      "inventory_class_id": "DISC-14",
+      "notes": "Direct source inventory completed. Unresolved interaction records require Phase 3 Matrix rows or explicit exclusions before source closure.",
+      "status": "complete",
+      "title": "Capability, version, and support status"
+    },
+    {
+      "inspected_source_areas": [
+        "Current JiMS harness",
+        "legacy runtime projection",
+        "Matrix validator and report"
+      ],
+      "interaction_ids": [
+        "INT-STANDARD-ANDROID-APP-LINKS",
+        "INT-STANDARD-HTTP",
+        "INT-STANDARD-HTTP-CACHE",
+        "INT-STANDARD-READIUM-WEBPUB",
+        "INT-STANDARD-RUSTICI-LAUNCH",
+        "INT-SUITE-CURRENT-STATE",
+        "INT-SUITE-XAPI-ACTOR-DESIGN"
+      ],
+      "inventory_class_id": "DISC-15",
+      "notes": "Direct source inventory completed. Unresolved interaction records require Phase 3 Matrix rows or explicit exclusions before source closure.",
+      "status": "complete",
+      "title": "Conformance evidence"
+    },
+    {
+      "inspected_source_areas": [
+        "Android Intent internals",
+        "WebView settings",
+        "cache wiring",
+        "IPC message framing",
+        "source interaction evidence"
+      ],
+      "interaction_ids": [
+        "INT-CATALOG-LINK-DISPATCH",
+        "INT-CATALOG-VALIDATE-FEED",
+        "INT-CLAIM-OFFLINE-HTTP-IPC",
+        "INT-CONSUMER-IPC-CLOSE",
+        "INT-DIAGNOSTIC-CACHE-INTERNALS",
+        "INT-DIAGNOSTIC-IPC-WIRE",
+        "INT-OFFLINE-PIN-PUBLICATION",
+        "INT-OFFLINE-REPOSITORY-CACHE",
+        "INT-RUNTIME-OPDS-SCHEMA-404",
+        "INT-WEB-RUNTIME-CACHE",
+        "INT-WEB-RUNTIME-CAPABILITIES"
+      ],
+      "inventory_class_id": "DISC-16",
+      "notes": "Direct source inventory completed. Unresolved interaction records require Phase 3 Matrix rows or explicit exclusions before source closure.",
+      "status": "complete",
+      "title": "Internal implementation evidence"
+    }
+  ],
+  "matrix_id": "respect-compatibility-matrix-v0.1",
+  "rejected_candidates": [
+    {
+      "candidate_id": "REJECT-001",
+      "description": "respectLaunchVersion is an active emitted CanApp parameter",
+      "reason": "The guide claims it, but active launch code does not emit it and the active demo does not consume it.",
+      "source_refs": [
+        "SRC-GUIDE-LAUNCH",
+        "SRC-RESPECT-XAPI-URL",
+        "SRC-DEMO-LAUNCH"
+      ]
+    },
+    {
+      "candidate_id": "REJECT-002",
+      "description": "Generic HTTP-over-IPC is an active CanApp route",
+      "reason": "Only generic adapter modules were found; no producer-to-transport-to-CanApp consumer route exists.",
+      "source_refs": [
+        "SRC-REQUIREMENTS-INTERFACES",
+        "SRC-RESPECT-IHTTP-ADAPTERS"
+      ]
+    },
+    {
+      "candidate_id": "REJECT-003",
+      "description": "Full xAPI conformance is a current CanApp obligation",
+      "reason": "RESPECT implements and launches a constrained statement subset; uninvoked xAPI resources cannot become CanApp requirements.",
+      "source_refs": [
+        "SRC-RESPECT-XAPI-HTTP",
+        "SRC-RESPECT-IPC-SERVICE",
+        "SRC-XAPI-103"
+      ]
+    },
+    {
+      "candidate_id": "REJECT-004",
+      "description": "Full OPDS 2.0 conformance is a current CanApp obligation",
+      "reason": "The active validator invokes schemas and selected RESPECT-specific traversal rules, not every optional OPDS feature.",
+      "source_refs": [
+        "SRC-RESPECT-OPDS",
+        "SRC-RESPECT-OPDS-SCHEMA",
+        "SRC-OPDS-20"
+      ]
+    },
+    {
+      "candidate_id": "REJECT-005",
+      "description": "Manifest web.url overrides the active learning-unit launch URL",
+      "reason": "The field is parseable but no active use was found; learning-unit acquisition links drive launch.",
+      "source_refs": [
+        "SRC-RESPECT-MANIFEST",
+        "SRC-RESPECT-XAPI-URL"
+      ]
+    }
+  ],
+  "searches": [
+    {
+      "command": "find . -maxdepth 2 -name build.gradle.kts -o -name settings.gradle.kts",
+      "result": "Twenty-nine included modules inspected for CanApp boundary candidates.",
+      "scope": "RESPECT module graph",
+      "search_id": "SEARCH-001",
+      "source_lock_id": "LOCK-RESPECT-SOURCE"
+    },
+    {
+      "command": "rg over RespectAppManifest, OPDS, launch, xAPI, OAuth, LTI, OneRoster, and IPC symbols followed by direct file inspection",
+      "result": "Candidate paths recorded in evidence_items; keyword hits were not accepted without call-path inspection.",
+      "scope": "CanApp interactions and claims",
+      "search_id": "SEARCH-002",
+      "source_lock_id": "LOCK-RESPECT-SOURCE"
+    },
+    {
+      "command": "direct inspection of active manifest, HTTP, OPDS, Android launch, xAPI URL, xAPI HTTP proxy, xAPI IPC client/server, and statement database call paths",
+      "result": "Accepted active surfaces were corrected for owner, route, and source attribution.",
+      "scope": "closed-loop active interactions",
+      "search_id": "SEARCH-003",
+      "source_lock_id": "LOCK-RESPECT-SOURCE"
+    },
+    {
+      "command": "claim-by-claim inspection of requirements README.md and integration guide README.md",
+      "result": "Unimplemented and contradicted claims remain features without executable CanApp rows.",
+      "scope": "OAuth, LTI, OneRoster, HTTP-over-IPC, xAPI, OPDS, and launch claims",
+      "search_id": "SEARCH-004",
+      "source_lock_id": "LOCK-REQUIREMENTS"
+    },
+    {
+      "command": "direct inspection of current JiMS harness and PR 47 delta",
+      "result": "Legacy fixture and partial web-preflight coverage mapped without treating it as Matrix authority.",
+      "scope": "current suite mapping",
+      "search_id": "SEARCH-005",
+      "source_lock_id": "LOCK-JIMS-BASE"
+    },
+    {
+      "command": "rg --files plus direct inspection of module graph, app listing, OPDS, acquisition, launch, WebView, cache, xAPI HTTP, xAPI IPC, authentication, lifecycle, tests, and error paths",
+      "result": "Production, claim, consumer, test, and diagnostic interactions were recorded with explicit actors and closure dispositions.",
+      "scope": "Sixteen-class production-boundary inventory",
+      "search_id": "SEARCH-006",
+      "source_lock_id": "LOCK-RESPECT-SOURCE"
+    },
+    {
+      "command": "Direct line inspection of requirements README and consumer integration guide followed by symbol and call-path checks in pinned RESPECT source",
+      "result": "OAuth, LTI launch, LTI AGS, OneRoster, general HTTP-over-IPC, respectLaunchVersion, and CanApp completion claims were separated from active behavior.",
+      "scope": "Claim-versus-implementation inventory",
+      "search_id": "SEARCH-007",
+      "source_lock_id": "LOCK-REQUIREMENTS"
+    },
+    {
+      "command": "Direct inspection of DemoLaunchableApp manifest, launch destination, xAPI client construction, and disposal",
+      "result": "The active demo confirms the implemented launch parameter subset, Android App Link binding, xAPI IPC binding, and client close behavior.",
+      "scope": "Active CanApp consumer confirmation",
+      "search_id": "SEARCH-008",
+      "source_lock_id": "LOCK-DEMO-CANAPP"
+    }
+  ],
+  "source_locks": [
+    "LOCK-ANDROID-APPLINKS",
+    "LOCK-CONSUMER-GUIDE",
+    "LOCK-DEMO-CANAPP",
+    "LOCK-DIAGNOSTIC-MATRIX",
+    "LOCK-JIMS-BASE",
+    "LOCK-JIMS-PR47",
+    "LOCK-OPDS-20",
+    "LOCK-READIUM-WEBPUB",
+    "LOCK-REQUIREMENTS",
+    "LOCK-RESPECT-SOURCE",
+    "LOCK-RESPECT-TESTS",
+    "LOCK-RFC9110",
+    "LOCK-RFC9111",
+    "LOCK-RUSTICI-LAUNCH",
+    "LOCK-XAPI-103"
+  ]
+}

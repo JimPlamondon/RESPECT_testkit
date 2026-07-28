@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+# SPDX-FileCopyrightText: 2026 Jim Plamondon
+# SPDX-License-Identifier: Apache-2.0
+
+set -euo pipefail
+
+message_file="$1"
+if ! grep -q '^Signed-off-by: ' "${message_file}"; then
+  printf 'Commit message requires Developer Certificate of Origin sign-off.\n' >&2
+  exit 1
+fi

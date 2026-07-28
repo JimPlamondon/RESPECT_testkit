@@ -1,0 +1,37 @@
+{
+  "metadata": {
+    "identifier": "urn:jims:respect:web-reference",
+    "title": {
+      "en": "RESPECT Web Reference CanApp"
+    }
+  },
+  "links": [
+    {
+      "rel": [
+        "http://opds-spec.org/acquisition/open-access"
+      ],
+      "href": "lesson.html",
+      "type": "text/html"
+    },
+    {
+      "rel": [
+        "https://respect.ustadmobile.com/ns/default-lesson-catalog"
+      ],
+      "href": "catalog.json",
+      "type": "application/opds+json"
+    }
+  ],
+  "images": [
+    {
+      "href": "icon.png",
+      "type": "image/png"
+    }
+  ],
+  "resources": [
+    {
+      "href": "lesson.js",
+      "type": "text/javascript"
+    }
+  ],
+  "respectFixture": "unknown properties are ignored"
+}

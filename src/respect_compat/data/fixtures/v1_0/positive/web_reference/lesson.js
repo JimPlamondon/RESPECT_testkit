@@ -1,0 +1,1 @@
+globalThis.RESPECT_REFERENCE_CANAPP = true;

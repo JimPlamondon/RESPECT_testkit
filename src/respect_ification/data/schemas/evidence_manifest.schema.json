@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://jims.example/schemas/respect_ification/evidence_manifest.schema.json",
+  "title": "RESPECT Evidence Manifest",
+  "type": "object",
+  "required": ["artifact_type", "format_version", "run_id", "matrix_id", "matrix_semantic_hash", "profile_id", "target_digest", "evidence", "core_hash", "artifact_set"],
+  "properties": {
+    "artifact_type": {"const": "respect_evidence_manifest"},
+    "format_version": {"const": "1.0.0"},
+    "run_id": {"type": "string"},
+    "matrix_id": {"type": "string"},
+    "matrix_semantic_hash": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "profile_id": {"type": "string"},
+    "target_digest": {"type": "string"},
+    "evidence": {"type": "array", "items": {"type": "object"}},
+    "core_hash": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "artifact_set": {"type": "object"}
+  }
+}

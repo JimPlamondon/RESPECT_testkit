@@ -1,0 +1,1 @@
+{"name":{"en":"JiMS Native Fixture"},"description":{"en":"Synthetic native RESPECT compatibility fixture."},"license":"Apache-2.0","website":"https://example.invalid/native","icon":"https://example.invalid/icon.png","learningUnits":"index.json","defaultLaunchUri":"jimsfixture://launch","respectLaunchVersion":"0.1","android":{"packageId":"org.jims.fixture"}}

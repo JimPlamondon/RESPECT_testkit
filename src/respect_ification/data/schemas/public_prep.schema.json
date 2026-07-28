@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://jims.example/schemas/respect_ification/public_prep.schema.json",
+  "title": "RESPECT-ification Public Prep Packet",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["artifact_type", "format_version", "target_digest", "profile_id", "declared_capabilities", "repository_summary", "prep_bundle_id", "semantic_hash"],
+  "properties": {
+    "artifact_type": {"const": "respect_ification_public_prep"},
+    "format_version": {"const": "1.0.0"},
+    "target_digest": {"type": "string", "minLength": 8},
+    "profile_id": {"type": "string", "minLength": 3},
+    "declared_capabilities": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+    "repository_summary": {"type": "object"},
+    "prep_bundle_id": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "semantic_hash": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+  }
+}

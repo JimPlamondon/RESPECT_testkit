@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://jims.example/schemas/respect_ification/ledger_event.schema.json",
+  "title": "RESPECT-ification Local Repair Ledger Event",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["event_id", "timestamp", "plan_semantic_hash", "task_id", "state_from", "state", "note", "verifier_result_ref", "prior_event_hash", "event_hash"],
+  "properties": {
+    "event_id": {"type": "string"},
+    "timestamp": {"type": "string", "format": "date-time"},
+    "plan_semantic_hash": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "task_id": {"type": "string"},
+    "state_from": {"type": "string"},
+    "state": {"enum": ["pending", "diagnosing", "implementing", "verifying", "locally_verified", "blocked", "abandoned"]},
+    "note": {"type": "string"},
+    "verifier_result_ref": {"type": ["string", "null"]},
+    "prior_event_hash": {"type": ["string", "null"]},
+    "event_hash": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+  }
+}

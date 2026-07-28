@@ -1,0 +1,12 @@
+{
+  "metadata": {
+    "identifier": "urn:jims:respect:web-reference:publication",
+    "title": "Reference publication"
+  },
+  "readingOrder": [
+    {
+      "href": "lesson.html",
+      "type": "text/html"
+    }
+  ]
+}

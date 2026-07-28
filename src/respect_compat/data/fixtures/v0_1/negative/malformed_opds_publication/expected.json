@@ -1,0 +1,1 @@
+{"manifest":"appmanifest.json","opds":"index.json","expected_results":[{"rule_id":"RCS-005","result":"fail"}]}

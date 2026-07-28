@@ -1,0 +1,1 @@
+{"manifest":"appmanifest.json","unsupported_requirement":{"claim":"Fixture demands a RESPECT-specific behavior not backed by active code.","disposition":"out_of_scope_for_v0_1"},"expected_results":[{"rule_id":"RCS-011","result":"skipped"}]}

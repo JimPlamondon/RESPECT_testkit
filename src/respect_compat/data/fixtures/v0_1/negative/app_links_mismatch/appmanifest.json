@@ -1,0 +1,1 @@
+{"name":{"en":"App Links Mismatch"},"description":{"en":"Synthetic fixture."},"license":"Apache-2.0","website":"https://example.invalid","icon":"https://example.invalid/icon.png","learningUnits":"index.json","defaultLaunchUri":"https://native.example.invalid/launch","android":{"packageId":"org.jims.fixture"}}

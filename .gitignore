@@ -1,0 +1,13 @@
+# SPDX-FileCopyrightText: 2026 Jim Plamondon
+# SPDX-License-Identifier: Apache-2.0
+
+.pytest_cache/
+__pycache__/
+*.py[cod]
+*.egg-info/
+src/*.egg-info/
+build/
+dist/
+matrix_validation_report.json
+.coverage
+htmlcov/

@@ -1,0 +1,213 @@
+{
+  "generated_at": "2026-07-23T17:10:00Z",
+  "profile_id": "RESPECT Native Android Compatible v0.1",
+  "authority_rule": "For RESPECT-specific requirements, trust only active UstadMobile/Respect code, tests, fixtures, and repository metadata. RESPECT prose documentation is non-authoritative context only. Official standards documentation is authoritative only for its own standard or platform.",
+  "respect_code_commit": "ef2f4319013473b008b4df5d8be46bd243fdc1ac",
+  "requirements": [
+    {
+      "id": "RCS-001",
+      "summary": "Load and parse a RESPECT app manifest as JSON with the current RESPECT code fields.",
+      "standard_family": "RESPECT manifest",
+      "respect_sources": [
+        "https://github.com/UstadMobile/Respect/blob/main/respect-datalayer/src/commonMain/kotlin/world/respect/datalayer/compatibleapps/model/RespectAppManifest.kt",
+        "https://github.com/UstadMobile/Respect/blob/main/respect-lib-shared/src/jvmMain/kotlin/world/respect/shared/domain/respectappmanifest/validator/RespectAppManifestValidator.kt",
+        "https://github.com/UstadMobile/Respect/blob/main/respect-server/src/main/resources/http/respect-ds/case_valid/appmanifest.json",
+        "https://github.com/UstadMobile/Respect/blob/main/respect-server/src/main/resources/http/respect-ds/native_demo/appmanifest.json"
+      ],
+      "source_date": "2026-07-23",
+      "observable_oracle": "Manifest parses into the active RespectAppManifest fields and required fields are present.",
+      "positive_fixture": "Valid web and native demo appmanifest fixtures from UstadMobile/Respect.",
+      "negative_fixture": "Invalid JSON or missing required fields: name, license, learningUnits, defaultLaunchUri.",
+      "harness_components": ["runner", "profile_loader", "manifest_validator", "fixture_loader", "report_generator"],
+      "report_fields": ["rule_id", "source_uri", "field_path", "severity", "expected", "observed"],
+      "v0_1_disposition": "in_scope",
+      "confidence": "high",
+      "contested": false
+    },
+    {
+      "id": "RCS-002",
+      "summary": "Validate manifest title, description, and license metadata.",
+      "standard_family": "RESPECT manifest and SPDX license identifiers",
+      "respect_sources": [
+        "https://github.com/UstadMobile/Respect/blob/main/respect-lib-shared/src/jvmMain/kotlin/world/respect/shared/domain/respectappmanifest/validator/RespectAppManifestValidator.kt"
+      ],
+      "source_date": "2026-07-23",
+      "observable_oracle": "Title is nonblank and no more than 80 characters; description when present is nonblank and no more than 4000 characters; license is an SPDX identifier known to the code's license list or the literal proprietary.",
+      "positive_fixture": "Manifest with AGPL-3.0 and normal localized name/description.",
+      "negative_fixture": "Overlong title, blank description, invalid license string.",
+      "harness_components": ["manifest_validator", "report_generator"],
+      "report_fields": ["rule_id", "field_path", "limit", "observed_length", "license"],
+      "v0_1_disposition": "in_scope",
+      "confidence": "high",
+      "contested": false
+    },
+    {
+      "id": "RCS-003",
+      "summary": "Validate manifest website, icon, and learningUnits link behavior.",
+      "standard_family": "RESPECT manifest and HTTP",
+      "respect_sources": [
+        "https://github.com/UstadMobile/Respect/blob/main/respect-lib-shared/src/jvmMain/kotlin/world/respect/shared/domain/respectappmanifest/validator/RespectAppManifestValidator.kt",
+        "https://github.com/UstadMobile/Respect/blob/main/respect-lib-shared/src/jvmMain/kotlin/world/respect/shared/domain/validator/ValidateHttpResponseForUrlUseCase.kt"
+      ],
+      "normative_sources": ["https://datatracker.ietf.org/doc/html/rfc9111"],
+      "source_date": "2026-07-23",
+      "observable_oracle": "Website is present and reachable; explicit icon or acceptable favicon exists; learningUnits responds with acceptable JSON or OPDS MIME type.",
+      "positive_fixture": "Native demo and case_valid resources served from a local test server with correct headers.",
+      "negative_fixture": "404 website, no icon/fallback favicon, wrong learningUnits MIME type.",
+      "harness_components": ["manifest_validator", "http_cache_validator"],
+      "report_fields": ["rule_id", "url", "status", "content_type", "message"],
+      "v0_1_disposition": "in_scope",
+      "confidence": "high",
+      "contested": false
+    },
+    {
+      "id": "RCS-004",
+      "summary": "Validate Android package ID declared in the RESPECT app manifest.",
+      "standard_family": "Android and RESPECT manifest",
+      "respect_sources": [
+        "https://github.com/UstadMobile/Respect/blob/main/respect-lib-shared/src/jvmMain/kotlin/world/respect/shared/domain/respectappmanifest/validator/RespectAppManifestValidator.kt"
+      ],
+      "source_date": "2026-07-23",
+      "observable_oracle": "android.packageId contains only letters, digits, period, underscore, or dollar sign when present.",
+      "positive_fixture": "org.openeel.demolaunchableapp",
+      "negative_fixture": "Package ID with spaces or hyphen.",
+      "harness_components": ["android_metadata_validator"],
+      "report_fields": ["rule_id", "package_id", "invalid_character"],
+      "v0_1_disposition": "in_scope",
+      "confidence": "high",
+      "contested": false
+    },
+    {
+      "id": "RCS-005",
+      "summary": "Validate OPDS learning-unit catalog and publication entries.",
+      "standard_family": "OPDS 2.0 and RESPECT learning units",
+      "respect_sources": [
+        "https://github.com/UstadMobile/Respect/tree/main/respect-lib-opds-model",
+        "https://github.com/UstadMobile/Respect/tree/main/respect-server/src/main/resources/http/respect-ds/native_demo"
+      ],
+      "normative_sources": ["https://specs.opds.io/opds-2.0.html"],
+      "source_date": "2026-07-23",
+      "observable_oracle": "learningUnits resolves to parseable OPDS feed or publication data with metadata and launch/resource links sufficient for a learning unit.",
+      "positive_fixture": "native_demo index and Lesson-manifest resources.",
+      "negative_fixture": "Malformed OPDS JSON, missing publication metadata, missing acquisition or launch link.",
+      "harness_components": ["opds_validator", "fixture_loader", "http_cache_validator"],
+      "report_fields": ["rule_id", "source_uri", "metadata_title", "link_rel", "link_type"],
+      "v0_1_disposition": "in_scope_narrow",
+      "confidence": "medium-high",
+      "contested": false
+    },
+    {
+      "id": "RCS-006",
+      "summary": "Validate HTTP cache-readiness for manifest, catalog, and selected learning-unit resource links.",
+      "standard_family": "HTTP caching",
+      "respect_sources": [
+        "https://github.com/UstadMobile/Respect/blob/main/respect-lib-shared/src/jvmMain/kotlin/world/respect/shared/domain/validator/ValidateHttpResponseForUrlUseCase.kt"
+      ],
+      "normative_sources": ["https://datatracker.ietf.org/doc/html/rfc9111"],
+      "source_date": "2026-07-23",
+      "observable_oracle": "Initial GET returns 200, acceptable MIME type where specified, Content-Length, ETag or Last-Modified, and conditional GET returns 304.",
+      "positive_fixture": "Local test server with correct validators and 304 handling.",
+      "negative_fixture": "Missing validator headers, missing Content-Length, wrong MIME type, conditional request returns 200.",
+      "harness_components": ["http_cache_validator", "local_test_server", "report_generator"],
+      "report_fields": ["rule_id", "url", "status", "content_length", "etag", "last_modified", "revalidation_status"],
+      "v0_1_disposition": "in_scope",
+      "deferral_rationale": "The requested Vary policy is not backed by inspected active RESPECT code and should be warning or clarification, not hard failure.",
+      "confidence": "high",
+      "contested": true
+    },
+    {
+      "id": "RCS-007",
+      "summary": "Validate xAPI statement receipt for launch, progress, and completion evidence.",
+      "standard_family": "xAPI and Learning Record Store",
+      "respect_sources": [
+        "https://github.com/UstadMobile/Respect/tree/main/respect-lib-xapi-core",
+        "https://github.com/UstadMobile/Respect/tree/main/respect-lib-test-resources"
+      ],
+      "normative_sources": ["https://github.com/adlnet/xAPI-Spec"],
+      "source_date": "2026-07-23",
+      "observable_oracle": "Fake LRS accepts syntactically valid xAPI statements, rejects malformed statements, records session-scoped receipt, and can reset fixtures.",
+      "positive_fixture": "xAPI sample statements under respect-lib-test-resources.",
+      "negative_fixture": "Invalid response statement fixture and missing required statement envelope fields.",
+      "harness_components": ["fake_lrs", "xapi_validator", "security_mode_labeler"],
+      "report_fields": ["rule_id", "statement_id", "actor", "verb", "object", "receipt_status"],
+      "v0_1_disposition": "in_scope_narrow",
+      "deferral_rationale": "Full ADL LRS conformance is out of scope for v0.1.",
+      "confidence": "medium",
+      "contested": false
+    },
+    {
+      "id": "RCS-008",
+      "summary": "Validate RESPECT launch URL and certification session parameters.",
+      "standard_family": "RESPECT launcher",
+      "respect_sources": [
+        "https://github.com/UstadMobile/Respect/tree/main/respect-server/src/main/resources/http/respect-ds/native_demo"
+      ],
+      "source_date": "2026-07-23",
+      "observable_oracle": "Fake launcher can generate a deterministic launch URL and session record with explicit certification, replay, or test mode labels.",
+      "positive_fixture": "Native demo manifest plus generated session fixture.",
+      "negative_fixture": "Missing launch version, missing endpoint, production label used for test evidence.",
+      "harness_components": ["fake_launcher", "security_mode_labeler", "report_generator"],
+      "report_fields": ["rule_id", "session_id", "mode", "launch_url", "endpoint_base"],
+      "v0_1_disposition": "suite_test_candidate",
+      "deferral_rationale": "Inspected active RESPECT code did not expose a complete standalone compatibility runner contract.",
+      "confidence": "medium",
+      "contested": true
+    },
+    {
+      "id": "RCS-009",
+      "summary": "Validate Android App Links domain association when native Android metadata is supplied.",
+      "standard_family": "Android App Links and Digital Asset Links",
+      "respect_sources": [
+        "https://github.com/UstadMobile/Respect/blob/main/respect-server/src/main/resources/http/respect-ds/native_demo/appmanifest.json"
+      ],
+      "normative_sources": [
+        "https://developer.android.com/training/app-links/verify-applinks",
+        "https://developers.google.com/digital-asset-links/v1/getting-started"
+      ],
+      "source_date": "2026-07-23",
+      "observable_oracle": "Given host, package ID, and certificate fingerprints, fetch assetlinks.json and verify the package/fingerprint relation.",
+      "positive_fixture": "Fixture with matching assetlinks statement.",
+      "negative_fixture": "Missing assetlinks file, wrong package, wrong fingerprint.",
+      "harness_components": ["app_links_validator", "android_metadata_validator"],
+      "report_fields": ["rule_id", "host", "package_id", "fingerprint", "relation", "status"],
+      "v0_1_disposition": "in_scope_when_metadata_supplied",
+      "deferral_rationale": "Need owner decision on fingerprint source for debug/release builds.",
+      "confidence": "medium",
+      "contested": true
+    },
+    {
+      "id": "RCS-010",
+      "summary": "Emit human-readable, JSON, and JUnit XML-compatible reports with stable rule IDs.",
+      "standard_family": "reporting and CI",
+      "respect_sources": [
+        "https://github.com/UstadMobile/Respect/tree/main/respect-lib-shared/src/commonMain/kotlin/world/respect/shared/domain/validator"
+      ],
+      "source_date": "2026-07-23",
+      "observable_oracle": "Every rule result includes rule ID, severity, source URI, expected value, observed value, diagnostic message, and evidence pointer.",
+      "positive_fixture": "Passing report fixture.",
+      "negative_fixture": "Failing report fixture.",
+      "harness_components": ["report_generator"],
+      "report_fields": ["rule_id", "severity", "source_uri", "expected", "observed", "message", "evidence"],
+      "v0_1_disposition": "in_scope",
+      "confidence": "medium-high",
+      "contested": false
+    },
+    {
+      "id": "RCS-011",
+      "summary": "Route unsupported RESPECT-specific claims to suite_test_candidate, spec_clarification_needed, or out_of_scope_for_v0_1.",
+      "standard_family": "process and certification integrity",
+      "respect_sources": [
+        "https://github.com/UstadMobile/Respect"
+      ],
+      "source_date": "2026-07-23",
+      "observable_oracle": "No RESPECT-specific rule may be marked required unless backed by active RESPECT code, test, fixture, or explicit owner decision.",
+      "positive_fixture": "Unsupported Vary policy classified as clarification or warning.",
+      "negative_fixture": "Unsupported requirement promoted to hard failure.",
+      "harness_components": ["ambiguity_router"],
+      "report_fields": ["candidate_requirement", "disposition", "owner", "next_step"],
+      "v0_1_disposition": "in_scope",
+      "confidence": "high",
+      "contested": false
+    }
+  ]
+}

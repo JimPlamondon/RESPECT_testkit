@@ -1,0 +1,127 @@
+{
+  "publication_manifest_discoveries": [
+    "publication.json"
+  ],
+  "validator_dispatch": {
+    "matched": true,
+    "media_type": "application/opds+json",
+    "validator": "opds_feed"
+  },
+  "http_resources": {
+    "lesson.html": {
+      "status": 200,
+      "content_type": "text/html",
+      "etag": "\"reference-lesson\"",
+      "revalidation_status": 304
+    },
+    "lesson.js": {
+      "status": 200,
+      "content_type": "text/javascript",
+      "etag": "\"reference-script\"",
+      "revalidation_status": 304
+    },
+    "icon.png": {
+      "status": 200,
+      "content_type": "image/png",
+      "etag": "\"reference-icon\"",
+      "revalidation_status": 304
+    }
+  },
+  "row_observations": {
+    "AUTH-001": {
+      "state": "pass",
+      "source": "controlled-reference-transcript",
+      "observed": "Every xAPI request used the launch Basic credential."
+    },
+    "AUTH-003": {
+      "state": "pass",
+      "source": "controlled-reference-transcript",
+      "observed": "The statement actor matched the authenticated launch actor."
+    },
+    "LAUNCH-003": {
+      "state": "pass",
+      "source": "controlled-reference-transcript",
+      "observed": "The CanApp used the supplied endpoint."
+    },
+    "LAUNCH-004": {
+      "state": "pass",
+      "source": "controlled-reference-transcript",
+      "observed": "The CanApp used the supplied activity_id."
+    },
+    "LAUNCH-005": {
+      "state": "pass",
+      "source": "controlled-reference-transcript",
+      "observed": "The CanApp used the supplied Basic auth value."
+    },
+    "LAUNCH-006": {
+      "state": "pass",
+      "source": "controlled-reference-transcript",
+      "observed": "The CanApp used the supplied serialized actor."
+    },
+    "XAPI-001": {
+      "state": "pass",
+      "source": "controlled-reference-transcript",
+      "observed": "The CanApp sent xAPI requests through the supplied HTTP endpoint."
+    },
+    "XAPI-006": {
+      "state": "pass",
+      "source": "controlled-reference-transcript",
+      "observed": "The statement contained actor, verb, and object."
+    },
+    "XAPI-007": {
+      "state": "pass",
+      "source": "controlled-reference-transcript",
+      "observed": "Every required IRI parsed as an absolute IRI."
+    },
+    "XAPI-008": {
+      "state": "pass",
+      "source": "controlled-reference-transcript",
+      "observed": "The scaled score was within minus one and one."
+    },
+    "XAPI-009": {
+      "state": "pass",
+      "source": "controlled-reference-transcript",
+      "observed": "The statement actor matched the launch actor."
+    },
+    "XAPI-010": {
+      "state": "pass",
+      "source": "controlled-reference-transcript",
+      "observed": "Duplicate statement identifiers produced the active RESPECT outcome."
+    },
+    "XAPI-011": {
+      "state": "pass",
+      "source": "controlled-reference-transcript",
+      "observed": "Voiding and retrieval matched the active RESPECT subset."
+    },
+    "XAPI-014": {
+      "state": "pass",
+      "source": "controlled-reference-transcript",
+      "observed": "Retrieval by statementId returned the controlled statement."
+    },
+    "XAPI-015": {
+      "state": "pass",
+      "source": "controlled-reference-transcript",
+      "observed": "Retrieval by voidedStatementId returned the controlled voided statement."
+    },
+    "XAPI-016": {
+      "state": "pass",
+      "source": "controlled-reference-transcript",
+      "observed": "Agent, verb, and activity filters returned the controlled matches."
+    },
+    "XAPI-017": {
+      "state": "pass",
+      "source": "controlled-reference-transcript",
+      "observed": "Related-agent and related-activity filters returned the controlled matches."
+    },
+    "XAPI-018": {
+      "state": "pass",
+      "source": "controlled-reference-transcript",
+      "observed": "Since, until, ordering, and limit bounded the controlled result."
+    },
+    "XAPI-019": {
+      "state": "pass",
+      "source": "controlled-reference-transcript",
+      "observed": "Exact, canonical, and ids formats matched the controlled result."
+    }
+  }
+}

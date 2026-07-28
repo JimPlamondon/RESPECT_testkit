@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+- Preserve genuine Matrix-row pass results from attributable emulators and local Hypertext Transfer Protocol Secure publication while issuing a structured, independently verifiable Provisional approval with exact reasons, affected rows, clearance actions, rerun scope, and responsible party.
+- Allow certification-mode Android scenarios to execute on emulators; physical-device confirmation now clears an explicit provision instead of acting as a pre-execution gate.
+
+## Unreleased
+
 - Add a general source-derived RESPECT-ification repair adapter and implementation prompt for any Candidate App and selected profile.
 - Add a packaged, source-bound native Android runtime companion, bounded Android Debug Bridge controller, and row-specific evidence projector.
 - Expose the native runtime driver through the `respect-compat` and `respect-ification` command-line interfaces.

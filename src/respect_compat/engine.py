@@ -10,6 +10,7 @@ from typing import Callable, Dict, List, Optional
 from .matrix_runtime import CompatibilityMatrix, MatrixRow
 from .models import (
     ActorHealth,
+    CertificationProvision,
     CertificationVerdict,
     Coverage,
     EvidenceRecord,
@@ -17,6 +18,11 @@ from .models import (
     RequirementOwner,
     ResultState,
     SuiteRun,
+)
+from .provisions import (
+    classify_evidence_environment,
+    derive_provisions,
+    provisional_display,
 )
 from .target import CanAppTarget
 
@@ -125,15 +131,32 @@ def _coverage(selected: List[str], results: List[MatrixRowResult]) -> Coverage:
     )
 
 
-def reduce_verdict(selected: List[MatrixRow], results: List[MatrixRowResult], mode: str) -> CertificationVerdict:
+def reduce_verdict(
+    selected: List[MatrixRow],
+    results: List[MatrixRowResult],
+    mode: str,
+    provisions: Optional[List[CertificationProvision]] = None,
+) -> CertificationVerdict:
+    provisions = provisions or []
     if mode != "certification":
-        return CertificationVerdict(False, "non_certification_mode", f"mode {mode} cannot certify")
+        return CertificationVerdict(
+            False,
+            "non_certification_mode",
+            "Non-certification mode",
+            f"mode {mode} cannot certify",
+        )
     selected_ids = {row.row_id for row in selected}
     result_ids = {result.row_id for result in results}
     if selected_ids != result_ids:
         missing = sorted(selected_ids - result_ids)
         extra = sorted(result_ids - selected_ids)
-        return CertificationVerdict(False, "incomplete", f"coverage mismatch; missing={missing}, extra={extra}")
+        return CertificationVerdict(
+            False,
+            "incomplete",
+            "Incomplete",
+            f"coverage mismatch; missing={missing}, extra={extra}",
+            provisions,
+        )
     canapp_results = [
         result for result in results if result.owner == RequirementOwner.CANAPP
     ]
@@ -146,12 +169,36 @@ def reduce_verdict(selected: List[MatrixRow], results: List[MatrixRowResult], mo
         return CertificationVerdict(
             False,
             "not_certified",
+            "Not certified",
             "applicable CanApp rows did not pass: "
             + ", ".join(f"{item.row_id}={item.state.value}" for item in nonpass),
+            provisions,
         )
     if not canapp_results:
-        return CertificationVerdict(False, "incomplete", "profile selected no CanApp-owned rows")
-    return CertificationVerdict(True, "certified", "all applicable CanApp-owned rows passed")
+        return CertificationVerdict(
+            False,
+            "incomplete",
+            "Incomplete",
+            "profile selected no CanApp-owned rows",
+            provisions,
+        )
+    if provisions:
+        return CertificationVerdict(
+            False,
+            "provisional",
+            provisional_display(provisions),
+            (
+                "all applicable CanApp-owned rows passed; "
+                f"{len(provisions)} certification provision(s) remain"
+            ),
+            provisions,
+        )
+    return CertificationVerdict(
+        True,
+        "certified",
+        "Certified",
+        "all applicable CanApp-owned rows passed",
+    )
 
 
 def execute(
@@ -242,7 +289,9 @@ def execute(
             )
         results.append(result)
     coverage = _coverage([row.row_id for row in selected], results)
-    verdict = reduce_verdict(selected, results, mode)
+    evidence_environment = classify_evidence_environment(target)
+    provisions = derive_provisions(selected, evidence_environment)
+    verdict = reduce_verdict(selected, results, mode, provisions)
     return SuiteRun(
         suite_version=SUITE_VERSION,
         run_id=run_id,
@@ -260,4 +309,5 @@ def execute(
         verdict=verdict,
         actor_health=context.actors,
         capabilities=sorted(target.capabilities),
+        evidence_environment=evidence_environment,
     )

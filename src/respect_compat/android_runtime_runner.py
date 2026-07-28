@@ -382,10 +382,8 @@ def run_native_android_runtime(
     probe = probe_android_device(device_id, adb=adb)
     if not probe.get("healthy"):
         raise ValueError("selected Android Debug Bridge device is unhealthy")
-    if certification_mode and probe.get("emulator") is not False:
-        raise ValueError(
-            "certification mode requires an attributable physical Android device"
-        )
+    target.metadata["device_id"] = device_id
+    target.metadata["device_probe"] = probe
     launch_url = derive_catalog_launch_url(target, scenario)
     tool = adb
     if tool is None:
@@ -493,6 +491,17 @@ def run_native_android_runtime(
         "apk_sha256": apk_sha256,
         "driver_sha256": driver_sha256,
         "device_id": device_id,
+        "device_environment": {
+            key: probe.get(key)
+            for key in (
+                "emulator",
+                "manufacturer",
+                "model",
+                "os_release",
+                "api_level",
+                "build_fingerprint",
+            )
+        },
         "scenario_nonce": scenario_nonce,
     }
     domain_verified = domain_is_verified(association, host)
@@ -535,6 +544,7 @@ def run_native_android_runtime(
         "apk_sha256": apk_sha256,
         "driver_sha256": driver_sha256,
         "device_id": device_id,
+        "device_environment": envelope["device_environment"],
         "scenario_nonce": scenario_nonce,
         "event_count": len(events),
     }

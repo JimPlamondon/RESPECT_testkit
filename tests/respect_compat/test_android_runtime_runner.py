@@ -215,7 +215,7 @@ def test_driver_receipt_binds_suite_source_and_apk(tmp_path):
         verify_runtime_driver_receipt(apk, path)
 
 
-def test_certification_mode_rejects_an_emulator_before_device_mutation(
+def test_certification_mode_does_not_reject_an_emulator_before_device_execution(
     tmp_path, monkeypatch
 ):
     target = type(
@@ -253,8 +253,21 @@ def test_certification_mode_rejects_an_emulator_before_device_mutation(
         "probe_android_device",
         lambda *_args, **_kwargs: {"healthy": True, "emulator": True},
     )
+    monkeypatch.setattr(
+        runtime_runner,
+        "derive_catalog_launch_url",
+        lambda *_args, **_kwargs: "https://canapp.example/lesson",
+    )
 
-    with pytest.raises(ValueError, match="physical Android device"):
+    commands = []
+
+    def command_runner(command, **_kwargs):
+        commands.append(command)
+        raise RuntimeError("execution reached the selected Android environment")
+
+    with pytest.raises(
+        RuntimeError, match="execution reached the selected Android environment"
+    ):
         runtime_runner.run_native_android_runtime(
             target,
             device_id="emulator-5554",
@@ -263,7 +276,8 @@ def test_certification_mode_rejects_an_emulator_before_device_mutation(
             scenario_path=scenario,
             scenario_nonce="nonce",
             certification_mode=True,
-            command_runner=lambda *_args, **_kwargs: pytest.fail(
-                "device command should not run"
-            ),
+            adb=tmp_path / "adb",
+            command_runner=command_runner,
         )
+    assert commands
+    assert commands[0][-3:-1] == ["install", "-r"]

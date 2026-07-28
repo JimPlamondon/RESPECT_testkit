@@ -4,6 +4,8 @@ The RESPECT-ification Kit turns immutable, Matrix-addressed Test Suite failures 
 
 The Kit does not determine compatibility. A narrow verifier result is always marked `narrow_non_certifying`; a complete selected-profile Test Suite run is the only compatibility oracle.
 
+The Kit's `full-test` command preserves the Test Suite's approval and structured provisions unchanged. A repaired CanApp whose applicable rows pass on an emulator or local Hypertext Transfer Protocol Secure publication is reported truthfully as Provisional with explicit reasons, affected rows, existing evidence, clearance actions, rerun scope, and responsible party; the Kit does not turn those environmental provisions into false CanApp failures.
+
 Run `respect-ification --help` or `python -m respect_ification.cli --help` for the supported repair, Publication Pack, verification, serving, and full-test commands.
 
 Public Prep contains aggregate build-system and language metadata. Optional private Prep contains root-relative source inventory and remains inside the CanApp owner's environment. Neither form can change Matrix requirements, evidence, outcomes, or verdicts.

@@ -146,7 +146,7 @@ def main(argv: Optional[list[str]] = None) -> int:
     write_suite_reports(run, args.output_dir)
     verification_errors = verify_suite_payload(suite_json_payload(run))
     print(
-        f"RESPECT {run.profile_id}: {run.verdict.state}; "
+        f"RESPECT {run.profile_id}: {run.verdict.display}; "
         f"pass={len(run.coverage.passed)} fail={len(run.coverage.failed)} "
         f"blocked={len(run.coverage.blocked)} incomplete={len(run.coverage.incomplete)}"
     )

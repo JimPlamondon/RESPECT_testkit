@@ -223,19 +223,30 @@ def probe_android_device(
     )
     state = completed.stdout.strip()
     emulator = None
+    properties = {}
     if completed.returncode == 0 and state == "device":
-        qemu = subprocess.run(
-            [str(tool), "-s", device_id, "shell", "getprop", "ro.kernel.qemu"],
+        getprop = subprocess.run(
+            [str(tool), "-s", device_id, "shell", "getprop"],
             check=False,
             capture_output=True,
             text=True,
             timeout=10,
         )
-        emulator = qemu.returncode == 0 and qemu.stdout.strip() == "1"
+        if getprop.returncode == 0:
+            for line in getprop.stdout.splitlines():
+                match = re.fullmatch(r"\[([^\]]+)\]: \[(.*)\]", line.strip())
+                if match:
+                    properties[match.group(1)] = match.group(2)
+            emulator = properties.get("ro.kernel.qemu") == "1"
     return {
         "device_id": device_id,
         "healthy": completed.returncode == 0 and state == "device",
         "emulator": emulator,
+        "manufacturer": properties.get("ro.product.manufacturer"),
+        "model": properties.get("ro.product.model"),
+        "os_release": properties.get("ro.build.version.release"),
+        "api_level": properties.get("ro.build.version.sdk"),
+        "build_fingerprint": properties.get("ro.build.fingerprint"),
         "state": state,
         "return_code": completed.returncode,
         "stderr": completed.stderr.strip(),

@@ -2,9 +2,10 @@
 
 ## Unreleased
 
-- Add a source-aware RESPECT-ification driver plan for the exact runtime-gated Matrix rows.
+- Add a general source-derived RESPECT-ification repair adapter and implementation prompt for any Candidate App and selected profile.
 - Add a packaged, source-bound native Android runtime companion, bounded Android Debug Bridge controller, and row-specific evidence projector.
 - Expose the native runtime driver through the `respect-compat` and `respect-ification` command-line interfaces.
+- Keep proprietary lesson-format discovery in the owner-local Kit repair stage while the Test Suite validates format-agnostic catalog, launch, activity, runtime, and Experience API relationships.
 
 ## 0.1.0
 

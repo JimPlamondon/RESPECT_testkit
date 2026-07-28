@@ -6,7 +6,6 @@ import json
 from respect_compat.handoff import canonical_hash
 from respect_ification.cli import main
 from respect_compat.resources import resource
-from respect_ification.runtime_driver_plan import DRIVER_GATED_ROW_IDS
 
 
 def test_prepare_cli_writes_public_and_private_packets(tmp_path):
@@ -60,26 +59,28 @@ def test_full_test_cli_preserves_test_suite_verdict(tmp_path):
     assert (output / "respect-ification-task-packet.json").is_file()
 
 
-def test_driver_plan_cli_inspects_source_and_writes_complete_prompt(tmp_path):
+def test_repair_plan_cli_writes_adapter_and_prompt(tmp_path):
     source = tmp_path / "source"
-    manifest = source / "app" / "src" / "main" / "AndroidManifest.xml"
-    manifest.parent.mkdir(parents=True)
-    manifest.write_text("<manifest />")
+    loader = source / "app" / "loader.py"
+    loader.parent.mkdir(parents=True)
+    loader.write_text('open("lessons/real.unit")')
+    lesson = source / "lessons" / "real.unit"
+    lesson.parent.mkdir()
+    lesson.write_text('{"title":"Real Unit"}')
     tasks = [
         {
-            "task_id": f"repair:{row_id}",
-            "row_id": row_id,
+            "task_id": "repair:OPDS-003",
+            "row_id": "OPDS-003",
             "initial_state": "pending",
             "source_hints": [],
             "normative_task": {
-                "task_id": f"repair:{row_id}",
-                "row_id": row_id,
-                "expected": f"Expected {row_id}",
-                "narrow_verifier_id": f"matrix-row:{row_id}",
+                "task_id": "repair:OPDS-003",
+                "row_id": "OPDS-003",
+                "expected": "Truthful publication metadata",
+                "narrow_verifier_id": "matrix-row:OPDS-003",
                 "dependency_task_ids": [],
             },
         }
-        for row_id in sorted(DRIVER_GATED_ROW_IDS)
     ]
     plan = {
         "artifact_type": "respect_ification_local_work_plan",
@@ -91,24 +92,31 @@ def test_driver_plan_cli_inspects_source_and_writes_complete_prompt(tmp_path):
     plan["semantic_hash"] = canonical_hash(plan, ("semantic_hash",))
     plan_path = tmp_path / "work-plan.json"
     plan_path.write_text(json.dumps(plan))
-    output = tmp_path / "driver-prompt.md"
+    adapter_output = tmp_path / "repair-adapter.json"
+    prompt_output = tmp_path / "repair-prompt.md"
 
     assert (
         main(
             [
-                "driver-plan",
+                "repair-plan",
                 "--work-plan",
                 str(plan_path),
                 "--source-root",
                 str(source),
+                "--canapp-root",
+                ".",
                 "--testkit-commit",
                 "abc123",
-                "--output",
-                str(output),
+                "--adapter-output",
+                str(adapter_output),
+                "--prompt-output",
+                str(prompt_output),
             ]
         )
         == 0
     )
-    prompt = output.read_text()
-    assert "26 runtime-driver-gated rows" in prompt
-    assert "app/src/main/AndroidManifest.xml" in prompt
+    adapter = json.loads(adapter_output.read_text())
+    prompt = prompt_output.read_text()
+    assert adapter["adapter_scope"] == "kit_time_only"
+    assert "lessons/real.unit" in prompt
+    assert "Truthful publication metadata" in prompt

@@ -21,7 +21,7 @@ from respect_compat.target import (
 from .ledger import append_event, read_ledger
 from .planner import build_work_plan, validate_work_plan
 from .prep import generate_prep, write_prep
-from .runtime_driver_plan import write_runtime_driver_prompt
+from .repair_adapter import write_repair_adapter
 from .verifier import run_narrow_verifier
 
 
@@ -140,11 +140,13 @@ def build_parser() -> KitArgumentParser:
     plan.add_argument("--private-prep", type=Path)
     plan.add_argument("--output", type=Path, required=True)
 
-    driver_plan = subparsers.add_parser("driver-plan")
-    driver_plan.add_argument("--work-plan", type=Path, required=True)
-    driver_plan.add_argument("--source-root", type=Path, required=True)
-    driver_plan.add_argument("--testkit-commit", required=True)
-    driver_plan.add_argument("--output", type=Path, required=True)
+    repair_plan = subparsers.add_parser("repair-plan")
+    repair_plan.add_argument("--work-plan", type=Path, required=True)
+    repair_plan.add_argument("--source-root", type=Path, required=True)
+    repair_plan.add_argument("--canapp-root", type=Path)
+    repair_plan.add_argument("--testkit-commit", required=True)
+    repair_plan.add_argument("--adapter-output", type=Path, required=True)
+    repair_plan.add_argument("--prompt-output", type=Path, required=True)
 
     status = subparsers.add_parser("status")
     status.add_argument("--work-plan", type=Path, required=True)
@@ -202,15 +204,20 @@ def main(argv: Optional[List[str]] = None) -> int:
             _write(args.output, work_plan)
             print(f"Planned {len(work_plan['tasks'])} actionable repair tasks.")
             return 0
-        if args.command == "driver-plan":
+        if args.command == "repair-plan":
             plan = _read(args.work_plan)
-            write_runtime_driver_prompt(
+            write_repair_adapter(
                 plan,
                 args.source_root,
-                args.output,
+                args.adapter_output,
+                args.prompt_output,
                 testkit_commit=args.testkit_commit,
+                canapp_root=args.canapp_root,
             )
-            print(f"Wrote source-aware runtime-driver prompt to {args.output}.")
+            print(
+                "Wrote the Kit-time repair adapter and source-derived "
+                "implementation prompt."
+            )
             return 0
         if args.command == "status":
             plan = _read(args.work_plan)

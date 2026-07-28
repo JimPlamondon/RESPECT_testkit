@@ -4,7 +4,7 @@ The RESPECT-ification Kit turns immutable, Matrix-addressed Test Suite failures 
 
 The Kit does not determine compatibility. A narrow verifier result is always marked `narrow_non_certifying`; a complete selected-profile Test Suite run is the only compatibility oracle.
 
-Run `respect-ification --help` or `python -m respect_ification.cli --help` for the supported `prepare`, `plan`, `driver-plan`, `status`, `record`, `verify`, and `full-test` commands.
+Run `respect-ification --help` or `python -m respect_ification.cli --help` for the supported `prepare`, `plan`, `repair-plan`, `status`, `record`, `verify`, and `full-test` commands.
 
 Public Prep contains aggregate build-system and language metadata. Optional private Prep contains root-relative source inventory and remains inside the CanApp owner's environment. Neither form can change Matrix requirements, evidence, outcomes, or verdicts.
 
@@ -12,6 +12,10 @@ The planner validates run, Matrix, profile, target, evidence, graph, and content
 
 The `full-test` handback invokes the complete Test Suite and preserves its exit code and verdict without reinterpretation.
 
-When owner-local Candidate App source is available and the work plan contains native Android runtime-gated rows, `driver-plan` inspects manifests, build files, lesson-loading seams, lesson content files, launch handling, lifecycle code, and Experience API code. Its generated implementation prompt requires a one-to-one inventory of real lessons, generator-backed OPDS and Readium wrappers, catalog-derived launch URLs, and runtime statements bound to actual lesson facts. A synthetic lesson, placeholder wrapper, marker resource, debug-only completion trigger, or disconnected activity identifier is explicitly forbidden.
+When owner-local Candidate App source is available, `repair-plan` creates two owner-local artifacts: a structured Kit-time repair adapter and a source-derived implementation prompt. The general analyzer follows the CanApp's own file references and common build, loading, selection, completion, launch, lifecycle, and Experience API seams. It does not encode any Candidate App's proprietary lesson format.
 
-The Test Suite-owned controller remains responsible for all trusted runtime observations; CanApp-side test code may drive real user operations but cannot submit row outcomes or manufacture product facts. When an Android Package Kit contains JiMSong assets, the verifier independently compares the hosted catalog and Readium resources with the packaged lesson titles and bytes.
+Use `--source-root` for the repository or source collection and, when the CanApp is one project inside it, use `--canapp-root` for that project's relative path. The analyzer scopes product-code signals to the CanApp while following its explicit references to content stored elsewhere in the source collection.
+
+The generated adapter is scaffolding, not a production runtime component. The repair prompt directs durable changes into normal CanApp code and build logic, requires a verified inventory of real selectable lessons, and requires truthful OPDS (Open Publication Distribution System) and Readium artifacts derived from that inventory. Provisional hosting may serve those real artifacts but may not simulate CanApp behavior.
+
+The unchanged Test Suite remains content-format agnostic. Its runtime controller derives acquisition from the selected catalog publication, binds the selected activity to that publication, observes real runtime behavior and Experience API statements, and rejects owner-authored outcomes. Candidate App-specific continuity is established by production code and production-owned tests generated during repair, not by teaching the Test Suite a proprietary format.

@@ -1,14 +1,10 @@
 # SPDX-FileCopyrightText: 2026 Jim Plamondon
 # SPDX-License-Identifier: Apache-2.0
 
-import hashlib
-import json
 import mimetypes
 import re
 import urllib.parse
 import urllib.request
-import zipfile
-from collections import Counter
 from html.parser import HTMLParser
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
@@ -212,340 +208,6 @@ def _read_json(context: ExecutionContext, url: str) -> Tuple[Optional[Dict[str, 
         return None, None
     value = observation.json_data
     return (value if isinstance(value, dict) else None), observation
-
-
-def _target_observation(
-    target,
-    url: str,
-) -> Optional[HttpObservation]:
-    existing = next(
-        (
-            item
-            for item in target.observations
-            if item.requested_url == url or item.final_url == url
-        ),
-        None,
-    )
-    if existing is not None:
-        return existing
-    if (
-        urllib.parse.urlparse(url).scheme in {"http", "https"}
-        and "remote_http" in target.capabilities
-    ):
-        try:
-            observation = fetch(url)
-        except Exception:
-            return None
-        target.observations.append(observation)
-        return observation
-    return None
-
-
-def _discover_webpub_manifest(
-    target,
-    acquisition_url: str,
-) -> Tuple[Optional[str], Optional[Dict[str, Any]]]:
-    acquisition = _target_observation(target, acquisition_url)
-    if acquisition is None or acquisition.status != 200:
-        return None, None
-    discoveries: List[str] = []
-    header = acquisition.headers.get("link", "")
-    if (
-        'rel="manifest"' in header
-        and "application/webpub+json" in header
-        and "<" in header
-        and ">" in header
-    ):
-        discoveries.append(
-            urllib.parse.urljoin(
-                acquisition.final_url,
-                header.split("<", 1)[1].split(">", 1)[0],
-            )
-        )
-    if _content_type(acquisition) in {"text/html", "application/html+xml"}:
-        parser = _PublicationLinkParser()
-        try:
-            parser.feed(acquisition.body.decode("utf-8"))
-        except UnicodeDecodeError:
-            return None, None
-        discoveries.extend(
-            urllib.parse.urljoin(acquisition.final_url, item["href"])
-            for item in parser.links
-        )
-    unique = sorted(set(discoveries))
-    if len(unique) != 1:
-        return None, None
-    observation = _target_observation(target, unique[0])
-    if observation is None or observation.status != 200:
-        return unique[0], None
-    value = observation.json_data
-    return unique[0], value if isinstance(value, dict) else None
-
-
-def usable_image(observation: HttpObservation) -> bool:
-    content_type = _content_type(observation)
-    body = observation.body
-    if content_type == "image/png":
-        if (
-            len(body) < 24
-            or body[:8] != b"\x89PNG\r\n\x1a\n"
-            or body[12:16] != b"IHDR"
-        ):
-            return False
-        width = int.from_bytes(body[16:20], "big")
-        height = int.from_bytes(body[20:24], "big")
-        return width > 1 and height > 1
-    if content_type in {"image/jpeg", "image/jpg"}:
-        return len(body) > 4 and body[:2] == b"\xff\xd8" and body[-2:] == b"\xff\xd9"
-    if content_type == "image/svg+xml":
-        try:
-            text = body.decode("utf-8").lower()
-        except UnicodeDecodeError:
-            return False
-        return "<svg" in text and "</svg>" in text
-    return content_type.startswith("image/") and len(body) > 32
-
-
-def packaged_lesson_binding(target) -> Dict[str, Any]:
-    cached = target.metadata.get("_packaged_lesson_binding")
-    if isinstance(cached, dict):
-        return cached
-    result: Dict[str, Any] = {
-        "applicable": False,
-        "valid": True,
-        "packaged_lessons": [],
-        "catalog_lessons": [],
-        "content_matches": {},
-        "errors": [],
-    }
-    if target.apk is None or not target.apk.is_file():
-        target.metadata["_packaged_lesson_binding"] = result
-        return result
-    packaged = []
-    try:
-        with zipfile.ZipFile(target.apk) as archive:
-            for name in sorted(archive.namelist()):
-                if not name.lower().endswith(".jimsong"):
-                    continue
-                body = archive.read(name)
-                try:
-                    value = json.loads(body.decode("utf-8"))
-                except (UnicodeDecodeError, json.JSONDecodeError):
-                    result["errors"].append(
-                        f"packaged JiMSong is not parseable JSON: {name}"
-                    )
-                    continue
-                title = value.get("title") if isinstance(value, dict) else None
-                if not isinstance(title, str) or not title.strip():
-                    result["errors"].append(
-                        f"packaged JiMSong has no title: {name}"
-                    )
-                    continue
-                packaged.append(
-                    {
-                        "path": name,
-                        "title": title,
-                        "sha256": hashlib.sha256(body).hexdigest(),
-                    }
-                )
-    except zipfile.BadZipFile:
-        target.metadata["_packaged_lesson_binding"] = result
-        return result
-    if not packaged:
-        target.metadata["_packaged_lesson_binding"] = result
-        return result
-    result["applicable"] = True
-    result["packaged_lessons"] = [item["title"] for item in packaged]
-
-    descriptor_base = target.metadata.get("descriptor_url")
-    if not isinstance(descriptor_base, str):
-        descriptor_base = (
-            target.observations[0].final_url
-            if target.observations
-            else target.uri
-        )
-    catalog_links = [
-        link
-        for link in _links(target.document)
-        if DEFAULT_CATALOG_REL in _relations(link)
-        and isinstance(link.get("href"), str)
-    ]
-    if len(catalog_links) != 1:
-        result["errors"].append(
-            "descriptor must expose exactly one default lesson catalog"
-        )
-    else:
-        catalog_url = urllib.parse.urljoin(
-            descriptor_base,
-            catalog_links[0]["href"],
-        )
-        catalog_observation = _target_observation(target, catalog_url)
-        catalog = (
-            catalog_observation.json_data
-            if catalog_observation is not None
-            and catalog_observation.status == 200
-            else None
-        )
-        publications = (
-            catalog.get("publications")
-            if isinstance(catalog, dict)
-            else None
-        )
-        if not isinstance(publications, list):
-            result["errors"].append(
-                "default lesson catalog has no publications"
-            )
-            publications = []
-        publications = [
-            item for item in publications if isinstance(item, dict)
-        ]
-        publication_titles = [
-            values[0]
-            for publication in publications
-            for values in [
-                _localized_values(
-                    publication.get("metadata", {}).get("title")
-                    if isinstance(publication.get("metadata"), dict)
-                    else None
-                )
-            ]
-            if len(values) == 1
-        ]
-        result["catalog_lessons"] = publication_titles
-        if Counter(publication_titles) != Counter(
-            item["title"] for item in packaged
-        ):
-            result["errors"].append(
-                "catalog titles do not match packaged lessons"
-            )
-
-        packaged_by_title = {
-            item["title"]: item
-            for item in packaged
-        }
-        for publication in publications:
-            metadata = (
-                publication.get("metadata")
-                if isinstance(publication.get("metadata"), dict)
-                else {}
-            )
-            title_values = _localized_values(metadata.get("title"))
-            title = title_values[0] if len(title_values) == 1 else None
-            if title not in packaged_by_title:
-                continue
-            identifier = metadata.get("identifier")
-            if not isinstance(identifier, str) or not identifier:
-                result["errors"].append(
-                    f"catalog publication has no identifier: {title}"
-                )
-                continue
-            acquisitions = [
-                link
-                for link in _links(publication)
-                if isinstance(link.get("href"), str)
-                and any(
-                    relation.startswith(ACQUISITION_PREFIX)
-                    for relation in _relations(link)
-                )
-                and str(link.get("type", "")).split(";", 1)[0]
-                in LEARNING_UNIT_TYPES
-            ]
-            if len(acquisitions) != 1:
-                result["errors"].append(
-                    f"catalog publication is not uniquely launchable: {title}"
-                )
-                continue
-            images = [
-                image
-                for image in publication.get("images") or []
-                if isinstance(image, dict)
-                and isinstance(image.get("href"), str)
-            ]
-            usable_images = []
-            for image in images:
-                image_url = urllib.parse.urljoin(
-                    catalog_url,
-                    image["href"],
-                )
-                observation = _target_observation(target, image_url)
-                if observation is not None and usable_image(observation):
-                    usable_images.append(image_url)
-            if not usable_images:
-                result["errors"].append(
-                    f"catalog image is missing, invalid, or a placeholder: {title}"
-                )
-            acquisition_url = urllib.parse.urljoin(
-                catalog_url,
-                acquisitions[0]["href"],
-            )
-            manifest_url, manifest = _discover_webpub_manifest(
-                target,
-                acquisition_url,
-            )
-            if manifest_url is None or manifest is None:
-                result["errors"].append(
-                    f"catalog publication has no unique Readium wrapper: {title}"
-                )
-                continue
-            manifest_metadata = (
-                manifest.get("metadata")
-                if isinstance(manifest.get("metadata"), dict)
-                else {}
-            )
-            if (
-                manifest_metadata.get("identifier") != identifier
-                or title not in _localized_values(
-                    manifest_metadata.get("title")
-                )
-            ):
-                result["errors"].append(
-                    f"Readium wrapper identity does not match catalog: {title}"
-                )
-            declared = []
-            for field in ("readingOrder", "resources"):
-                values = manifest.get(field)
-                if isinstance(values, list):
-                    declared.extend(
-                        item
-                        for item in values
-                        if isinstance(item, dict)
-                        and isinstance(item.get("href"), str)
-                    )
-            expected_hash = packaged_by_title[title]["sha256"]
-            matches = []
-            for link in declared:
-                resource_url = urllib.parse.urljoin(
-                    manifest_url,
-                    link["href"],
-                )
-                observation = _target_observation(target, resource_url)
-                if (
-                    observation is not None
-                    and observation.status == 200
-                    and hashlib.sha256(observation.body).hexdigest()
-                    == expected_hash
-                ):
-                    matches.append(resource_url)
-            if len(matches) != 1:
-                result["errors"].append(
-                    f"Readium wrapper is not bound to packaged lesson bytes: {title}"
-                )
-            else:
-                result["content_matches"][title] = packaged_by_title[title][
-                    "path"
-                ]
-        for item in packaged:
-            if item["title"] not in result["content_matches"]:
-                message = (
-                    "Readium wrapper is not bound to packaged lesson bytes: "
-                    f"{item['title']}"
-                )
-                if message not in result["errors"]:
-                    result["errors"].append(message)
-
-    result["valid"] = not result["errors"]
-    target.metadata["_packaged_lesson_binding"] = result
-    return result
 
 
 def _publication_documents(context: ExecutionContext) -> List[Tuple[str, Dict[str, Any]]]:
@@ -753,7 +415,6 @@ def manifest_executor(context: ExecutionContext, row: MatrixRow):
 
 def opds_executor(context: ExecutionContext, row: MatrixRow):
     documents = _publication_documents(context)
-    lesson_binding = packaged_lesson_binding(context.target)
     if context.target.is_legacy_manifest:
         learning_units = context.target.document.get("learningUnits")
         if isinstance(learning_units, str):
@@ -801,25 +462,7 @@ def opds_executor(context: ExecutionContext, row: MatrixRow):
             and bool(item["metadata"].get("title"))
             for _, item in documents
         )
-        binding_errors = [
-            error
-            for error in lesson_binding["errors"]
-            if (
-                "catalog" in error
-                or "default lesson catalog" in error
-            )
-        ]
-        return _check(
-            context,
-            row,
-            bool(valid) and not binding_errors,
-            {
-                "documents": len(documents),
-                "packaged_lesson_binding_errors": binding_errors,
-            },
-            "Selected publication metadata is present and bound to packaged lessons.",
-            "Selected publication metadata is incomplete or disconnected from packaged lessons.",
-        )
+        return _check(context, row, bool(valid), {"documents": len(documents)}, "Selected publication metadata is present.", "Selected publication metadata is incomplete.")
     acquisition: List[Tuple[str, Dict[str, Any]]] = []
     images: List[Tuple[str, Dict[str, Any]]] = []
     resources: List[Tuple[str, Dict[str, Any]]] = []
@@ -833,23 +476,6 @@ def opds_executor(context: ExecutionContext, row: MatrixRow):
         for item in publication.get("resources") or []:
             if isinstance(item, dict):
                 resources.append((base, item))
-    discovered_manifest_resources: List[Tuple[str, Dict[str, Any]]] = []
-    for base, link in acquisition:
-        acquisition_url = _resolved(
-            context,
-            str(link.get("href", "")),
-            base,
-        )
-        manifest_url, manifest = _discover_webpub_manifest(
-            context.target,
-            acquisition_url,
-        )
-        if manifest_url is None or manifest is None:
-            continue
-        for item in manifest.get("resources") or []:
-            if isinstance(item, dict):
-                discovered_manifest_resources.append((manifest_url, item))
-    resources.extend(discovered_manifest_resources)
     if row.row_id == "OPDS-004":
         accepted = [
             (base, link) for base, link in acquisition
@@ -869,30 +495,12 @@ def opds_executor(context: ExecutionContext, row: MatrixRow):
                 )
             except Exception as error:
                 outcomes.append({"url": url, "error": type(error).__name__})
-        binding_errors = [
-            error
-            for error in lesson_binding["errors"]
-            if (
-                "uniquely launchable" in error
-                or "catalog titles do not match packaged lessons" in error
-            )
-        ]
         passed = bool(outcomes) and all(
             item.get("status") == 200
             and item.get("content_type") in LEARNING_UNIT_TYPES
             for item in outcomes
-        ) and not binding_errors
-        return _check(
-            context,
-            row,
-            passed,
-            {
-                "links": outcomes,
-                "packaged_lesson_binding_errors": binding_errors,
-            },
-            "Every packaged lesson has one accepted acquisition link.",
-            "An acquisition link is missing, unreachable, or disconnected from a packaged lesson.",
         )
+        return _check(context, row, passed, outcomes, "Every accepted acquisition link is reachable with an accepted media type.", "An acquisition link is missing, unreachable, or has an unsupported media type.")
     if row.row_id == "OPDS-005":
         prohibited = []
         for base, link in acquisition:
@@ -951,28 +559,7 @@ def opds_executor(context: ExecutionContext, row: MatrixRow):
                     ),
                 }
             )
-        binding_errors = [
-            error
-            for error in lesson_binding["errors"]
-            if (
-                "Readium wrapper" in error
-                or "catalog titles do not match packaged lessons" in error
-            )
-            and "packaged lesson bytes" not in error
-        ]
-        return _check(
-            context,
-            row,
-            bool(validated)
-            and all(item["valid"] for item in validated)
-            and not binding_errors,
-            {
-                "manifests": validated,
-                "packaged_lesson_binding_errors": binding_errors,
-            },
-            "A matching Readium wrapper was discovered for every packaged lesson.",
-            "A Readium wrapper is missing, invalid, or disconnected from its catalog publication.",
-        )
+        return _check(context, row, bool(validated) and all(item["valid"] for item in validated), validated, "Every discovered publication manifest is structurally valid.", "A publication manifest is missing or invalid.")
     if row.row_id in {"OPDS-007", "OPDS-008"}:
         selected = resources if row.row_id == "OPDS-007" else images
         if not selected:
@@ -985,31 +572,7 @@ def opds_executor(context: ExecutionContext, row: MatrixRow):
                 outcomes.append({"url": url, "status": observation.status})
             except Exception as error:
                 outcomes.append({"url": url, "error": type(error).__name__})
-        binding_errors = (
-            [
-                error
-                for error in lesson_binding["errors"]
-                if "packaged lesson bytes" in error
-            ]
-            if row.row_id == "OPDS-007"
-            else [
-                error
-                for error in lesson_binding["errors"]
-                if "catalog image" in error
-            ]
-        )
-        return _check(
-            context,
-            row,
-            all(item.get("status") == 200 for item in outcomes)
-            and not binding_errors,
-            {
-                "links": outcomes,
-                "packaged_lesson_binding_errors": binding_errors,
-            },
-            "Every declared resource is reachable and bound to packaged lesson content.",
-            "A declared resource is unreachable or disconnected from packaged lesson content.",
-        )
+        return _check(context, row, all(item.get("status") == 200 for item in outcomes), outcomes, "Every declared resource is reachable.", "A declared resource is unreachable.")
     if row.row_id == "OPDS-009":
         declared_urls = [
             _resolved(context, str(link.get("href", "")), base)

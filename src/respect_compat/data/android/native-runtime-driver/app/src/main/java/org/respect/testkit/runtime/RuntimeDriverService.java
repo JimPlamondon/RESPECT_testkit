@@ -44,6 +44,7 @@ public final class RuntimeDriverService extends Service {
     private final Map<String, JSONObject> statements = new LinkedHashMap<>();
     private final Set<String> voidedStatementIds = new LinkedHashSet<>();
     private final Set<Integer> activeFlows = new LinkedHashSet<>();
+    private boolean transientCompletionFailurePending = true;
     private HandlerThread handlerThread;
     private Messenger messenger;
     private EventStore events;
@@ -142,6 +143,11 @@ public final class RuntimeDriverService extends Service {
 
     private void handlePost(Message message, Bundle data) throws JSONException {
         JSONArray incoming = new JSONArray(data.getString(KEY_BODY, "[]"));
+        if (transientCompletionFailurePending && containsRegularStatement(incoming)) {
+            transientCompletionFailurePending = false;
+            send(message, WHAT_RESPONSE, 500, null);
+            return;
+        }
         JSONArray identifiers = new JSONArray();
         int status = 200;
         for (int index = 0; index < incoming.length(); index++) {
@@ -167,6 +173,19 @@ public final class RuntimeDriverService extends Service {
             identifiers.put(identifier);
         }
         send(message, WHAT_RESPONSE, status, status == 200 ? identifiers.toString() : null);
+    }
+
+    private static boolean containsRegularStatement(JSONArray statements)
+            throws JSONException {
+        for (int index = 0; index < statements.length(); index++) {
+            JSONObject verb = statements.getJSONObject(index).optJSONObject("verb");
+            if (verb == null
+                    || !"http://adlnet.gov/expapi/verbs/voided".equals(
+                            verb.optString("id"))) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private void handleGet(Message message, JSONObject queryParams, boolean flow) {

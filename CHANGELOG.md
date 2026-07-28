@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+- Added explicit local certification-authority trust for provisional HTTPS targets while retaining certificate and hostname validation.
+- Made conditional HTTP responses observable instead of treating `304 Not Modified` as a transport failure.
+- Made the native runtime companion exercise a real durable identical retry and stopped requiring a conforming Candidate App to emit conflicting statement content.
+
+## Unreleased
+
 - Preserve genuine Matrix-row pass results from attributable emulators and local Hypertext Transfer Protocol Secure publication while issuing a structured, independently verifiable Provisional approval with exact reasons, affected rows, clearance actions, rerun scope, and responsible party.
 - Allow certification-mode Android scenarios to execute on emulators; physical-device confirmation now clears an explicit provision instead of acting as a pre-execution gate.
 - Add a general source-derived RESPECT-ification repair adapter and implementation prompt for any Candidate App and selected profile.

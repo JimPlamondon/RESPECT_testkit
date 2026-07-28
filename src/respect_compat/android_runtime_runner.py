@@ -186,7 +186,11 @@ def _target_json(target: CanAppTarget, url: str) -> Dict[str, Any]:
     if observation is None:
         from .target import fetch
 
-        observation = fetch(url)
+        ca_cert = target.metadata.get("tls_ca_cert")
+        observation = fetch(
+            url,
+            ca_cert=Path(ca_cert) if isinstance(ca_cert, str) else None,
+        )
         target.observations.append(observation)
     value = observation.json_data
     if observation.status != 200 or not isinstance(value, dict):

@@ -62,6 +62,11 @@ def _add_target(parser: argparse.ArgumentParser) -> None:
     group.add_argument("--server-base-url")
     group.add_argument("--apk-only", action="store_true")
     parser.add_argument("--apk", type=Path)
+    parser.add_argument(
+        "--ca-cert",
+        type=Path,
+        help="Trust this CA certificate for a provisioned HTTPS target.",
+    )
     parser.add_argument("--device-id")
     parser.add_argument("--runtime-driver-apk", type=Path)
     parser.add_argument("--runtime-driver-receipt", type=Path)
@@ -76,9 +81,17 @@ def _load_target(args: argparse.Namespace) -> CanAppTarget:
     elif args.fixture_dir:
         target = load_fixture_target(args.fixture_dir, apk=args.apk)
     elif args.manifest_url:
-        target = load_url_target(args.manifest_url, apk=args.apk)
+        target = load_url_target(
+            args.manifest_url,
+            apk=args.apk,
+            ca_cert=args.ca_cert,
+        )
     else:
-        target = load_server_target(args.server_base_url, apk=args.apk)
+        target = load_server_target(
+            args.server_base_url,
+            apk=args.apk,
+            ca_cert=args.ca_cert,
+        )
     if args.device_id:
         probe = probe_android_device(args.device_id)
         target.metadata["device_id"] = args.device_id
@@ -123,6 +136,8 @@ def _suite_target_args(args: argparse.Namespace) -> List[str]:
         values = ["--server-base-url", args.server_base_url]
     if args.apk:
         values.extend(["--apk", str(args.apk)])
+    if args.ca_cert:
+        values.extend(["--ca-cert", str(args.ca_cert)])
     if args.device_id:
         values.extend(["--device-id", args.device_id])
     if args.runtime_driver_apk:

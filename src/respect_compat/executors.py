@@ -282,6 +282,30 @@ def _discover_webpub_manifest(
     return unique[0], value if isinstance(value, dict) else None
 
 
+def usable_image(observation: HttpObservation) -> bool:
+    content_type = _content_type(observation)
+    body = observation.body
+    if content_type == "image/png":
+        if (
+            len(body) < 24
+            or body[:8] != b"\x89PNG\r\n\x1a\n"
+            or body[12:16] != b"IHDR"
+        ):
+            return False
+        width = int.from_bytes(body[16:20], "big")
+        height = int.from_bytes(body[20:24], "big")
+        return width > 1 and height > 1
+    if content_type in {"image/jpeg", "image/jpg"}:
+        return len(body) > 4 and body[:2] == b"\xff\xd8" and body[-2:] == b"\xff\xd9"
+    if content_type == "image/svg+xml":
+        try:
+            text = body.decode("utf-8").lower()
+        except UnicodeDecodeError:
+            return False
+        return "<svg" in text and "</svg>" in text
+    return content_type.startswith("image/") and len(body) > 32
+
+
 def packaged_lesson_binding(target) -> Dict[str, Any]:
     cached = target.metadata.get("_packaged_lesson_binding")
     if isinstance(cached, dict):
@@ -431,6 +455,25 @@ def packaged_lesson_binding(target) -> Dict[str, Any]:
                     f"catalog publication is not uniquely launchable: {title}"
                 )
                 continue
+            images = [
+                image
+                for image in publication.get("images") or []
+                if isinstance(image, dict)
+                and isinstance(image.get("href"), str)
+            ]
+            usable_images = []
+            for image in images:
+                image_url = urllib.parse.urljoin(
+                    catalog_url,
+                    image["href"],
+                )
+                observation = _target_observation(target, image_url)
+                if observation is not None and usable_image(observation):
+                    usable_images.append(image_url)
+            if not usable_images:
+                result["errors"].append(
+                    f"catalog image is missing, invalid, or a placeholder: {title}"
+                )
             acquisition_url = urllib.parse.urljoin(
                 catalog_url,
                 acquisitions[0]["href"],
@@ -949,7 +992,11 @@ def opds_executor(context: ExecutionContext, row: MatrixRow):
                 if "packaged lesson bytes" in error
             ]
             if row.row_id == "OPDS-007"
-            else []
+            else [
+                error
+                for error in lesson_binding["errors"]
+                if "catalog image" in error
+            ]
         )
         return _check(
             context,

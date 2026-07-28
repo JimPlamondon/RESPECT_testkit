@@ -13,7 +13,11 @@ import pytest
 
 from respect_compat.engine import ExecutorRegistry, execute
 from respect_compat.cli import main
-from respect_compat.executors import build_registry, packaged_lesson_binding
+from respect_compat.executors import (
+    build_registry,
+    packaged_lesson_binding,
+    usable_image,
+)
 from respect_compat.matrix_runtime import DEFAULT_MATRIX_PATH, load_matrix, semantic_hash
 from respect_compat.models import RequirementOwner, ResultState
 from respect_compat.report import suite_json_payload, verify_suite_payload
@@ -58,6 +62,28 @@ def _observation(url, body, content_type):
         status=200,
         headers={"content-type": content_type},
         body=body,
+    )
+
+
+def test_live_image_validation_rejects_one_pixel_placeholder():
+    one_pixel = (
+        b"\x89PNG\r\n\x1a\n"
+        b"\x00\x00\x00\rIHDR"
+        b"\x00\x00\x00\x01"
+        b"\x00\x00\x00\x01"
+    )
+    two_pixels = (
+        b"\x89PNG\r\n\x1a\n"
+        b"\x00\x00\x00\rIHDR"
+        b"\x00\x00\x00\x02"
+        b"\x00\x00\x00\x02"
+    )
+
+    assert not usable_image(
+        _observation("https://example/icon.png", one_pixel, "image/png")
+    )
+    assert usable_image(
+        _observation("https://example/icon.png", two_pixels, "image/png")
     )
 
 
@@ -166,6 +192,7 @@ def test_packaged_lesson_binding_rejects_synthetic_catalog(tmp_path):
             "OPDS-004",
             "OPDS-006",
             "OPDS-007",
+            "OPDS-008",
         ],
         run_seed="synthetic-catalog",
     )
@@ -177,6 +204,7 @@ def test_packaged_lesson_binding_rejects_synthetic_catalog(tmp_path):
         "OPDS-004": ResultState.FAIL,
         "OPDS-006": ResultState.FAIL,
         "OPDS-007": ResultState.FAIL,
+        "OPDS-008": ResultState.FAIL,
     }
 
 
@@ -197,6 +225,13 @@ def test_packaged_lesson_binding_requires_actual_lesson_bytes(tmp_path):
     lesson_url = "https://canapp.example/lessons/real-song/index.html"
     manifest_url = "https://canapp.example/lessons/real-song/publication.json"
     content_url = "https://canapp.example/lessons/real-song/Real_Song.jimsong"
+    image_url = "https://canapp.example/lessons/real-song/icon.png"
+    image = (
+        b"\x89PNG\r\n\x1a\n"
+        b"\x00\x00\x00\rIHDR"
+        b"\x00\x00\x00\x02"
+        b"\x00\x00\x00\x02"
+    )
     descriptor = {
         "metadata": {"identifier": "app", "title": "CanApp"},
         "links": [
@@ -219,6 +254,12 @@ def test_packaged_lesson_binding_requires_actual_lesson_bytes(tmp_path):
                 "rel": ["http://opds-spec.org/acquisition/open-access"],
                 "href": lesson_url,
                 "type": "text/html",
+            }
+        ],
+        "images": [
+            {
+                "href": "lessons/real-song/icon.png",
+                "type": "image/png",
             }
         ],
     }
@@ -272,6 +313,7 @@ def test_packaged_lesson_binding_requires_actual_lesson_bytes(tmp_path):
                 lesson,
                 "application/vnd.jims.jimsong+json",
             ),
+            _observation(image_url, image, "image/png"),
         ],
     )
 

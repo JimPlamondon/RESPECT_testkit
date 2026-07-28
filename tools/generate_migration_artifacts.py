@@ -179,45 +179,60 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--source-repo", type=Path, required=True)
     parser.add_argument("--trace", type=Path, action="append", default=[])
+    parser.add_argument(
+        "--preserve-inventory",
+        action="store_true",
+        help="Refresh destination hashes without changing the frozen source inventory.",
+    )
     args = parser.parse_args()
     root = Path(__file__).resolve().parents[1]
     source = args.source_repo.resolve()
     if run_git(source, "rev-parse", "HEAD").decode().strip() != SOURCE_COMMIT:
         raise SystemExit("source worktree is not frozen at SOURCE_COMMIT")
-    entries = source_items(source)
-    all_paths = [item["source_path"] for item in entries]
-    static_paths = [
-        value
-        for value in all_paths
-        if value != "licensing-public/schemas/respect_compat/matrix_validation_report.json"
-    ]
-    inventory = {
-        "schema_version": "1.0.0",
-        "source_repository": SOURCE_REPOSITORY,
-        "source_pull_request": PR_NUMBER,
-        "source_commit": SOURCE_COMMIT,
-        "source_tree_oids": {
-            "licensing-public": run_git(source, "rev-parse", f"{SOURCE_COMMIT}:licensing-public").decode().strip(),
-            "validator_blob": run_git(source, "rev-parse", f"{SOURCE_COMMIT}:tools/validate_respect_compatibility_matrix.py").decode().strip(),
-            "bootstrap_blob": run_git(source, "rev-parse", f"{SOURCE_COMMIT}:tools/bootstrap_respect_compat_standards.py").decode().strip(),
-        },
-        "matrix": {
-            "identifier": MATRIX_ID,
-            "version": MATRIX_VERSION,
-            "semantic_hash": MATRIX_SEMANTIC_HASH,
-            "features": 43,
-            "rows": 84,
-            "mutation_checks": 21,
-        },
-        "closures": {
-            "git_object_enumeration": all_paths,
-            "static_import_reference": static_paths,
-            "baseline_file_access": traced_paths(source, args.trace),
-        },
-        "entries": entries,
-    }
-    inventory["inventory_hash"] = canonical_hash(inventory, "inventory_hash")
-    write_json(root / "migration/source_inventory.json", inventory)
+    if args.preserve_inventory:
+        inventory = json.loads(
+            (root / "migration/source_inventory.json").read_text(encoding="utf-8")
+        )
+        if inventory.get("inventory_hash") != canonical_hash(
+            inventory, "inventory_hash"
+        ):
+            raise SystemExit("committed source inventory hash is invalid")
+        entries = inventory["entries"]
+    else:
+        entries = source_items(source)
+        all_paths = [item["source_path"] for item in entries]
+        static_paths = [
+            value
+            for value in all_paths
+            if value != "licensing-public/schemas/respect_compat/matrix_validation_report.json"
+        ]
+        inventory = {
+            "schema_version": "1.0.0",
+            "source_repository": SOURCE_REPOSITORY,
+            "source_pull_request": PR_NUMBER,
+            "source_commit": SOURCE_COMMIT,
+            "source_tree_oids": {
+                "licensing-public": run_git(source, "rev-parse", f"{SOURCE_COMMIT}:licensing-public").decode().strip(),
+                "validator_blob": run_git(source, "rev-parse", f"{SOURCE_COMMIT}:tools/validate_respect_compatibility_matrix.py").decode().strip(),
+                "bootstrap_blob": run_git(source, "rev-parse", f"{SOURCE_COMMIT}:tools/bootstrap_respect_compat_standards.py").decode().strip(),
+            },
+            "matrix": {
+                "identifier": MATRIX_ID,
+                "version": MATRIX_VERSION,
+                "semantic_hash": MATRIX_SEMANTIC_HASH,
+                "features": 43,
+                "rows": 84,
+                "mutation_checks": 21,
+            },
+            "closures": {
+                "git_object_enumeration": all_paths,
+                "static_import_reference": static_paths,
+                "baseline_file_access": traced_paths(source, args.trace),
+            },
+            "entries": entries,
+        }
+        inventory["inventory_hash"] = canonical_hash(inventory, "inventory_hash")
+        write_json(root / "migration/source_inventory.json", inventory)
     manifest_entries = []
     for source_item in entries:
         source_path = source_item["source_path"]

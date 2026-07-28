@@ -13,3 +13,5 @@ Certification produces a fresh unpredictable scenario nonce. Test and replay mod
 Every run emits the authoritative JSON report, a sanitized evidence manifest, an immutable RESPECT-ification task packet, a text report, and a JUnit test report. The task packet contains only actionable CanApp-owned nonpasses and is the one-way handoff to the optional Kit.
 
 CanApp-owned rows alone determine CanApp compatibility. RESPECT-owned and Test-Suite-owned rows remain separately attributed, and a RESPECT environment defect is never reported as a CanApp defect.
+
+Native Android rows that require attributable device behavior use the Test Suite-owned companion and Android Debug Bridge controller documented in [NATIVE_ANDROID_RUNTIME_DRIVER.md](NATIVE_ANDROID_RUNTIME_DRIVER.md). The controller accepts no imported row outcomes and validates its companion build receipt before enabling controlled-runtime evidence.

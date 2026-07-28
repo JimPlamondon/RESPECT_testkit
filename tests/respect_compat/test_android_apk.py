@@ -20,6 +20,11 @@ def test_android_manifest_parser_finds_app_link_and_xapi_query():
     </intent>
   </queries>
   <application>
+    <service android:name=".RuntimeDriverService" android:exported="true">
+      <intent-filter>
+        <action android:name="org.openeel.action.xapioveripc" />
+      </intent-filter>
+    </service>
     <activity android:name=".MainActivity" android:exported="true">
       <intent-filter android:autoVerify="true">
         <action android:name="android.intent.action.VIEW" />
@@ -43,6 +48,13 @@ def test_android_manifest_parser_finds_app_link_and_xapi_query():
         }
     ]
     assert result["query_actions"] == ["org.openeel.action.xapioveripc"]
+    assert result["services"] == [
+        {
+            "service": ".RuntimeDriverService",
+            "exported": True,
+            "actions": ["org.openeel.action.xapioveripc"],
+        }
+    ]
 
 
 def test_android_device_probe_reports_missing_adb_without_claiming_health(tmp_path):

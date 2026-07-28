@@ -65,10 +65,27 @@ def parse_manifest_xml(text: str) -> Dict[str, Any]:
             if action.attrib.get(f"{ANDROID_NS}name")
         }
     )
+    services = []
+    for service in root.findall(".//service"):
+        actions = sorted(
+            {
+                action.attrib.get(f"{ANDROID_NS}name")
+                for action in service.findall("intent-filter/action")
+                if action.attrib.get(f"{ANDROID_NS}name")
+            }
+        )
+        services.append(
+            {
+                "service": service.attrib.get(f"{ANDROID_NS}name", ""),
+                "exported": service.attrib.get(f"{ANDROID_NS}exported") == "true",
+                "actions": actions,
+            }
+        )
     return {
         "package_id": package_id,
         "app_links": app_links,
         "query_actions": query_actions,
+        "services": services,
     }
 
 
@@ -80,9 +97,26 @@ def inspect_apk(
     tool = apkanalyzer or DEFAULT_APKANALYZER
     if tool is None or not tool.exists():
         located = shutil.which("apkanalyzer")
-        if not located:
-            raise FileNotFoundError("apkanalyzer")
-        tool = Path(located)
+        if located:
+            tool = Path(located)
+        else:
+            android_home = os.environ.get("ANDROID_HOME") or os.environ.get(
+                "ANDROID_SDK_ROOT"
+            )
+            candidates = (
+                sorted(
+                    (
+                        Path(android_home).expanduser()
+                        / "cmdline-tools"
+                    ).glob("*/bin/apkanalyzer"),
+                    reverse=True,
+                )
+                if android_home
+                else []
+            )
+            if not candidates:
+                raise FileNotFoundError("apkanalyzer")
+            tool = candidates[0]
     selected_java = java_home or DEFAULT_JAVA_HOME
     environment = os.environ.copy()
     if selected_java is not None and selected_java.exists():

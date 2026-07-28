@@ -3,11 +3,13 @@
 
 import argparse
 import json
+import secrets
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 from respect_compat.cli import main as suite_main
 from respect_compat.android_apk import probe_android_device
+from respect_compat.android_runtime_runner import run_native_android_runtime
 from respect_compat.handoff import canonical_hash
 from respect_compat.target import (
     CanAppTarget,
@@ -19,6 +21,7 @@ from respect_compat.target import (
 from .ledger import append_event, read_ledger
 from .planner import build_work_plan, validate_work_plan
 from .prep import generate_prep, write_prep
+from .runtime_driver_plan import write_runtime_driver_prompt
 from .verifier import run_narrow_verifier
 
 
@@ -47,6 +50,9 @@ def _add_target(parser: argparse.ArgumentParser) -> None:
     group.add_argument("--server-base-url")
     parser.add_argument("--apk", type=Path)
     parser.add_argument("--device-id")
+    parser.add_argument("--runtime-driver-apk", type=Path)
+    parser.add_argument("--runtime-driver-receipt", type=Path)
+    parser.add_argument("--runtime-scenario", type=Path)
 
 
 def _load_target(args: argparse.Namespace) -> CanAppTarget:
@@ -62,6 +68,30 @@ def _load_target(args: argparse.Namespace) -> CanAppTarget:
         target.metadata["device_probe"] = probe
         if probe["healthy"]:
             target.capabilities.add("android_device")
+    runtime_values = (
+        args.runtime_driver_apk,
+        args.runtime_driver_receipt,
+        args.runtime_scenario,
+    )
+    if any(runtime_values) and not all(runtime_values):
+        raise ValueError(
+            "--runtime-driver-apk, --runtime-driver-receipt, and "
+            "--runtime-scenario must be supplied together"
+        )
+    if args.runtime_driver_apk:
+        if not args.apk or not args.device_id:
+            raise ValueError(
+                "native runtime execution requires --apk and --device-id"
+            )
+        run_native_android_runtime(
+            target,
+            device_id=args.device_id,
+            driver_apk=args.runtime_driver_apk,
+            driver_receipt=args.runtime_driver_receipt,
+            scenario_path=args.runtime_scenario,
+            scenario_nonce=secrets.token_hex(12),
+        )
+        target.capabilities.add("controlled_android_runtime")
     return target
 
 
@@ -76,6 +106,14 @@ def _suite_target_args(args: argparse.Namespace) -> List[str]:
         values.extend(["--apk", str(args.apk)])
     if args.device_id:
         values.extend(["--device-id", args.device_id])
+    if args.runtime_driver_apk:
+        values.extend(["--runtime-driver-apk", str(args.runtime_driver_apk)])
+    if args.runtime_driver_receipt:
+        values.extend(
+            ["--runtime-driver-receipt", str(args.runtime_driver_receipt)]
+        )
+    if args.runtime_scenario:
+        values.extend(["--runtime-scenario", str(args.runtime_scenario)])
     return values
 
 
@@ -101,6 +139,12 @@ def build_parser() -> KitArgumentParser:
     plan.add_argument("--task-packet", type=Path, required=True)
     plan.add_argument("--private-prep", type=Path)
     plan.add_argument("--output", type=Path, required=True)
+
+    driver_plan = subparsers.add_parser("driver-plan")
+    driver_plan.add_argument("--work-plan", type=Path, required=True)
+    driver_plan.add_argument("--source-root", type=Path, required=True)
+    driver_plan.add_argument("--testkit-commit", required=True)
+    driver_plan.add_argument("--output", type=Path, required=True)
 
     status = subparsers.add_parser("status")
     status.add_argument("--work-plan", type=Path, required=True)
@@ -157,6 +201,16 @@ def main(argv: Optional[List[str]] = None) -> int:
                 raise ValueError(f"invalid generated work plan: {errors}")
             _write(args.output, work_plan)
             print(f"Planned {len(work_plan['tasks'])} actionable repair tasks.")
+            return 0
+        if args.command == "driver-plan":
+            plan = _read(args.work_plan)
+            write_runtime_driver_prompt(
+                plan,
+                args.source_root,
+                args.output,
+                testkit_commit=args.testkit_commit,
+            )
+            print(f"Wrote source-aware runtime-driver prompt to {args.output}.")
             return 0
         if args.command == "status":
             plan = _read(args.work_plan)

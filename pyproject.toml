@@ -26,6 +26,7 @@ respect-compat = "respect_compat.cli:main"
 respect-ification = "respect_ification.cli:main"
 respect-matrix-validate = "respect_compat.matrix_validator:main"
 respect-standards-bootstrap = "respect_compat.standards_bootstrap:main"
+respect-runtime-driver-build = "respect_compat.runtime_driver_build:main"
 
 [tool.setuptools]
 include-package-data = true
@@ -36,6 +37,7 @@ where = ["src"]
 [tool.setuptools.package-data]
 respect_compat = [
   "data/indexes/*.json",
+  "data/android/**/*",
   "data/matrix/*.json",
   "data/profiles/*.json",
   "data/schemas/*.json",

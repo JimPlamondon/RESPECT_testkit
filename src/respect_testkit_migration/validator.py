@@ -27,9 +27,13 @@ FORBIDDEN_EXCLUSION_CLASSES = {
     "validator",
     "bootstrap",
 }
-AUTHORITY_ROOTS = (
-    "src/respect_compat/data/",
-    "src/respect_ification/data/",
+MIGRATED_AUTHORITY_ROOTS = (
+    "src/respect_compat/data/fixtures/",
+    "src/respect_compat/data/indexes/",
+    "src/respect_compat/data/matrix/",
+    "src/respect_compat/data/profiles/",
+    "src/respect_compat/data/schemas/",
+    "src/respect_ification/data/schemas/",
 )
 
 
@@ -124,7 +128,7 @@ def validate_manifest(
             errors.append(f"ILLEGAL_DISPOSITION: {source_path}: {disposition}")
     actual_authorities = {
         path.relative_to(repository_root).as_posix()
-        for root_name in AUTHORITY_ROOTS
+        for root_name in MIGRATED_AUTHORITY_ROOTS
         for path in (repository_root / root_name).rglob("*")
         if path.is_file() and path.name != "__pycache__"
     }

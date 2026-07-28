@@ -125,13 +125,34 @@ class Coverage:
 
 
 @dataclass(frozen=True)
-class CertificationVerdict:
-    certified: bool
-    state: str
-    reason: str
+class CertificationProvision:
+    code: str
+    label: str
+    explanation: str
+    affected_rows: List[str]
+    evidence: Dict[str, Any]
+    clearance: str
+    rerun_scope: str
+    responsible_party: str
 
     def to_json_dict(self) -> Dict[str, Any]:
         return asdict(self)
+
+
+@dataclass(frozen=True)
+class CertificationVerdict:
+    certified: bool
+    state: str
+    display: str
+    reason: str
+    provisions: List[CertificationProvision] = field(default_factory=list)
+
+    def to_json_dict(self) -> Dict[str, Any]:
+        data = asdict(self)
+        data["provisions"] = [
+            provision.to_json_dict() for provision in self.provisions
+        ]
+        return data
 
 
 @dataclass(frozen=True)
@@ -152,6 +173,7 @@ class SuiteRun:
     verdict: CertificationVerdict
     actor_health: List[ActorHealth]
     capabilities: List[str]
+    evidence_environment: Dict[str, Any]
 
     def to_json_dict(self) -> Dict[str, Any]:
         return {
@@ -167,6 +189,7 @@ class SuiteRun:
             "target_digest": self.target_digest,
             "scenario_nonce": self.scenario_nonce,
             "capabilities": sorted(self.capabilities),
+            "evidence_environment": self.evidence_environment,
             "actor_health": [item.to_json_dict() for item in self.actor_health],
             "coverage": self.coverage.to_json_dict(),
             "verdict": self.verdict.to_json_dict(),

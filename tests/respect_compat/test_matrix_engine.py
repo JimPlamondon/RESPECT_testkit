@@ -15,9 +15,18 @@ from respect_compat.cli import main
 from respect_compat.executors import build_registry
 from respect_compat.matrix_runtime import DEFAULT_MATRIX_PATH, load_matrix, semantic_hash
 from respect_compat.models import RequirementOwner, ResultState
-from respect_compat.report import suite_json_payload, verify_suite_payload
+from respect_compat.report import (
+    suite_json_payload,
+    verify_suite_payload,
+    write_suite_reports,
+)
 from respect_compat.resources import resource
-from respect_compat.target import CanAppTarget, load_fixture_target, load_url_target
+from respect_compat.target import (
+    CanAppTarget,
+    HttpObservation,
+    load_fixture_target,
+    load_url_target,
+)
 
 
 REFERENCE_FIXTURE = resource("data/fixtures/v1_0/positive/web_reference")
@@ -394,6 +403,163 @@ def test_real_http_target_executes_descriptor_opds_and_http_rows():
     } == {}
 
 
+def test_opds_005_does_not_vacuously_pass_without_an_acquisition_link():
+    matrix = load_matrix()
+    canapp = target(
+        {
+            "metadata": {
+                "identifier": "https://canapp.example/app",
+                "title": "Example",
+            },
+            "links": [],
+        }
+    )
+
+    run = execute(
+        matrix,
+        canapp,
+        "PROFILE-WEB",
+        "test",
+        build_registry(matrix),
+        run_seed="no-acquisition",
+        selected_row_ids=["OPDS-005"],
+    )
+
+    assert run.results[0].state == ResultState.NOT_APPLICABLE
+
+
+def test_opds_009_requires_one_real_visit_for_a_repeated_url():
+    resource_url = "https://canapp.example/lesson"
+    document = {
+        "metadata": {"title": "Catalog"},
+        "publications": [
+            {
+                "metadata": {
+                    "identifier": "https://canapp.example/lesson",
+                    "title": "Lesson",
+                },
+                "links": [
+                    {"href": resource_url, "type": "text/html"},
+                    {"href": resource_url, "type": "text/html"},
+                ],
+            }
+        ],
+    }
+    matrix = load_matrix()
+    canapp = target(document)
+
+    missing = execute(
+        matrix,
+        canapp,
+        "PROFILE-WEB",
+        "test",
+        build_registry(matrix),
+        run_seed="repeat-missing",
+        selected_row_ids=["OPDS-009"],
+    )
+
+    assert missing.results[0].state != ResultState.PASS
+
+    canapp.observations.append(
+        HttpObservation(
+            requested_url=resource_url,
+            final_url=resource_url,
+            status=200,
+            headers={"content-type": "text/html"},
+            body=b"lesson",
+        )
+    )
+    observed = execute(
+        matrix,
+        canapp,
+        "PROFILE-WEB",
+        "test",
+        build_registry(matrix),
+        run_seed="repeat-observed",
+        selected_row_ids=["OPDS-009"],
+    )
+
+    assert observed.results[0].state == ResultState.PASS
+    assert observed.results[0].observed[resource_url] == 1
+
+
+def test_opds_010_rejects_an_unsupported_catalog_media_type():
+    matrix = load_matrix()
+    document = {
+        "metadata": {
+            "identifier": "https://canapp.example/app",
+            "title": "Example",
+        },
+        "links": [
+            {
+                "rel": [
+                    "https://respect.ustadmobile.com/ns/default-lesson-catalog"
+                ],
+                "href": "catalog.bin",
+                "type": "application/x-invented-catalog",
+            }
+        ],
+    }
+
+    run = execute(
+        matrix,
+        target(document),
+        "PROFILE-WEB",
+        "test",
+        build_registry(matrix),
+        run_seed="unsupported-catalog-type",
+        selected_row_ids=["OPDS-010"],
+    )
+
+    assert run.results[0].state == ResultState.FAIL
+
+
+def test_opds_011_requires_the_resolved_relative_resource_to_be_reached(
+    tmp_path,
+):
+    matrix = load_matrix()
+    document = {
+        "metadata": {"title": "Catalog"},
+        "publications": [
+            {
+                "metadata": {
+                    "identifier": "https://canapp.example/lesson",
+                    "title": "Lesson",
+                },
+                "links": [{"href": "missing.lesson", "type": "text/html"}],
+            }
+        ],
+    }
+    canapp = target(document)
+    canapp.source_root = tmp_path
+
+    missing = execute(
+        matrix,
+        canapp,
+        "PROFILE-WEB",
+        "test",
+        build_registry(matrix),
+        run_seed="relative-missing",
+        selected_row_ids=["OPDS-011"],
+    )
+
+    assert missing.results[0].state == ResultState.FAIL
+
+    (tmp_path / "missing.lesson").write_text("real lesson")
+    reached = execute(
+        matrix,
+        canapp,
+        "PROFILE-WEB",
+        "test",
+        build_registry(matrix),
+        run_seed="relative-reached",
+        selected_row_ids=["OPDS-011"],
+    )
+
+    assert reached.results[0].state == ResultState.PASS
+    assert reached.results[0].observed[0]["status"] == 200
+
+
 def test_independent_report_verifier_rejects_tampered_verdict():
     matrix = load_matrix()
     registry = ExecutorRegistry()
@@ -404,6 +570,116 @@ def test_independent_report_verifier_rejects_tampered_verdict():
     payload["verdict"]["certified"] = False
     payload["verdict"]["state"] = "not_certified"
     assert verify_suite_payload(payload)
+
+
+def test_emulator_preserves_row_passes_and_yields_named_provisional_approval():
+    matrix = load_matrix()
+    registry = ExecutorRegistry()
+    selected = matrix.selected_rows("PROFILE-NATIVE_ANDROID")
+    for row in selected:
+        registry.register(row.row_id, passing_executor)
+    canapp = target()
+    canapp.metadata["device_probe"] = {
+        "device_id": "emulator-5554",
+        "healthy": True,
+        "emulator": True,
+    }
+    canapp.capabilities.add("controlled_android_runtime")
+
+    run = execute(
+        matrix,
+        canapp,
+        "PROFILE-NATIVE_ANDROID",
+        "certification",
+        registry,
+    )
+
+    assert all(result.state == ResultState.PASS for result in run.results)
+    assert not run.verdict.certified
+    assert run.verdict.state == "provisional"
+    assert run.verdict.display == "Provisional (emulated Android runtime)"
+    provision = run.verdict.provisions[0]
+    assert provision.code == "EMULATED_ANDROID_RUNTIME"
+    assert provision.affected_rows == sorted(
+        row.row_id for row in selected if "tier_1_device" in row.required_tooling
+    )
+
+
+def test_local_https_preserves_row_passes_and_yields_named_provisional_approval(
+    tmp_path,
+):
+    matrix = load_matrix()
+    registry = ExecutorRegistry()
+    selected = matrix.selected_rows("PROFILE-WEB")
+    for row in selected:
+        registry.register(row.row_id, passing_executor)
+    canapp = target()
+    canapp.uri = "https://127.0.0.1:8443/descriptor.json"
+
+    run = execute(matrix, canapp, "PROFILE-WEB", "certification", registry)
+
+    assert all(result.state == ResultState.PASS for result in run.results)
+    assert not run.verdict.certified
+    assert run.verdict.state == "provisional"
+    assert run.verdict.display == "Provisional (local HTTPS publication)"
+    assert [item.code for item in run.verdict.provisions] == [
+        "LOCAL_HTTPS_PUBLICATION"
+    ]
+    write_suite_reports(run, tmp_path)
+    report = json.loads((tmp_path / "respect-report.json").read_text())
+    assert report["verdict"]["display"] == (
+        "Provisional (local HTTPS publication)"
+    )
+    assert report["independent_verification"]["passed"] is True
+    text_report = (tmp_path / "respect-report.txt").read_text()
+    assert "Approval: Provisional (local HTTPS publication)" in text_report
+    assert "Provision LOCAL_HTTPS_PUBLICATION:" in text_report
+
+
+def test_multiple_provisional_reasons_are_retained_and_displayed_together():
+    matrix = load_matrix()
+    registry = ExecutorRegistry()
+    for row in matrix.selected_rows("PROFILE-NATIVE_ANDROID"):
+        registry.register(row.row_id, passing_executor)
+    canapp = target()
+    canapp.uri = "https://localhost:8443/descriptor.json"
+    canapp.metadata["device_probe"] = {
+        "device_id": "emulator-5554",
+        "healthy": True,
+        "emulator": True,
+    }
+
+    run = execute(
+        matrix,
+        canapp,
+        "PROFILE-NATIVE_ANDROID",
+        "certification",
+        registry,
+    )
+
+    assert run.verdict.display == (
+        "Provisional (emulated Android runtime; local HTTPS publication)"
+    )
+    assert [item.code for item in run.verdict.provisions] == [
+        "EMULATED_ANDROID_RUNTIME",
+        "LOCAL_HTTPS_PUBLICATION",
+    ]
+
+
+def test_independent_report_verifier_rejects_tampered_provisions():
+    matrix = load_matrix()
+    registry = ExecutorRegistry()
+    for row in matrix.selected_rows("PROFILE-WEB"):
+        registry.register(row.row_id, passing_executor)
+    canapp = target()
+    canapp.uri = "https://localhost:8443/descriptor.json"
+    run = execute(matrix, canapp, "PROFILE-WEB", "certification", registry)
+    payload = suite_json_payload(run)
+    payload["verdict"]["provisions"] = []
+    assert any(
+        "serialized verdict provisions" in error
+        for error in verify_suite_payload(payload)
+    )
 
 
 def test_independent_report_verifier_rejects_tampered_owner():
@@ -420,7 +696,7 @@ def test_independent_report_verifier_rejects_tampered_owner():
     assert any("owner does not match" in error for error in verify_suite_payload(payload))
 
 
-def test_reference_web_canapp_certifies_with_environment_separated():
+def test_reference_web_fixture_is_provisional_despite_passing_canapp_rows():
     fixture = REFERENCE_FIXTURE
     matrix = load_matrix()
     run = execute(
@@ -430,7 +706,12 @@ def test_reference_web_canapp_certifies_with_environment_separated():
         "certification",
         build_registry(matrix),
     )
-    assert run.verdict.certified
+    assert not run.verdict.certified
+    assert run.verdict.state == "provisional"
+    assert run.verdict.display == "Provisional (suite fixture evidence)"
+    assert [item.code for item in run.verdict.provisions] == [
+        "SUITE_FIXTURE_EVIDENCE"
+    ]
     assert not [
         result
         for result in run.results

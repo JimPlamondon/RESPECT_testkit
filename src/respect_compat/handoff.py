@@ -35,6 +35,7 @@ def _shared(report: Dict[str, Any]) -> Dict[str, Any]:
         "profile_id": report["profile_id"],
         "target_digest": report["target_digest"],
         "scenario_nonce": report["scenario_nonce"],
+        "evidence_environment": copy.deepcopy(report["evidence_environment"]),
     }
 
 

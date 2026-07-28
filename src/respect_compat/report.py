@@ -9,6 +9,11 @@ from xml.etree.ElementTree import Element, ElementTree, SubElement
 from .matrix_runtime import load_matrix
 from .models import RequirementOwner, ResultState, RuleResult, SuiteRun
 from .handoff import build_handoff, write_handoff
+from .provisions import (
+    classify_publication_environment,
+    derive_provisions,
+    provisional_display,
+)
 
 
 def ordered_results(results: Iterable[RuleResult]) -> List[RuleResult]:
@@ -82,7 +87,9 @@ def recompute_serialized_verdict(payload: Dict[str, Any]) -> Dict[str, Any]:
         return {
             "certified": False,
             "state": "non_certification_mode",
+            "display": "Non-certification mode",
             "reason": f"mode {payload.get('mode')} cannot certify",
+            "provisions": [],
         }
     coverage = payload.get("coverage", {})
     selected = coverage.get("selected", [])
@@ -92,13 +99,17 @@ def recompute_serialized_verdict(payload: Dict[str, Any]) -> Dict[str, Any]:
         return {
             "certified": False,
             "state": "harness_error",
+            "display": "Harness error",
             "reason": "duplicate selected or result row identifier",
+            "provisions": [],
         }
     if set(selected) != set(result_ids):
         return {
             "certified": False,
             "state": "incomplete",
+            "display": "Incomplete",
             "reason": "serialized selected and executed row sets differ",
+            "provisions": [],
         }
     try:
         matrix = load_matrix()
@@ -106,14 +117,25 @@ def recompute_serialized_verdict(payload: Dict[str, Any]) -> Dict[str, Any]:
         return {
             "certified": False,
             "state": "harness_error",
+            "display": "Harness error",
             "reason": f"canonical Matrix could not be loaded: {type(error).__name__}",
+            "provisions": [],
         }
     if payload.get("matrix_semantic_hash") != matrix.semantic_hash:
         return {
             "certified": False,
             "state": "harness_error",
+            "display": "Harness error",
             "reason": "report Matrix hash does not match canonical Matrix",
+            "provisions": [],
         }
+    provisions = derive_provisions(
+        [matrix.rows[row_id] for row_id in selected if row_id in matrix.rows],
+        payload.get("evidence_environment", {}),
+    )
+    serialized_provisions = [
+        provision.to_json_dict() for provision in provisions
+    ]
     canapp = [
         item
         for item in results
@@ -130,23 +152,73 @@ def recompute_serialized_verdict(payload: Dict[str, Any]) -> Dict[str, Any]:
         return {
             "certified": False,
             "state": "incomplete",
+            "display": "Incomplete",
             "reason": "profile selected no CanApp-owned rows",
+            "provisions": serialized_provisions,
         }
     if nonpass:
         return {
             "certified": False,
             "state": "not_certified",
-            "reason": "applicable CanApp rows did not pass",
+            "display": "Not certified",
+            "reason": "applicable CanApp rows did not pass: "
+            + ", ".join(
+                f"{item.get('row_id')}={item.get('state')}" for item in nonpass
+            ),
+            "provisions": serialized_provisions,
+        }
+    if provisions:
+        return {
+            "certified": False,
+            "state": "provisional",
+            "display": provisional_display(provisions),
+            "reason": (
+                "all applicable CanApp-owned rows passed; "
+                f"{len(provisions)} certification provision(s) remain"
+            ),
+            "provisions": serialized_provisions,
         }
     return {
         "certified": True,
         "state": "certified",
+        "display": "Certified",
         "reason": "all applicable CanApp-owned rows passed",
+        "provisions": [],
     }
 
 
 def verify_suite_payload(payload: Dict[str, Any]) -> List[str]:
     errors: List[str] = []
+    environment = payload.get("evidence_environment", {})
+    publication = (
+        environment.get("publication", {})
+        if isinstance(environment, dict)
+        else {}
+    )
+    expected_publication = classify_publication_environment(
+        str(payload.get("target_uri", "")),
+        str(payload.get("target_adapter", "")),
+    )
+    if publication != expected_publication:
+        errors.append(
+            "evidence environment publication classification does not match target"
+        )
+    runtime = (
+        environment.get("android_runtime", {})
+        if isinstance(environment, dict)
+        else {}
+    )
+    runtime_kind = runtime.get("kind")
+    runtime_probe = runtime.get("probe", {})
+    if runtime_kind == "emulator" and runtime_probe.get("emulator") is not True:
+        errors.append("emulator evidence environment lacks a matching device probe")
+    if (
+        runtime_kind == "physical_device"
+        and runtime_probe.get("emulator") is not False
+    ):
+        errors.append(
+            "physical-device evidence environment lacks a matching device probe"
+        )
     try:
         matrix = load_matrix()
         profile = matrix.resolve_profile(str(payload.get("profile_id")))
@@ -183,7 +255,7 @@ def verify_suite_payload(payload: Dict[str, Any]) -> List[str]:
         )
     recomputed = recompute_serialized_verdict(payload)
     serialized = payload.get("verdict", {})
-    for field in ("certified", "state"):
+    for field in ("certified", "state", "display", "reason", "provisions"):
         if serialized.get(field) != recomputed.get(field):
             errors.append(
                 f"serialized verdict {field}={serialized.get(field)!r} "
@@ -237,10 +309,20 @@ def write_suite_reports(run: SuiteRun, output_dir: Path) -> None:
         f"Target: {run.target_uri}",
         f"Target digest: {run.target_digest}",
         f"Adapter: {run.target_adapter}",
-        f"Verdict: {run.verdict.state}",
+        f"Approval: {run.verdict.display}",
         f"Independent verification: {'pass' if not verification_errors else 'fail'}",
         "",
     ]
+    for provision in run.verdict.provisions:
+        lines.extend(
+            [
+                f"Provision {provision.code}: {provision.explanation}",
+                f"  Affected rows: {', '.join(provision.affected_rows) or 'none'}",
+                f"  To clear: {provision.clearance}",
+            ]
+        )
+    if run.verdict.provisions:
+        lines.append("")
     for result in sorted(run.results, key=lambda item: item.row_id):
         lines.append(
             f"{result.row_id} [{result.owner.value}] {result.state.value}: "

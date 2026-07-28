@@ -65,10 +65,27 @@ def parse_manifest_xml(text: str) -> Dict[str, Any]:
             if action.attrib.get(f"{ANDROID_NS}name")
         }
     )
+    services = []
+    for service in root.findall(".//service"):
+        actions = sorted(
+            {
+                action.attrib.get(f"{ANDROID_NS}name")
+                for action in service.findall("intent-filter/action")
+                if action.attrib.get(f"{ANDROID_NS}name")
+            }
+        )
+        services.append(
+            {
+                "service": service.attrib.get(f"{ANDROID_NS}name", ""),
+                "exported": service.attrib.get(f"{ANDROID_NS}exported") == "true",
+                "actions": actions,
+            }
+        )
     return {
         "package_id": package_id,
         "app_links": app_links,
         "query_actions": query_actions,
+        "services": services,
     }
 
 
@@ -80,9 +97,26 @@ def inspect_apk(
     tool = apkanalyzer or DEFAULT_APKANALYZER
     if tool is None or not tool.exists():
         located = shutil.which("apkanalyzer")
-        if not located:
-            raise FileNotFoundError("apkanalyzer")
-        tool = Path(located)
+        if located:
+            tool = Path(located)
+        else:
+            android_home = os.environ.get("ANDROID_HOME") or os.environ.get(
+                "ANDROID_SDK_ROOT"
+            )
+            candidates = (
+                sorted(
+                    (
+                        Path(android_home).expanduser()
+                        / "cmdline-tools"
+                    ).glob("*/bin/apkanalyzer"),
+                    reverse=True,
+                )
+                if android_home
+                else []
+            )
+            if not candidates:
+                raise FileNotFoundError("apkanalyzer")
+            tool = candidates[0]
     selected_java = java_home or DEFAULT_JAVA_HOME
     environment = os.environ.copy()
     if selected_java is not None and selected_java.exists():
@@ -188,9 +222,31 @@ def probe_android_device(
         timeout=10,
     )
     state = completed.stdout.strip()
+    emulator = None
+    properties = {}
+    if completed.returncode == 0 and state == "device":
+        getprop = subprocess.run(
+            [str(tool), "-s", device_id, "shell", "getprop"],
+            check=False,
+            capture_output=True,
+            text=True,
+            timeout=10,
+        )
+        if getprop.returncode == 0:
+            for line in getprop.stdout.splitlines():
+                match = re.fullmatch(r"\[([^\]]+)\]: \[(.*)\]", line.strip())
+                if match:
+                    properties[match.group(1)] = match.group(2)
+            emulator = properties.get("ro.kernel.qemu") == "1"
     return {
         "device_id": device_id,
         "healthy": completed.returncode == 0 and state == "device",
+        "emulator": emulator,
+        "manufacturer": properties.get("ro.product.manufacturer"),
+        "model": properties.get("ro.product.model"),
+        "os_release": properties.get("ro.build.version.release"),
+        "api_level": properties.get("ro.build.version.sdk"),
+        "build_fingerprint": properties.get("ro.build.fingerprint"),
         "state": state,
         "return_code": completed.returncode,
         "stderr": completed.stderr.strip(),

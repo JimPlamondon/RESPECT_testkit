@@ -3,11 +3,13 @@
 
 import argparse
 import json
+import secrets
 from pathlib import Path
 from typing import List, Optional
 
 from .android_metadata_validator import validate_android
 from .android_apk import probe_android_device
+from .android_runtime_runner import run_native_android_runtime
 from .ambiguity_router import route_claim
 from .app_links_validator import validate_app_links
 from .fake_launcher import build_launch_session
@@ -76,6 +78,9 @@ def main(argv: Optional[list[str]] = None) -> int:
     parser.add_argument("--profile", required=True)
     parser.add_argument("--apk", type=Path)
     parser.add_argument("--device-id")
+    parser.add_argument("--runtime-driver-apk", type=Path)
+    parser.add_argument("--runtime-driver-receipt", type=Path)
+    parser.add_argument("--runtime-scenario", type=Path)
     parser.add_argument(
         "--run-seed",
         help="Deterministic test/replay seed; forbidden in certification mode.",
@@ -85,6 +90,20 @@ def main(argv: Optional[list[str]] = None) -> int:
     args = parser.parse_args(argv)
     if args.mode == "certification" and args.run_seed:
         parser.error("--run-seed is forbidden in certification mode")
+    runtime_values = (
+        args.runtime_driver_apk,
+        args.runtime_driver_receipt,
+        args.runtime_scenario,
+    )
+    if any(runtime_values) and not all(runtime_values):
+        parser.error(
+            "--runtime-driver-apk, --runtime-driver-receipt, and "
+            "--runtime-scenario must be supplied together"
+        )
+    if args.runtime_driver_apk and (not args.apk or not args.device_id):
+        parser.error(
+            "native runtime execution requires --apk and --device-id"
+        )
     try:
         matrix = load_matrix()
         matrix.resolve_profile(args.profile)
@@ -102,6 +121,20 @@ def main(argv: Optional[list[str]] = None) -> int:
         target.metadata["device_probe"] = device_probe
         if device_probe["healthy"]:
             target.capabilities.add("android_device")
+    if args.runtime_driver_apk:
+        try:
+            run_native_android_runtime(
+                target,
+                device_id=args.device_id,
+                driver_apk=args.runtime_driver_apk,
+                driver_receipt=args.runtime_driver_receipt,
+                scenario_path=args.runtime_scenario,
+                scenario_nonce=secrets.token_hex(12),
+                certification_mode=args.mode == "certification",
+            )
+            target.capabilities.add("controlled_android_runtime")
+        except (FileNotFoundError, json.JSONDecodeError, OSError, RuntimeError, ValueError) as error:
+            parser.error(str(error))
     run = execute(
         matrix,
         target,
@@ -113,7 +146,7 @@ def main(argv: Optional[list[str]] = None) -> int:
     write_suite_reports(run, args.output_dir)
     verification_errors = verify_suite_payload(suite_json_payload(run))
     print(
-        f"RESPECT {run.profile_id}: {run.verdict.state}; "
+        f"RESPECT {run.profile_id}: {run.verdict.display}; "
         f"pass={len(run.coverage.passed)} fail={len(run.coverage.failed)} "
         f"blocked={len(run.coverage.blocked)} incomplete={len(run.coverage.incomplete)}"
     )

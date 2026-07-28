@@ -20,3 +20,10 @@ def test_runtime_schemas_compile():
     }
     for path in schemas:
         Draft202012Validator.check_schema(json.loads(path.read_text()))
+
+
+def test_publication_manifest_schema_compiles():
+    path = resource(
+        "data/publication/publication_manifest.schema.json"
+    )
+    Draft202012Validator.check_schema(json.loads(path.read_text()))

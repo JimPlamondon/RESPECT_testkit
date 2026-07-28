@@ -386,7 +386,8 @@ def project_runtime_observations(
         if isinstance(statement_id, str):
             by_statement_id.setdefault(statement_id, []).append(pair)
     duplicate_ok = False
-    conflict_ok = False
+    conflicting_reuse_seen = False
+    conflicting_reuse_rejected = True
     for pairs in by_statement_id.values():
         for index, left in enumerate(pairs):
             for right in pairs[index + 1 :]:
@@ -396,19 +397,29 @@ def project_runtime_observations(
                     for item in response_map.get(right[0]["request_id"], [])
                 ]
                 duplicate_ok = duplicate_ok or (same and 200 in status)
-                conflict_ok = conflict_ok or (not same and 409 in status)
-    if duplicate_ok or conflict_ok:
-        accepted = duplicate_ok and conflict_ok
+                if not same:
+                    conflicting_reuse_seen = True
+                    conflicting_reuse_rejected = (
+                        conflicting_reuse_rejected and 409 in status
+                    )
+    if duplicate_ok or conflicting_reuse_seen:
+        accepted = duplicate_ok and conflicting_reuse_rejected
         observations["XAPI-010"] = _result(
             "pass" if accepted else "fail",
             {
                 "identical_duplicate_accepted": duplicate_ok,
-                "conflicting_duplicate_rejected": conflict_ok,
+                "conflicting_identifier_reuse_seen": conflicting_reuse_seen,
+                "conflicting_duplicate_rejected": (
+                    conflicting_reuse_rejected
+                    if conflicting_reuse_seen
+                    else None
+                ),
             },
             (
-                "Duplicate identifier controls matched the active semantics."
+                "An identical retry was accepted and no conflicting identifier "
+                "reuse was accepted."
                 if accepted
-                else "A duplicate identifier control did not match the active semantics."
+                else "A duplicate identifier control violated the active semantics."
             ),
         )
 

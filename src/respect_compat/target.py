@@ -3,6 +3,8 @@
 
 import hashlib
 import json
+import ssl
+import urllib.error
 import urllib.parse
 import urllib.request
 from dataclasses import dataclass, field
@@ -80,18 +82,39 @@ def _fixture_digest(root: Path, uri: str, apk: Optional[Path]) -> str:
     return hasher.hexdigest()
 
 
-def fetch(url: str, headers: Optional[Dict[str, str]] = None, timeout: float = 10.0) -> HttpObservation:
+def fetch(
+    url: str,
+    headers: Optional[Dict[str, str]] = None,
+    timeout: float = 10.0,
+    ca_cert: Optional[Path] = None,
+) -> HttpObservation:
     request = urllib.request.Request(
         url,
         headers={"User-Agent": "RESPECT-Compatible-Test-Suite/1.0", **(headers or {})},
     )
-    with urllib.request.urlopen(request, timeout=timeout) as response:
+    context = (
+        ssl.create_default_context(cafile=str(ca_cert.resolve(strict=True)))
+        if ca_cert is not None
+        else None
+    )
+    try:
+        response = urllib.request.urlopen(
+            request,
+            timeout=timeout,
+            context=context,
+        )
+    except urllib.error.HTTPError as error:
+        response = error
+    with response:
         body = response.read()
         return HttpObservation(
             requested_url=url,
             final_url=response.geturl(),
             status=response.status,
-            headers={key.lower(): value for key, value in response.headers.items()},
+            headers={
+                key.lower(): value
+                for key, value in response.headers.items()
+            },
             body=body,
         )
 
@@ -153,8 +176,12 @@ def load_apk_target(apk: Path) -> CanAppTarget:
     )
 
 
-def load_url_target(url: str, apk: Optional[Path] = None) -> CanAppTarget:
-    observation = fetch(url)
+def load_url_target(
+    url: str,
+    apk: Optional[Path] = None,
+    ca_cert: Optional[Path] = None,
+) -> CanAppTarget:
+    observation = fetch(url, ca_cert=ca_cert)
     data = observation.json_data
     if not isinstance(data, dict):
         raise ValueError(f"CanApp target did not return a JSON object: {url}")
@@ -167,12 +194,21 @@ def load_url_target(url: str, apk: Optional[Path] = None) -> CanAppTarget:
         digest=_digest("manifest_url", observation.final_url, observation.body, apk),
         document=data,
         apk=apk,
+        metadata={
+            "tls_ca_cert": str(ca_cert.resolve(strict=True))
+            if ca_cert is not None
+            else None,
+        },
         observations=[observation],
         capabilities=capabilities,
     )
 
 
-def load_server_target(base_url: str, apk: Optional[Path] = None) -> CanAppTarget:
+def load_server_target(
+    base_url: str,
+    apk: Optional[Path] = None,
+    ca_cert: Optional[Path] = None,
+) -> CanAppTarget:
     normalized = base_url.rstrip("/") + "/"
     candidates = [
         normalized,
@@ -183,7 +219,11 @@ def load_server_target(base_url: str, apk: Optional[Path] = None) -> CanAppTarge
     failures: List[Tuple[str, str]] = []
     for candidate in dict.fromkeys(candidates):
         try:
-            target = load_url_target(candidate, apk=apk)
+            target = load_url_target(
+                candidate,
+                apk=apk,
+                ca_cert=ca_cert,
+            )
             target.adapter = "server_base_url"
             target.uri = base_url
             target.digest = _digest(

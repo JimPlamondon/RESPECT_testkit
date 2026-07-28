@@ -6,6 +6,8 @@ The RESPECT-ification Kit's general `repair-plan` command is documented separate
 
 The companion application exports the `org.openeel.action.xapioveripc` Android Messenger service. It captures binding, request, correlated reply, flow, completion, and unbind observations and returns controlled statement responses. The Python controller installs the submitted Android Package Kit (APK) and companion, launches the submitted production Hypertext Transfer Protocol Secure (HTTPS) App Link, drives only bounded scenario actions, reads the companion's private event log through `run-as`, verifies health and artifact bindings, and projects row observations itself.
 
+The companion returns one controlled transient server failure for the first ordinary statement submission. A conforming CanApp must retry the same durable statement without changing its identifier or content. The companion then accepts that identical retry. This exercises idempotent retry behavior without asking a conforming CanApp to manufacture a conflicting statement. If a CanApp does reuse an identifier with different content, the companion returns `409 Conflict` and the Test Suite records the violation.
+
 An owner-authored result file, fixture assertion, raw shell command, imported pass flag, or substituted companion APK cannot become trusted evidence. The controller requires a build receipt binding the companion APK hash to the driver source packaged with the running Test Suite, and it binds observations to the target digest, APK digest, companion digest, selected device, fresh scenario nonce, and CanApp package.
 
 ## Build the suite-owned companion
@@ -15,6 +17,8 @@ Run `respect-runtime-driver-build --gradle-wrapper <path-to-gradlew> --output-ap
 ## Runtime interface
 
 Add `--apk <canapp.apk> --device-id <serial> --runtime-driver-apk <driver.apk> --runtime-driver-receipt <driver.receipt.json> --runtime-scenario <scenario.json>` to `respect-compat`, `respect-ification verify`, or `respect-ification full-test`. The three runtime-driver arguments are an atomic group and require both the submitted APK and an explicitly selected healthy device.
+
+For a Kit-emitted provisional HTTPS origin signed by a local certification authority, add `--ca-cert <authority.pem>`. Certificate-chain and hostname validation remain enabled; the option only supplies the explicit local trust anchor to descriptor, catalog, publication, resource, and runtime discovery requests.
 
 The scenario is owner-local JSON (JavaScript Object Notation) with artifact type `respect_native_android_runtime_scenario`, format version `1.0.0`, the CanApp and driver packages, controlled endpoint, authorization, actor, activity identifier, expected production HTTPS launch URL, and a bounded action list. The controller resolves the submitted descriptor and default lesson catalog, selects exactly one publication whose identifier equals the scenario activity identifier, derives the launch base from that publication's single acquisition link, and appends only the standard RESPECT launch parameters. The expected launch URL must exactly match that derived URL. An owner-selected alternate path, hidden diagnostic parameter, invented activity identifier, fragment, or prepopulated reserved parameter is rejected before device mutation.
 

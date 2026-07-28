@@ -196,7 +196,12 @@ def _read_url(context: ExecutionContext, url: str, headers: Optional[Dict[str, s
         and "remote_http" not in context.target.capabilities
     ):
         raise RuntimeError("target has no live HTTP capability")
-    observation = fetch(url, headers=headers)
+    ca_cert = context.target.metadata.get("tls_ca_cert")
+    observation = fetch(
+        url,
+        headers=headers,
+        ca_cert=Path(ca_cert) if isinstance(ca_cert, str) else None,
+    )
     context.target.observations.append(observation)
     return observation
 
@@ -758,11 +763,12 @@ def http_executor(context: ExecutionContext, row: MatrixRow):
         status = int(configured["revalidation_status"])
         return _check(context, row, status == 304, status, "Conditional revalidation returned HTTP 304.", "Conditional revalidation did not return HTTP 304.")
     try:
-        request = urllib.request.Request(observation.final_url, headers=request_headers)
-        with urllib.request.urlopen(request, timeout=10.0) as response:
-            status = response.status
-    except urllib.error.HTTPError as error:
-        status = error.code
+        ca_cert = context.target.metadata.get("tls_ca_cert")
+        status = fetch(
+            observation.final_url,
+            headers=request_headers,
+            ca_cert=Path(ca_cert) if isinstance(ca_cert, str) else None,
+        ).status
     except Exception as error:
         return _blocked(context, row, f"conditional HTTP request: {type(error).__name__}")
     return _check(context, row, status == 304, status, "Conditional revalidation returned HTTP 304.", "Conditional revalidation did not return HTTP 304.")

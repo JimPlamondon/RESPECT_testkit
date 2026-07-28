@@ -260,6 +260,24 @@ def test_controller_evidence_projects_all_26_rows_without_imported_states():
     assert all(item["source"] == "suite-owned-android-runtime-driver" for item in observations.values())
 
 
+def test_identical_retry_passes_without_requiring_conflicting_canapp_output():
+    events = [
+        item
+        for item in _passing_events()
+        if item.get("request_id") != 3
+    ]
+
+    observations = project_runtime_observations(events, _binding())
+
+    assert observations["XAPI-010"]["state"] == "pass"
+    assert (
+        observations["XAPI-010"]["observed"][
+            "conflicting_identifier_reuse_seen"
+        ]
+        is False
+    )
+
+
 def test_wrong_binding_blocks_every_runtime_row():
     events = _passing_events()
     events[1]["target_digest"] = "another-target"

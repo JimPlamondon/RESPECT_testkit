@@ -83,6 +83,11 @@ def main(argv: Optional[list[str]] = None) -> int:
     input_group.add_argument("--apk-only", action="store_true")
     parser.add_argument("--profile", required=True)
     parser.add_argument("--apk", type=Path)
+    parser.add_argument(
+        "--ca-cert",
+        type=Path,
+        help="Trust this CA certificate for a provisioned HTTPS target.",
+    )
     parser.add_argument("--device-id")
     parser.add_argument("--runtime-driver-apk", type=Path)
     parser.add_argument("--runtime-driver-receipt", type=Path)
@@ -120,9 +125,17 @@ def main(argv: Optional[list[str]] = None) -> int:
         elif args.fixture_dir:
             target = load_fixture_target(Path(args.fixture_dir), apk=args.apk)
         elif args.manifest_url:
-            target = load_url_target(args.manifest_url, apk=args.apk)
+            target = load_url_target(
+                args.manifest_url,
+                apk=args.apk,
+                ca_cert=args.ca_cert,
+            )
         else:
-            target = load_server_target(args.server_base_url, apk=args.apk)
+            target = load_server_target(
+                args.server_base_url,
+                apk=args.apk,
+                ca_cert=args.ca_cert,
+            )
     except (FileNotFoundError, json.JSONDecodeError, ValueError, OSError) as error:
         parser.error(str(error))
     if args.device_id:

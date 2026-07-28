@@ -64,6 +64,30 @@ def test_full_test_cli_preserves_test_suite_verdict(tmp_path):
     assert (output / "respect-ification-task-packet.json").is_file()
 
 
+def test_full_test_cli_forwards_apk_only_assessment(tmp_path):
+    apk = tmp_path / "candidate.apk"
+    apk.write_bytes(b"submitted apk bytes")
+    output = tmp_path / "suite"
+
+    assert (
+        main(
+            [
+                "full-test",
+                "--apk-only",
+                "--apk",
+                str(apk),
+                "--profile",
+                "PROFILE-SUITE_QUALITY",
+                "--output-dir",
+                str(output),
+            ]
+        )
+        == 2
+    )
+    report = json.loads((output / "respect-report.json").read_text())
+    assert report["target_adapter"] == "apk_only"
+
+
 def test_repair_plan_cli_writes_adapter_and_prompt(tmp_path):
     matrix = load_matrix()
     source = tmp_path / "source"

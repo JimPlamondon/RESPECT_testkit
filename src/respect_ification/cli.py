@@ -15,6 +15,7 @@ from respect_compat.handoff import canonical_hash
 from respect_compat.matrix_runtime import load_matrix
 from respect_compat.target import (
     CanAppTarget,
+    load_apk_target,
     load_fixture_target,
     load_server_target,
     load_url_target,
@@ -59,6 +60,7 @@ def _add_target(parser: argparse.ArgumentParser) -> None:
     group.add_argument("--fixture-dir", type=Path)
     group.add_argument("--manifest-url")
     group.add_argument("--server-base-url")
+    group.add_argument("--apk-only", action="store_true")
     parser.add_argument("--apk", type=Path)
     parser.add_argument("--device-id")
     parser.add_argument("--runtime-driver-apk", type=Path)
@@ -67,7 +69,11 @@ def _add_target(parser: argparse.ArgumentParser) -> None:
 
 
 def _load_target(args: argparse.Namespace) -> CanAppTarget:
-    if args.fixture_dir:
+    if args.apk_only:
+        if not args.apk:
+            raise ValueError("--apk-only requires --apk")
+        target = load_apk_target(args.apk)
+    elif args.fixture_dir:
         target = load_fixture_target(args.fixture_dir, apk=args.apk)
     elif args.manifest_url:
         target = load_url_target(args.manifest_url, apk=args.apk)
@@ -107,7 +113,9 @@ def _load_target(args: argparse.Namespace) -> CanAppTarget:
 
 
 def _suite_target_args(args: argparse.Namespace) -> List[str]:
-    if args.fixture_dir:
+    if args.apk_only:
+        values = ["--apk-only"]
+    elif args.fixture_dir:
         values = ["--fixture-dir", str(args.fixture_dir)]
     elif args.manifest_url:
         values = ["--manifest-url", args.manifest_url]

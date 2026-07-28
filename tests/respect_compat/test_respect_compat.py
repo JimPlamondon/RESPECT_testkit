@@ -72,3 +72,19 @@ def test_cli_invocation_error_uses_exit_code_64():
     with pytest.raises(SystemExit) as error:
         main([])
     assert error.value.code == 64
+
+
+def test_cli_apk_only_requires_submitted_apk(tmp_path):
+    with pytest.raises(SystemExit) as error:
+        main(
+            [
+                "--apk-only",
+                "--profile",
+                "PROFILE-NATIVE_ANDROID",
+                "--mode",
+                "test",
+                "--output-dir",
+                str(tmp_path),
+            ]
+        )
+    assert error.value.code == 64

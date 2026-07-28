@@ -16,6 +16,8 @@ The planner validates run, Matrix, profile, target, evidence, graph, and content
 
 The `full-test` handback invokes the complete Test Suite and preserves its exit code and verdict without reinterpretation.
 
+For the first repair cycle of a raw native Android Candidate App, `full-test --apk-only --apk <path>` produces the complete Matrix report and repair packet without assuming the app already has the discovery interface that the Kit is meant to add.
+
 When owner-local Candidate App source is available, `repair-plan` creates two owner-local artifacts: a structured Kit-time repair adapter and a source-derived implementation prompt. The general analyzer follows the CanApp's own file references and common build, loading, selection, completion, launch, lifecycle, and Experience API seams. It does not encode any Candidate App's proprietary lesson format.
 
 Use `--source-root` for the repository or source collection and, when the CanApp is one project inside it, use `--canapp-root` for that project's relative path. The analyzer scopes product-code signals to the CanApp while following its explicit references to content stored elsewhere in the source collection.

@@ -270,6 +270,21 @@ def test_wrong_binding_blocks_every_runtime_row():
     assert all("binding" in item["message"].lower() for item in observations.values())
 
 
+def test_verified_domain_is_reported_independently_of_current_user_resolution():
+    events = [
+        _event(
+            "app_link_resolved",
+            resolved_package="android/com.android.internal.app.ResolverActivity",
+            domain_verified=True,
+        )
+    ]
+
+    observations = project_runtime_observations(events, _binding())
+
+    assert observations["ANDROID-001"]["state"] == "fail"
+    assert observations["ANDROID-002"]["state"] == "pass"
+
+
 def test_owner_authored_pass_field_is_ignored():
     event = _event("owner_result", row_id="AUTH-001", state="pass")
 

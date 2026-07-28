@@ -227,7 +227,7 @@ def project_runtime_observations(
                 else "The production HTTPS App Link did not resolve to the submitted CanApp."
             ),
         )
-        associated = resolved and app_link.get("domain_verified") is True
+        associated = app_link.get("domain_verified") is True
         observations["ANDROID-002"] = _result(
             "pass" if associated else "fail",
             app_link,

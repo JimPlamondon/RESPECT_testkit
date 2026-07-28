@@ -4,6 +4,7 @@
 import hashlib
 import json
 import re
+import shlex
 import shutil
 import subprocess
 import time
@@ -73,6 +74,15 @@ def _absolute_https(value: Any) -> bool:
         return False
     parsed = urllib.parse.urlparse(value)
     return parsed.scheme == "https" and bool(parsed.netloc)
+
+
+def domain_is_verified(association: str, host: str) -> bool:
+    return bool(
+        re.search(
+            rf"(?im)^\s*{re.escape(host)}:\s*(?:verified|1024)\s*$",
+            association,
+        )
+    )
 
 
 def load_runtime_scenario(path: Path) -> Dict[str, Any]:
@@ -250,12 +260,31 @@ def run_native_android_runtime(
         "--re-verify",
         scenario["canapp_package"],
     )
-    association = device(
+    host = urllib.parse.urlparse(scenario["launch_url"]).hostname or ""
+    association = ""
+    for _attempt in range(10):
+        association = device(
+            "shell",
+            "pm",
+            "get-app-links",
+            scenario["canapp_package"],
+        ).stdout
+        if domain_is_verified(association, host):
+            break
+        sleeper(1)
+    if not domain_is_verified(association, host):
+        raise ValueError("Android domain association did not become verified")
+    device(
         "shell",
         "pm",
-        "get-app-links",
+        "set-app-links-user-selection",
+        "--user",
+        "0",
+        "--package",
         scenario["canapp_package"],
-    ).stdout
+        "true",
+        host,
+    )
     resolution = device(
         "shell",
         "cmd",
@@ -267,9 +296,9 @@ def run_native_android_runtime(
         "-c",
         "android.intent.category.BROWSABLE",
         "-d",
-        scenario["launch_url"],
+        shlex.quote(scenario["launch_url"]),
     ).stdout.strip()
-    device(
+    launch = device(
         "shell",
         "am",
         "start",
@@ -279,8 +308,8 @@ def run_native_android_runtime(
         "-c",
         "android.intent.category.BROWSABLE",
         "-d",
-        scenario["launch_url"],
-    )
+        shlex.quote(scenario["launch_url"]),
+    ).stdout
     for action in scenario["actions"]:
         if action["type"] == "wait":
             sleeper(action["milliseconds"] / 1000)
@@ -314,19 +343,13 @@ def run_native_android_runtime(
         "device_id": device_id,
         "scenario_nonce": scenario_nonce,
     }
-    host = urllib.parse.urlparse(scenario["launch_url"]).hostname or ""
-    domain_verified = bool(
-        re.search(
-            rf"(?is){re.escape(host)}.*(?:verified|state:\s*1024)",
-            association,
-        )
-    )
+    domain_verified = domain_is_verified(association, host)
     events = [
         {
             "kind": "app_link_resolved",
             "resolved_package": (
                 scenario["canapp_package"]
-                if scenario["canapp_package"] in resolution
+                if scenario["canapp_package"] in f"{resolution}\n{launch}"
                 else resolution
             ),
             "domain_verified": domain_verified,

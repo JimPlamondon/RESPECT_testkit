@@ -9,6 +9,7 @@ import pytest
 import respect_compat.android_runtime_runner as runtime_runner
 from respect_compat.android_runtime_runner import (
     DRIVER_PACKAGE,
+    domain_is_verified,
     load_runtime_scenario,
     parse_driver_events,
     runtime_driver_source_hash,
@@ -83,6 +84,16 @@ def test_driver_event_parser_requires_health_control_and_valid_json_lines():
 def test_driver_event_parser_rejects_missing_health_control():
     with pytest.raises(ValueError, match="health"):
         parse_driver_events(json.dumps({"kind": "service_bound"}))
+
+
+def test_domain_verification_parser_does_not_accept_unrelated_verified_host():
+    association = """
+      other.example: verified
+      canapp.example: 1024
+    """
+
+    assert domain_is_verified(association, "canapp.example")
+    assert not domain_is_verified(association, "missing.example")
 
 
 def test_driver_receipt_binds_suite_source_and_apk(tmp_path):

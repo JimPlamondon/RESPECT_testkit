@@ -172,7 +172,7 @@ def _verify_packet(
         if packet.get(field_name) != expected:
             errors.append(f"{field_name} binding mismatch")
     if packet.get("core_hash") != _canonical_hash(
-        packet, ("core_hash",)
+        packet, ("core_hash", "suite_issuance")
     ):
         errors.append("core hash mismatch")
     return sorted(set(errors))

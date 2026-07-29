@@ -1234,7 +1234,7 @@
       "adaptation_reason": "standalone package layout, installed-resource access, or destination documentation",
       "blob_oid": "7308485b95dcdea858018bf3cf04282d481e55f5",
       "destination_path": "pyproject.toml",
-      "destination_sha256": "ad270faf247eb481d7b0b1e6aadfd7b3f6568c2add5474f3dab7752026e5ff39",
+      "destination_sha256": "bb60faf232bd3f6ea9d85dd364b90d6ff0eb81c354d59f6436401cf360e92432",
       "disposition": "adapted",
       "item_class": "repository_scaffold",
       "license": "Apache-2.0",
@@ -2277,7 +2277,7 @@
       "source_repository": "https://github.com/JimPlamondon/jims"
     }
   ],
-  "manifest_hash": "505a049f7e960f7acc540612cb17bd4c2aea82d78327d3b6288f66c708340204",
+  "manifest_hash": "b4bf33d918216f49ea9fa8f043d78aa4b65a63057f7c929e0c6bd6e5864f680e",
   "native_entries": [
     {
       "destination_path": "src/respect_compat/data/schemas/atomic_result_v2.schema.json",

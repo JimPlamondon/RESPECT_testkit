@@ -151,6 +151,7 @@
       "IF-OFFLINE-HTTP-IPC": 1,
       "IF-ONEROSTER": 1,
       "IF-OPDS": 2,
+      "IF-PUBLICATION-REGISTRY": 2,
       "IF-REGISTRATION": 1,
       "IF-RESPECT-IFICATION": 1,
       "IF-RUSTICI-LAUNCH": 1,
@@ -166,14 +167,123 @@
       "IF-XAPI-HTTP": 2,
       "IF-XAPI-IPC": 2
     },
-    "feature_count": 43,
+    "feature_count": 45,
     "matrix_to_source": "complete",
     "ready_for_downstream_code": true,
-    "row_count": 84,
+    "row_count": 87,
     "source_to_matrix": "complete",
     "unresolved_count": 0
   },
   "features": [
+    {
+      "claim_sources": [
+        {
+          "evidence": "No authoritative Spix publication-authorization verification key is currently published; the Test Suite therefore requires an explicit source-locked trust anchor and a named testing-only fallback.",
+          "locator": "docs/respect_compat/publication_pipeline.md",
+          "source_ref": "SRC-SPIX-PUBLICATION-POLICY"
+        }
+      ],
+      "conformance_disposition": "non_canapp_obligation",
+      "current_suite_mapping": {
+        "harness_paths": [
+          "src/respect_compat/certification_keys.py",
+          "src/respect_compat/publication_prerequisites.py"
+        ],
+        "legacy_requirement_ids": [],
+        "notes": "Certification uses only a source-locked Spix key. When none exists, the suite generates and reuses a testing keypair and records an explicit Provisional reason.",
+        "status": "implemented"
+      },
+      "documentation_status": "documented",
+      "feature_id": "RCF-SPIX-CERTIFICATION-KEY",
+      "first_applicable_respect_version": "TestKit policy 2026-07-29",
+      "implementation_sources": [
+        {
+          "evidence": "Project-owned policy assigns the publication-authorization trust anchor to Spix and prohibits a submission-supplied key from becoming certification authority.",
+          "locator": "docs/respect_compat/publication_pipeline.md",
+          "source_ref": "SRC-SPIX-PUBLICATION-POLICY"
+        }
+      ],
+      "implementation_status": "implemented_and_tested",
+      "interface_family_id": "IF-PUBLICATION-REGISTRY",
+      "last_applicable_respect_version": null,
+      "lifecycle_status": "active",
+      "nonimplementation_evidence": [],
+      "nonimplementation_reason": "not_applicable",
+      "profile_ids": [
+        "PROFILE-NATIVE_ANDROID",
+        "PROFILE-WEB"
+      ],
+      "requirement_owner": "spix_foundation",
+      "requirement_status": "required",
+      "respect_ification_guidance": "Do not ask the Candidate App publisher to supply the certification trust anchor. Use the source-locked Spix key when available; otherwise reuse the locally generated testing key and retain the testing-only Provisional reason.",
+      "respect_revision": "TestKit policy 2026-07-29",
+      "row_ids": [
+        "PUBLISH-003"
+      ],
+      "scope_rationale": "Without an independently supplied trust anchor, an AppDev could sign its own publication authorization and defeat independent certification.",
+      "semantic_contract_ids": [
+        "SC-PUBLICATION-REGISTRY"
+      ],
+      "standard_bindings": [],
+      "support_status": "implemented_and_testable",
+      "testability_status": "executable_now",
+      "title": "Spix publication-authorization trust anchor"
+    },
+    {
+      "claim_sources": [
+        {
+          "evidence": "The Foundation publication pipeline requires legal publication authority and an immutable acquisition of the exact certified artifact.",
+          "locator": "docs/respect_compat/publication_pipeline.md",
+          "source_ref": "SRC-SPIX-PUBLICATION-POLICY"
+        }
+      ],
+      "conformance_disposition": "non_canapp_obligation",
+      "current_suite_mapping": {
+        "harness_paths": [
+          "src/respect_compat/publication_prerequisites.py",
+          "src/respect_ification/publication_authorization.py"
+        ],
+        "legacy_requirement_ids": [],
+        "notes": "The Matrix-driven suite verifies the signed authorization and exact immutable artifact; the Kit ensures one asynchronous publisher-agreement request and obtains build-specific authorization.",
+        "status": "implemented"
+      },
+      "documentation_status": "documented",
+      "feature_id": "RCF-PUBLICATION-REGISTRY",
+      "first_applicable_respect_version": "TestKit policy 2026-07-29",
+      "implementation_sources": [
+        {
+          "evidence": "Project-owned policy defines the two prerequisites needed to automate the certified-to-published registry transition.",
+          "locator": "docs/respect_compat/publication_pipeline.md",
+          "source_ref": "SRC-SPIX-PUBLICATION-POLICY"
+        }
+      ],
+      "implementation_status": "implemented_and_tested",
+      "interface_family_id": "IF-PUBLICATION-REGISTRY",
+      "last_applicable_respect_version": null,
+      "lifecycle_status": "active",
+      "nonimplementation_evidence": [],
+      "nonimplementation_reason": "not_applicable",
+      "profile_ids": [
+        "PROFILE-NATIVE_ANDROID",
+        "PROFILE-WEB"
+      ],
+      "requirement_owner": "publisher",
+      "requirement_status": "required",
+      "respect_ification_guidance": "Do not modify the CanApp to manufacture these facts. Ensure the existing publisher agreement idempotently, obtain a Spix authorization bound to the exact build, and publish that build at its content-addressed HTTPS URL.",
+      "respect_revision": "TestKit policy 2026-07-29",
+      "row_ids": [
+        "PUBLISH-001",
+        "PUBLISH-002"
+      ],
+      "scope_rationale": "These two publisher-owned facts are necessary and sufficient for an independently passing build to enter the automated public RESPECT Compatible app registry.",
+      "semantic_contract_ids": [
+        "SC-PUBLICATION-REGISTRY"
+      ],
+      "standard_bindings": [],
+      "support_status": "implemented_and_testable",
+      "testability_status": "executable_now",
+      "title": "Certified-build publication prerequisites"
+    },
     {
       "claim_sources": [],
       "conformance_disposition": "required_canapp",
@@ -2727,6 +2837,21 @@
   "generated_at": "2026-07-27T13:42:25Z",
   "interface_families": [
     {
+      "description": "Publisher authorization and immutable exact-build acquisition needed by the Spix registry publication pipeline.",
+      "interface_family_id": "IF-PUBLICATION-REGISTRY",
+      "lifecycle_status": "active",
+      "profile_ids": [
+        "PROFILE-NATIVE_ANDROID",
+        "PROFILE-WEB"
+      ],
+      "scope": "Non-CanApp prerequisites for advancing an independently passing build from Provisional approval into the public RESPECT Compatible app registry.",
+      "source_refs": [
+        "SRC-SPIX-PUBLICATION-POLICY"
+      ],
+      "title": "Spix registry publication",
+      "version": "2026-07-29"
+    },
+    {
       "interface_family_id": "IF-ANDROID-LAUNCH",
       "lifecycle_status": "active",
       "scope": "Source-audited behavior and claims associated with Android App Links.",
@@ -3142,6 +3267,7 @@
         "IF-LAUNCH",
         "IF-MANIFEST",
         "IF-OPDS",
+        "IF-PUBLICATION-REGISTRY",
         "IF-RUSTICI-LAUNCH",
         "IF-XAPI",
         "IF-XAPI-ASSIGNMENT",
@@ -3185,6 +3311,7 @@
         "IF-LAUNCH",
         "IF-MANIFEST",
         "IF-OPDS",
+        "IF-PUBLICATION-REGISTRY",
         "IF-RUSTICI-LAUNCH",
         "IF-XAPI",
         "IF-XAPI-ASSIGNMENT",
@@ -3202,6 +3329,378 @@
     }
   ],
   "rows": [
+    {
+      "applicability_predicate": "A Candidate App build is being evaluated for Foundation certification or is exercising the certification protocol provisionally.",
+      "binding_id": null,
+      "canapp_behavior": "No Candidate App or publisher-supplied key can establish the Spix Foundation's certification authority.",
+      "current_suite_status": "implemented",
+      "evidence_attribution": "Record the key provenance, key identifier, SHA-256 fingerprint, Matrix hash, Test Suite package identity, target digest, and scenario nonce without recording any private key bytes.",
+      "expected_evidence": [
+        "Source-locked Spix public-key resource and fingerprint, or the stable fingerprint and testing-only provenance of the locally generated fallback key."
+      ],
+      "external_actor": "Spix Foundation certification authority",
+      "failure_classification": "terminal",
+      "feature_id": "RCF-SPIX-CERTIFICATION-KEY",
+      "interaction": {
+        "consumed_behavior": "Load the verification key from Test Suite-controlled state and classify its independent provenance before accepting any authorization signature.",
+        "consumer": "RESPECT Compatible Test Suite",
+        "produced_behavior": "Publish and maintain the authoritative public key used to verify Spix publication authorizations.",
+        "producer": "Spix Foundation",
+        "transport": "not_applicable"
+      },
+      "narrow_verifier": "Execute TEST-PUBLISH-003 with a source-locked Spix key, a persistent suite-generated testing key, an AppDev-supplied substitute, and a malformed key.",
+      "negative_case": "An AppDev-supplied or malformed key cannot become the Foundation trust anchor; absence uses the persistent testing key and remains explicitly Provisional.",
+      "oracles": {
+        "anti_cheating": {
+          "description": "Certification-mode provenance comes from Test Suite-controlled resources or state, never from the Candidate App submission bundle.",
+          "evidence_fields": [
+            "provenance",
+            "fingerprint_sha256",
+            "target_digest"
+          ]
+        },
+        "conformance": {
+          "description": "A source-locked Spix Ed25519 public key is available independently of the Candidate App and publisher.",
+          "evidence_fields": [
+            "provenance",
+            "key_id",
+            "fingerprint_sha256"
+          ]
+        },
+        "harness_health": {
+          "description": "The suite loads a valid Ed25519 key and rejects a malformed key or submission-supplied trust substitution.",
+          "evidence_fields": [
+            "errors",
+            "provenance"
+          ]
+        },
+        "target_attribution": {
+          "description": "The key decision is bound to the Test Suite package, Matrix, submitted target, and fresh scenario.",
+          "evidence_fields": [
+            "target_digest",
+            "scenario_nonce",
+            "fingerprint_sha256"
+          ]
+        }
+      },
+      "outcomes": {
+        "blocked": {
+          "condition": "Test Suite-controlled key storage is unavailable and the failed prerequisite is recorded.",
+          "failure_domain": "suite"
+        },
+        "deferred": {
+          "condition": "Spix key publication is pending; the persistent testing key allows provisional protocol testing only.",
+          "failure_domain": "source_authority"
+        },
+        "fail": {
+          "condition": "The alleged certification key is malformed, altered, or supplied by the Candidate App submission rather than independently anchored by Spix or marked testing-only.",
+          "failure_domain": "source_authority"
+        },
+        "harness_error": {
+          "condition": "The suite cannot load or generate a valid Ed25519 testing key independently of the submission.",
+          "failure_domain": "suite"
+        },
+        "incomplete": {
+          "condition": "No source-locked Spix key exists; the suite uses its persistent testing-only key and certification remains Provisional.",
+          "failure_domain": "source_authority"
+        },
+        "not_applicable": {
+          "condition": "The selected profile is not eligible for Foundation certification or provisional certification-protocol testing.",
+          "failure_domain": "not_applicable"
+        },
+        "pass": {
+          "condition": "The suite independently supplies the source-locked Spix Ed25519 certification public key.",
+          "failure_domain": "not_applicable"
+        }
+      },
+      "positive_case": "The installed Test Suite contains a source-locked Spix public key whose identifier and fingerprint match Foundation policy.",
+      "primary_failure_domain": "source_authority",
+      "profile_ids": [
+        "PROFILE-NATIVE_ANDROID",
+        "PROFILE-WEB"
+      ],
+      "required_tooling": [
+        "tier_1_ed25519_verifier",
+        "tier_1_suite_controlled_key_store"
+      ],
+      "requirement_owner": "spix_foundation",
+      "requirement_statement": {
+        "action": "Publish the independently trusted key used to verify Spix publication authorizations",
+        "expected_output": "The Test Suite can authenticate authorization tokens without trusting any key supplied by the Candidate App or publisher",
+        "failure_owner": "source_authority",
+        "input": "The source-locked Test Suite release and Spix certification-key policy",
+        "receiver": "RESPECT Compatible Test Suite",
+        "subject": "Spix Foundation"
+      },
+      "route_variant": "semantic",
+      "row_id": "PUBLISH-003",
+      "semantic_contract_id": "SC-PUBLICATION-REGISTRY",
+      "source_refs": [
+        "SRC-SPIX-PUBLICATION-POLICY"
+      ],
+      "stimulus_sequence": [
+        "Inspect Test Suite-controlled key provenance.",
+        "Load and fingerprint the verification key.",
+        "Reject submission-controlled substitution.",
+        "When the Spix key is absent, generate or reuse one testing keypair and record testing-only provenance."
+      ],
+      "test_action": "Verify independent trust-anchor provenance before interpreting publication-authorization signatures.",
+      "test_case_ids": [
+        "TEST-PUBLISH-003"
+      ],
+      "title": "Spix supplies the certification trust anchor",
+      "tooling_health_preconditions": [
+        "Testing-key persistence and Ed25519 loading pass independently of Candidate App input."
+      ]
+    },
+    {
+      "applicability_predicate": "A submitted Candidate App build is being evaluated for Foundation certification and public registry publication.",
+      "binding_id": null,
+      "canapp_behavior": "No Candidate App code change can supply legal publisher authority; the exact tested artifact and stable app identifier must remain unchanged.",
+      "current_suite_status": "implemented",
+      "evidence_attribution": "Bind the verified Spix token, agreement reference, app identifier, artifact SHA-256, immutable URL, Matrix hash, and scenario nonce to the submitted target.",
+      "expected_evidence": [
+        "Ed25519 signature verification, Spix issuer, publisher identifier, stable app identifier, agreement version, DocuSign envelope reference, artifact SHA-256, immutable URL, publication scope, token identifier, and issue time."
+      ],
+      "external_actor": "Candidate App publisher and Spix Foundation publication service",
+      "failure_classification": "terminal",
+      "feature_id": "RCF-PUBLICATION-REGISTRY",
+      "interaction": {
+        "consumed_behavior": "Verify the Spix-issued authorization against the pinned Spix public key and exact submitted-build bindings.",
+        "consumer": "RESPECT Compatible Test Suite and Spix registry publisher",
+        "produced_behavior": "Provide legal authority and permission to publish the exact build if it independently passes certification.",
+        "producer": "Candidate App publisher and Spix Foundation",
+        "transport": "not_applicable"
+      },
+      "narrow_verifier": "Execute TEST-PUBLISH-001 with a valid signed token and independently mutate its signature, app identifier, artifact digest, URL, scope, and agreement reference.",
+      "negative_case": "A missing authorization is Provisional; a bad signature or a token bound to different facts fails this publisher-owned row.",
+      "oracles": {
+        "anti_cheating": {
+          "description": "The signature and exact-build fields prevent an owner-authored pass flag or authorization for another artifact from satisfying the row.",
+          "evidence_fields": [
+            "scenario_nonce",
+            "token_id",
+            "artifact_sha256"
+          ]
+        },
+        "conformance": {
+          "description": "A Spix authorization token is authentic and exactly binds the publisher, app, artifact, acquisition URL, agreement, and publish-if-certified scope.",
+          "evidence_fields": [
+            "verified",
+            "binding_errors",
+            "token_id"
+          ]
+        },
+        "harness_health": {
+          "description": "The pinned Spix public key loads and a deliberately altered signature is rejected.",
+          "evidence_fields": [
+            "signature_algorithm",
+            "public_key_id"
+          ]
+        },
+        "target_attribution": {
+          "description": "The token artifact digest, immutable URL, and stable app identifier match the submitted target.",
+          "evidence_fields": [
+            "target_digest",
+            "artifact_sha256",
+            "immutable_artifact_url",
+            "app_id"
+          ]
+        }
+      },
+      "outcomes": {
+        "blocked": {
+          "condition": "The Spix verification authority is unavailable and that failed prerequisite is recorded.",
+          "failure_domain": "actor"
+        },
+        "deferred": {
+          "condition": "The publisher agreement is still awaiting signature; certification remains Provisional.",
+          "failure_domain": "legal"
+        },
+        "fail": {
+          "condition": "The supplied token has an invalid signature, lacks publication scope, or binds different app, artifact, URL, or agreement facts.",
+          "failure_domain": "legal"
+        },
+        "harness_error": {
+          "condition": "The suite cannot perform the required cryptographic verification independently of the supplied token.",
+          "failure_domain": "suite"
+        },
+        "incomplete": {
+          "condition": "No Spix authorization token, public key, exact artifact, immutable URL, or stable app identifier was supplied; certification remains Provisional.",
+          "failure_domain": "legal"
+        },
+        "not_applicable": {
+          "condition": "The selected profile is not eligible for Foundation certification or registry publication.",
+          "failure_domain": "not_applicable"
+        },
+        "pass": {
+          "condition": "The authentic Spix token exactly binds all required publication facts for the submitted build.",
+          "failure_domain": "not_applicable"
+        }
+      },
+      "positive_case": "A Spix-signed token under a completed Publisher Agreement exactly authorizes this app identifier, artifact digest, immutable URL, and publication scope.",
+      "primary_failure_domain": "legal",
+      "profile_ids": [
+        "PROFILE-NATIVE_ANDROID",
+        "PROFILE-WEB"
+      ],
+      "required_tooling": [
+        "tier_1_ed25519_verifier"
+      ],
+      "requirement_owner": "publisher",
+      "requirement_statement": {
+        "action": "Provide a Spix-issued authorization to publish the exact build if it passes certification",
+        "expected_output": "An authentic token exactly binds the publisher, app, artifact, immutable URL, agreement, and publication scope",
+        "failure_owner": "legal",
+        "input": "The exact submitted artifact and completed Spix Publisher Agreement",
+        "receiver": "Spix registry publication pipeline",
+        "subject": "Candidate App publisher"
+      },
+      "route_variant": "semantic",
+      "row_id": "PUBLISH-001",
+      "semantic_contract_id": "SC-PUBLICATION-REGISTRY",
+      "source_refs": [
+        "SRC-SPIX-PUBLICATION-POLICY"
+      ],
+      "stimulus_sequence": [
+        "Load the supplied token and pinned Spix public key.",
+        "Verify the Ed25519 signature.",
+        "Compare every publication binding with the submitted target."
+      ],
+      "test_action": "Cryptographically verify the authorization and compare its legal and exact-build bindings.",
+      "test_case_ids": [
+        "TEST-PUBLISH-001"
+      ],
+      "title": "Publisher authorizes registry publication of the exact certified build",
+      "tooling_health_preconditions": [
+        "The verifier accepts a known-good signature and rejects a one-byte signature or payload mutation."
+      ]
+    },
+    {
+      "applicability_predicate": "A submitted Candidate App build is being evaluated for Foundation certification and public registry publication.",
+      "binding_id": null,
+      "canapp_behavior": "The submitted Candidate App artifact must be the same artifact made available for registry acquisition; no test-only substitute or rebuilt binary is permitted.",
+      "current_suite_status": "implemented",
+      "evidence_attribution": "Bind the requested and final URLs, HTTP status, cache policy, served SHA-256, submitted artifact SHA-256, Matrix hash, target digest, and scenario nonce.",
+      "expected_evidence": [
+        "Content-addressed HTTPS URL, successful response, immutable cache directive, submitted artifact SHA-256, and served-byte SHA-256."
+      ],
+      "external_actor": "Candidate App publisher's artifact host",
+      "failure_classification": "terminal",
+      "feature_id": "RCF-PUBLICATION-REGISTRY",
+      "interaction": {
+        "consumed_behavior": "Acquire the build through its declared immutable HTTPS URL and hash the returned bytes.",
+        "consumer": "Spix registry publication pipeline",
+        "produced_behavior": "Serve the exact submitted build at a content-addressed HTTPS URL with immutable cache semantics.",
+        "producer": "Candidate App publisher",
+        "transport": "HTTPS"
+      },
+      "narrow_verifier": "Execute TEST-PUBLISH-002 against the exact submitted artifact, then independently mutate the URL digest, cache policy, status, and one served byte.",
+      "negative_case": "A missing URL is Provisional; a mutable URL, non-HTTPS URL, error response, or byte mismatch fails this publisher-owned row.",
+      "oracles": {
+        "anti_cheating": {
+          "description": "The suite hashes bytes fetched from the declared URL rather than accepting publisher-authored digest evidence.",
+          "evidence_fields": [
+            "expected_sha256",
+            "observed_sha256",
+            "scenario_nonce"
+          ]
+        },
+        "conformance": {
+          "description": "The content-addressed HTTPS response is successful, immutable, and byte-identical to the submitted artifact.",
+          "evidence_fields": [
+            "url",
+            "http_status",
+            "cache_control",
+            "verified"
+          ]
+        },
+        "harness_health": {
+          "description": "The suite can fetch a positive control and detect a one-byte negative control.",
+          "evidence_fields": [
+            "fetch_control",
+            "hash_control"
+          ]
+        },
+        "target_attribution": {
+          "description": "The local artifact digest and independently fetched digest are bound to the submitted target.",
+          "evidence_fields": [
+            "target_digest",
+            "expected_sha256",
+            "observed_sha256"
+          ]
+        }
+      },
+      "outcomes": {
+        "blocked": {
+          "condition": "The declared remote host is unavailable and the failed network prerequisite is recorded.",
+          "failure_domain": "network"
+        },
+        "deferred": {
+          "condition": "Artifact publication is pending; certification remains Provisional.",
+          "failure_domain": "policy"
+        },
+        "fail": {
+          "condition": "The URL is not HTTPS and content-addressed, the response is not successful and immutable, or the served bytes differ from the submitted artifact.",
+          "failure_domain": "security"
+        },
+        "harness_error": {
+          "condition": "A positive fetch or hashing control fails independently of the publisher host.",
+          "failure_domain": "suite"
+        },
+        "incomplete": {
+          "condition": "The exact submitted artifact or its immutable acquisition URL was not supplied; certification remains Provisional.",
+          "failure_domain": "policy"
+        },
+        "not_applicable": {
+          "condition": "The selected profile is not eligible for Foundation certification or registry publication.",
+          "failure_domain": "not_applicable"
+        },
+        "pass": {
+          "condition": "The content-addressed HTTPS URL returns the exact submitted artifact with immutable cache semantics.",
+          "failure_domain": "not_applicable"
+        }
+      },
+      "positive_case": "The URL path contains the submitted artifact SHA-256 and returns those exact bytes with HTTP 200 and Cache-Control immutable.",
+      "primary_failure_domain": "security",
+      "profile_ids": [
+        "PROFILE-NATIVE_ANDROID",
+        "PROFILE-WEB"
+      ],
+      "required_tooling": [
+        "tier_1_remote_https",
+        "tier_1_sha256"
+      ],
+      "requirement_owner": "publisher",
+      "requirement_statement": {
+        "action": "Publish the exact submitted build at a content-addressed immutable HTTPS URL",
+        "expected_output": "The URL returns byte-for-byte the artifact independently tested by Spix",
+        "failure_owner": "security",
+        "input": "The exact submitted artifact and its declared acquisition URL",
+        "receiver": "Spix registry publication pipeline",
+        "subject": "Candidate App publisher"
+      },
+      "route_variant": "HTTPS",
+      "row_id": "PUBLISH-002",
+      "semantic_contract_id": "SC-PUBLICATION-REGISTRY",
+      "source_refs": [
+        "SRC-SPIX-PUBLICATION-POLICY"
+      ],
+      "stimulus_sequence": [
+        "Hash the submitted artifact.",
+        "Require its SHA-256 in the HTTPS URL path.",
+        "Fetch the URL and hash the returned bytes.",
+        "Verify successful immutable response semantics and exact digest equality."
+      ],
+      "test_action": "Independently acquire and compare the exact registry artifact.",
+      "test_case_ids": [
+        "TEST-PUBLISH-002"
+      ],
+      "title": "Immutable acquisition URL serves the exact certified build",
+      "tooling_health_preconditions": [
+        "The HTTPS client and SHA-256 implementation pass positive and one-byte negative controls."
+      ]
+    },
     {
       "applicability_predicate": "The selected conformance profile includes this route and the CanApp declares or exposes the corresponding capability.",
       "binding_id": "BIND-LAUNCH-ANDROID-INTENT",
@@ -13292,6 +13791,14 @@
   "schema_version": "1.1.0",
   "semantic_contracts": [
     {
+      "scope": "A publisher legally authorizes publication and exposes the exact independently tested build through one stable immutable acquisition reference.",
+      "semantic_contract_id": "SC-PUBLICATION-REGISTRY",
+      "source_refs": [
+        "SRC-SPIX-PUBLICATION-POLICY"
+      ],
+      "title": "Certified build to public registry"
+    },
+    {
       "scope": "RESPECT records, updates, and removes CanApp availability.",
       "semantic_contract_id": "SC-REGISTRATION",
       "source_refs": [],
@@ -13382,8 +13889,19 @@
       "title": "Assignment and grade return"
     }
   ],
-  "semantic_hash": "c10090db5b2112a1fe5bfa39a13ca86aecca1d36d98f37ebe86592a6a196812c",
+  "semantic_hash": "5a059124de6875ad8fa2e23c7244343f70eab6033ad26fbefeb46407d20421ee",
   "source_locks": [
+    {
+      "local_path": "docs/respect_compat/publication_pipeline.md",
+      "name": "Spix certified-build publication policy",
+      "repository_or_uri": "project:docs/respect_compat/publication_pipeline.md",
+      "retrieved_at": "2026-07-29T00:00:00Z",
+      "revision": "policy-2026-07-29",
+      "rights_status": "project_owned",
+      "source_lock_id": "LOCK-SPIX-PUBLICATION-POLICY",
+      "source_type": "owner_decision",
+      "use": "Defines the minimum legal and immutable-artifact inputs required to automate publication of an independently certified build."
+    },
     {
       "local_path": null,
       "name": "Android App Links documentation",

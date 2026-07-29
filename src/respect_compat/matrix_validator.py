@@ -25,6 +25,8 @@ SCHEMA = resource("data/schemas/compatibility_matrix.schema.json")
 
 OWNER_VALUES = {
     "canapp",
+    "publisher",
+    "spix_foundation",
     "respect_launcher",
     "respect_service",
     "learning_record_store",

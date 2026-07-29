@@ -288,6 +288,28 @@ def execute(
                 [],
             )
         results.append(result)
+    publication_prerequisites = target.metadata.setdefault(
+        "_publication_prerequisites", {}
+    )
+    if isinstance(publication_prerequisites, dict):
+        result_by_id = {item.row_id: item for item in results}
+        for row_id, key in (
+            ("PUBLISH-001", "authorization"),
+            ("PUBLISH-002", "immutable_artifact"),
+            ("PUBLISH-003", "certification_key"),
+        ):
+            result = result_by_id.get(row_id)
+            if result is not None:
+                publication_prerequisites.setdefault(
+                    key,
+                    {
+                        "status": (
+                            "valid"
+                            if result.state == ResultState.PASS
+                            else result.state.value
+                        )
+                    },
+                )
     coverage = _coverage([row.row_id for row in selected], results)
     evidence_environment = classify_evidence_environment(target)
     provisions = derive_provisions(selected, evidence_environment)

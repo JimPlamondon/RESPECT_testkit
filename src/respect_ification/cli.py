@@ -15,6 +15,7 @@ from respect_compat.handoff import canonical_hash
 from respect_compat.matrix_runtime import load_matrix
 from respect_compat.target import (
     CanAppTarget,
+    attach_publication_inputs,
     load_apk_target,
     load_fixture_target,
     load_server_target,
@@ -30,6 +31,10 @@ from .publication_pack import (
     build_verification_receipt,
     verify_deployed_publication,
     verify_publication_pack,
+)
+from .publication_authorization import (
+    SpixPublicationClient,
+    ensure_publication_authorization,
 )
 from .publication_server import serve_publication_pack
 from .repair_adapter import write_repair_adapter
@@ -71,6 +76,18 @@ def _add_target(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--runtime-driver-apk", type=Path)
     parser.add_argument("--runtime-driver-receipt", type=Path)
     parser.add_argument("--runtime-scenario", type=Path)
+    parser.add_argument("--publication-artifact", type=Path)
+    parser.add_argument("--immutable-artifact-url")
+    parser.add_argument("--publication-authorization-token", type=Path)
+    parser.add_argument(
+        "--spix-public-key",
+        type=Path,
+        help=(
+            "Forward a submission-supplied key for negative verification; "
+            "it cannot establish Spix certification trust."
+        ),
+    )
+    parser.add_argument("--certification-key-state-dir", type=Path)
 
 
 def _load_target(args: argparse.Namespace) -> CanAppTarget:
@@ -92,6 +109,13 @@ def _load_target(args: argparse.Namespace) -> CanAppTarget:
             apk=args.apk,
             ca_cert=args.ca_cert,
         )
+    attach_publication_inputs(
+        target,
+        artifact=args.publication_artifact,
+        immutable_artifact_url=args.immutable_artifact_url,
+        authorization_token=args.publication_authorization_token,
+        spix_public_key=args.spix_public_key,
+    )
     if args.device_id:
         probe = probe_android_device(args.device_id)
         target.metadata["device_id"] = args.device_id
@@ -148,6 +172,30 @@ def _suite_target_args(args: argparse.Namespace) -> List[str]:
         )
     if args.runtime_scenario:
         values.extend(["--runtime-scenario", str(args.runtime_scenario)])
+    if args.publication_artifact:
+        values.extend(
+            ["--publication-artifact", str(args.publication_artifact)]
+        )
+    if args.immutable_artifact_url:
+        values.extend(
+            ["--immutable-artifact-url", args.immutable_artifact_url]
+        )
+    if args.publication_authorization_token:
+        values.extend(
+            [
+                "--publication-authorization-token",
+                str(args.publication_authorization_token),
+            ]
+        )
+    if args.spix_public_key:
+        values.extend(["--spix-public-key", str(args.spix_public_key)])
+    if args.certification_key_state_dir:
+        values.extend(
+            [
+                "--certification-key-state-dir",
+                str(args.certification_key_state_dir),
+            ]
+        )
     return values
 
 
@@ -204,6 +252,9 @@ def build_parser() -> KitArgumentParser:
     publication_pack.add_argument(
         "--signer-kind",
         choices=("debug", "release"),
+    )
+    publication_pack.add_argument(
+        "--publication-authorization-token", type=Path
     )
     publication_pack.add_argument("--output", type=Path, required=True)
 
@@ -267,6 +318,36 @@ def build_parser() -> KitArgumentParser:
     publication_serve.add_argument("--port", type=int, default=8765)
     publication_serve.add_argument("--certfile", type=Path)
     publication_serve.add_argument("--keyfile", type=Path)
+
+    publication_authorization = subparsers.add_parser(
+        "publication-authorization"
+    )
+    publication_authorization.add_argument(
+        "--spix-service-url", required=True
+    )
+    publication_authorization.add_argument("--publisher-id", required=True)
+    publication_authorization.add_argument(
+        "--agreement-version", required=True
+    )
+    publication_authorization.add_argument("--app-id", required=True)
+    publication_authorization.add_argument(
+        "--artifact", type=Path, required=True
+    )
+    publication_authorization.add_argument(
+        "--immutable-artifact-url", required=True
+    )
+    publication_authorization.add_argument(
+        "--state", type=Path, required=True
+    )
+    publication_authorization.add_argument(
+        "--token-output", type=Path, required=True
+    )
+    publication_authorization.add_argument(
+        "--open-signing", action="store_true"
+    )
+    publication_authorization.add_argument(
+        "--replace-terminal-request", action="store_true"
+    )
 
     status = subparsers.add_parser("status")
     status.add_argument("--work-plan", type=Path, required=True)
@@ -398,6 +479,10 @@ def main(argv: Optional[List[str]] = None) -> int:
                 provision=args.provision,
                 signer_kind=args.signer_kind,
                 apk_binding=apk_binding,
+                certified_artifact=args.apk,
+                publication_authorization_token=(
+                    args.publication_authorization_token
+                ),
             )
             print(
                 f"Wrote a {receipt['provision']} RESPECT Publication Pack "
@@ -471,6 +556,34 @@ def main(argv: Optional[List[str]] = None) -> int:
                 keyfile=args.keyfile,
             )
             return 0
+        if args.command == "publication-authorization":
+            artifact = args.artifact.resolve(strict=True)
+            if not artifact.is_file():
+                raise ValueError("--artifact must name a file")
+            state = ensure_publication_authorization(
+                args.state,
+                args.token_output,
+                {
+                    "publisher_id": args.publisher_id,
+                    "agreement_version": args.agreement_version,
+                    "app_id": args.app_id,
+                    "artifact_sha256": hashlib.sha256(
+                        artifact.read_bytes()
+                    ).hexdigest(),
+                    "immutable_artifact_url": (
+                        args.immutable_artifact_url
+                    ),
+                },
+                SpixPublicationClient(args.spix_service_url),
+                open_signing=args.open_signing,
+                replace_terminal_request=args.replace_terminal_request,
+            )
+            print(
+                "Publication authorization: "
+                f"{state['status']} "
+                f"(envelope {state.get('docusign_envelope_id') or 'pending'})."
+            )
+            return 0 if state["status"] == "authorized" else 2
         if args.command == "status":
             plan = _read(args.work_plan)
             if plan.get("semantic_hash") != canonical_hash(

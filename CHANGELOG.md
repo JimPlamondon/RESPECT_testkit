@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- Add publisher-owned Matrix rows for legal publication authorization and immutable exact-build acquisition, each with explicit Provisional reasons when absent.
+- Add a Spix-owned certification trust-anchor row and a persistent permission-restricted testing keypair fallback that always produces an explicit testing-only Provisional reason.
+- Add an idempotent Spix/DocuSign agreement workflow that persists request state, avoids duplicate envelopes and repeated signing-page launches, and emits build-specific authorization tokens without exposing Spix secrets.
+- Include the exact submitted build at a content-addressed immutable URL in production Publication Packs, with optional non-public authorization-token bundling.
 - Added explicit local certification-authority trust for provisional HTTPS targets while retaining certificate and hostname validation.
 - Made conditional HTTP responses observable instead of treating `304 Not Modified` as a transport failure.
 - Made the native runtime companion exercise a real durable identical retry and stopped requiring a conforming Candidate App to emit conflicting statement content.
@@ -15,7 +19,7 @@
 - Expose the native runtime driver through the `respect-compat` and `respect-ification` command-line interfaces.
 - Keep proprietary lesson-format discovery in the owner-local Kit repair stage while the Test Suite validates format-agnostic catalog, launch, activity, runtime, and Experience API relationships.
 - Add the generic Publication Pack workflow for confirmed source-derived inventories, complete static RESPECT publication output, portable conditional-request hosting, Android Package Kit signer extraction, provisional and production safeguards, and deployed-origin verification.
-- Add a complete 84-row Matrix truth audit, row-specific durable-repair contracts, validated narrow-verifier receipts, and fail-closed ownership boundaries.
+- Add a complete 87-row Matrix truth audit, row-specific durable-repair contracts, validated narrow-verifier receipts, and fail-closed ownership boundaries.
 - Reject blanket lesson-candidate confirmation, bind confirmed inventories to current source bytes, and bind production publication identity to the submitted Android Package Kit.
 - Prevent suite-forced cleanup, unvisited links, unsupported catalog types, unresolved relative links, or bundled fixture assertions from becoming false compatibility evidence.
 - Add an APK-only assessment target so a raw native Android Candidate App can receive honest missing-interface results without a fabricated descriptor.

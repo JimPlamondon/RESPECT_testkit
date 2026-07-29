@@ -47,6 +47,8 @@ def worst_exit_code(results: list[RuleResult]) -> int:
 
 class RequirementOwner(str, Enum):
     CANAPP = "canapp"
+    PUBLISHER = "publisher"
+    SPIX_FOUNDATION = "spix_foundation"
     RESPECT_LAUNCHER = "respect_launcher"
     RESPECT_SERVICE = "respect_service"
     TEST_SUITE = "test_suite"

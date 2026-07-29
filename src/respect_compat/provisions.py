@@ -78,9 +78,13 @@ def classify_evidence_environment(target: Any) -> Dict[str, Any]:
         }
     else:
         android_runtime = {"kind": "not_observed", "device_id": None, "probe": {}}
+    prerequisites = target.metadata.get("_publication_prerequisites", {})
+    if not isinstance(prerequisites, dict):
+        prerequisites = {}
     return {
         "android_runtime": android_runtime,
         "publication": publication,
+        "publication_prerequisites": prerequisites,
     }
 
 
@@ -89,7 +93,92 @@ def derive_provisions(
     evidence_environment: Dict[str, Any],
 ) -> List[CertificationProvision]:
     rows = list(selected_rows)
+    row_ids = {row.row_id for row in rows}
     provisions: List[CertificationProvision] = []
+    prerequisites = evidence_environment.get(
+        "publication_prerequisites", {}
+    )
+    certification_key = prerequisites.get("certification_key", {})
+    if "PUBLISH-003" in row_ids and certification_key.get(
+        "status"
+    ) != "valid":
+        testing_only = certification_key.get("status") == "testing_only"
+        provisions.append(
+            CertificationProvision(
+                code=(
+                    "TESTING_ONLY_RESPECT_CERTIFICATION_KEY"
+                    if testing_only
+                    else "SPIX_CERTIFICATION_TRUST_ANCHOR_MISSING"
+                ),
+                label=(
+                    "RESPECT certification key is testing-only"
+                    if testing_only
+                    else "Spix certification trust anchor missing"
+                ),
+                explanation=(
+                    "The cryptographic publication-authorization path was "
+                    "exercised with the Test Suite's persistent testing key; "
+                    "that key cannot authorize Foundation certification."
+                    if testing_only
+                    else "Spix has not supplied an independently trusted "
+                    "publication-authorization verification key."
+                ),
+                affected_rows=["PUBLISH-003"],
+                evidence=certification_key,
+                clearance=(
+                    "Publish and source-lock the Spix certification public "
+                    "key in the Test Suite, then rerun the affected rows."
+                ),
+                rerun_scope="affected_rows",
+                responsible_party="spix_foundation",
+            )
+        )
+    if "PUBLISH-002" in row_ids and prerequisites.get(
+        "immutable_artifact", {}
+    ).get("status") != "valid":
+        evidence = prerequisites.get("immutable_artifact", {})
+        provisions.append(
+            CertificationProvision(
+                code="IMMUTABLE_CERTIFIED_BUILD_URL_MISSING",
+                label="immutable certified-build URL missing",
+                explanation=(
+                    "The exact tested artifact is not yet available from a "
+                    "content-addressed HTTPS URL with immutable cache semantics."
+                ),
+                affected_rows=["PUBLISH-002"],
+                evidence=evidence,
+                clearance=(
+                    "Publish the unchanged tested artifact at a URL containing "
+                    "its SHA-256 digest, return the exact bytes with Cache-Control "
+                    "immutable, and rerun PUBLISH-002."
+                ),
+                rerun_scope="affected_rows",
+                responsible_party="publisher",
+            )
+        )
+    if "PUBLISH-001" in row_ids and prerequisites.get(
+        "authorization", {}
+    ).get("status") != "valid":
+        evidence = prerequisites.get("authorization", {})
+        provisions.append(
+            CertificationProvision(
+                code="PUBLICATION_AUTHORIZATION_MISSING",
+                label="publication authorization missing",
+                explanation=(
+                    "Spix has not supplied a valid publication-authorization "
+                    "token proving publisher authority and permission to publish "
+                    "this exact build."
+                ),
+                affected_rows=["PUBLISH-001"],
+                evidence=evidence,
+                clearance=(
+                    "Complete the current Spix Publisher Agreement request and "
+                    "supply the resulting Spix authorization token."
+                ),
+                rerun_scope="affected_rows",
+                responsible_party="publisher",
+            )
+        )
     publication = evidence_environment.get("publication", {})
     if publication.get("kind") == "fixture":
         affected = sorted(

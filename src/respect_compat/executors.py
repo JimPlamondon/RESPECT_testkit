@@ -15,6 +15,7 @@ from .equivalence import xapi_equivalence
 from .matrix_runtime import CompatibilityMatrix, MatrixRow
 from .models import RequirementOwner, ResultState
 from .opds_schema import validate_opds_documents
+from .publication_prerequisites import publication_prerequisite_executor
 from .target import HttpObservation, fetch
 from .xapi_actor import LogicalXapiActor
 
@@ -1021,6 +1022,8 @@ def build_registry(matrix: CompatibilityMatrix) -> ExecutorRegistry:
             executor = opds_executor
         elif row.row_id.startswith("HTTP-"):
             executor = http_executor
+        elif row.row_id.startswith("PUBLISH-"):
+            executor = publication_prerequisite_executor
         elif row.row_id in {"ANDROID-001", "ANDROID-002", "XAPI-013"}:
             executor = android_executor
         elif row.owner in {

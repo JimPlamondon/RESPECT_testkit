@@ -38,9 +38,9 @@ def main() -> int:
     if (
         matrix.matrix_id != "respect-compatibility-matrix-v0.1"
         or matrix.matrix_version != "1.0.0"
-        or matrix.semantic_hash != "c10090db5b2112a1fe5bfa39a13ca86aecca1d36d98f37ebe86592a6a196812c"
-        or len(matrix.features) != 43
-        or len(matrix.rows) != 84
+        or matrix.semantic_hash != "5a059124de6875ad8fa2e23c7244343f70eab6033ad26fbefeb46407d20421ee"
+        or len(matrix.features) != 45
+        or len(matrix.rows) != 87
     ):
         raise RuntimeError("installed Matrix identity drift")
     with resource_path("data/fixtures/v1_0/positive/web_reference") as positive:

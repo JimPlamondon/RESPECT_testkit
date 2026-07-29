@@ -1447,13 +1447,13 @@
       "source_path": "tools/validate_respect_compatibility_matrix.py"
     }
   ],
-  "inventory_hash": "b2b61c31421dd6591fc48a1fd1d21de78f243c52f834d7a5045fccfea6565e50",
+  "inventory_hash": "253be61d741605244ffcc30cbb3c4523b091625abb6048dcea2e089dc50a2112",
   "matrix": {
-    "features": 43,
+    "features": 45,
     "identifier": "respect-compatibility-matrix-v0.1",
     "mutation_checks": 21,
-    "rows": 84,
-    "semantic_hash": "c10090db5b2112a1fe5bfa39a13ca86aecca1d36d98f37ebe86592a6a196812c",
+    "rows": 87,
+    "semantic_hash": "5a059124de6875ad8fa2e23c7244343f70eab6033ad26fbefeb46407d20421ee",
     "version": "1.0.0"
   },
   "schema_version": "1.0.0",

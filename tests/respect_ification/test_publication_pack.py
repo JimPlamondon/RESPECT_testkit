@@ -417,10 +417,21 @@ def test_production_pack_requires_signing_evidence_bound_to_the_apk(tmp_path):
             signer_kind="release",
         )
 
+    apk = tmp_path / "candidate.apk"
+    apk.write_bytes(b"exact submitted apk")
+    authorization = tmp_path / "publication-authorization.json"
+    authorization.write_text(
+        json.dumps(
+            {
+                "payload": {"token_id": "authorization-123"},
+                "signature": {"algorithm": "Ed25519", "value": "signed"},
+            }
+        )
+    )
     binding = {
         "package_id": "example.owner.canapp",
         "signer_sha256": FINGERPRINT.replace(":", ""),
-        "apk_sha256": "ab" * 32,
+        "apk_sha256": hashlib.sha256(apk.read_bytes()).hexdigest(),
     }
     receipt = build_publication_pack(
         _manifest(),
@@ -431,6 +442,8 @@ def test_production_pack_requires_signing_evidence_bound_to_the_apk(tmp_path):
         provision="production",
         signer_kind="release",
         apk_binding=binding,
+        certified_artifact=apk,
+        publication_authorization_token=authorization,
     )
 
     assert receipt["apk_binding"] == binding
@@ -438,5 +451,20 @@ def test_production_pack_requires_signing_evidence_bound_to_the_apk(tmp_path):
         (tmp_path / "bound" / "deployment.json").read_text()
     )
     assert deployment["apk_binding"] == binding
+    assert binding["apk_sha256"] in deployment["immutable_artifact_url"]
+    assert (
+        tmp_path
+        / "bound"
+        / "public"
+        / deployment["immutable_artifact_path"].lstrip("/")
+    ).read_bytes() == apk.read_bytes()
+    assert json.loads(
+        (
+            tmp_path
+            / "bound"
+            / "submission"
+            / "publication-authorization.json"
+        ).read_text()
+    )["payload"]["token_id"] == "authorization-123"
     assert receipt["verification"]["scope"] == "pack_integrity_only"
     assert receipt["verification"]["deployed_origin_verified"] is False

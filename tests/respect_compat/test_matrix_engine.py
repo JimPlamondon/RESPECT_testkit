@@ -58,8 +58,8 @@ def passing_executor(context, row):
 def test_canonical_matrix_loads_and_selects_active_profiles():
     matrix = load_matrix()
     assert matrix.matrix_version == "1.0.0"
-    assert len(matrix.features) == 43
-    assert len(matrix.rows) == 84
+    assert len(matrix.features) == 45
+    assert len(matrix.rows) == 87
     assert matrix.selected_rows("PROFILE-WEB")
     assert matrix.selected_rows("RESPECT Web and WebView active profile")
     assert matrix.selected_rows("PROFILE-NATIVE_ANDROID")
@@ -750,8 +750,16 @@ def test_reference_web_fixture_is_provisional_despite_passing_canapp_rows():
     )
     assert not run.verdict.certified
     assert run.verdict.state == "provisional"
-    assert run.verdict.display == "Provisional (suite fixture evidence)"
+    assert run.verdict.display == (
+        "Provisional (immutable certified-build URL missing; "
+        "publication authorization missing; "
+        "Spix certification trust anchor missing; "
+        "suite fixture evidence)"
+    )
     assert [item.code for item in run.verdict.provisions] == [
+        "IMMUTABLE_CERTIFIED_BUILD_URL_MISSING",
+        "PUBLICATION_AUTHORIZATION_MISSING",
+        "SPIX_CERTIFICATION_TRUST_ANCHOR_MISSING",
         "SUITE_FIXTURE_EVIDENCE"
     ]
     assert not [

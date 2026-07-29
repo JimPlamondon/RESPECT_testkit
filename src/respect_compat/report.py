@@ -67,6 +67,15 @@ def suite_json_payload(run: SuiteRun) -> Dict[str, Any]:
             for result in run.results
             if result.owner == RequirementOwner.CANAPP
         ],
+        "publication_prerequisites": [
+            result.to_json_dict()
+            for result in run.results
+            if result.owner
+            in {
+                RequirementOwner.PUBLISHER,
+                RequirementOwner.SPIX_FOUNDATION,
+            }
+        ],
         "respect_environment": [
             result.to_json_dict()
             for result in run.results

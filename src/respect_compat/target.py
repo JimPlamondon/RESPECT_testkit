@@ -54,6 +54,51 @@ class CanAppTarget:
         )
 
 
+def attach_publication_inputs(
+    target: CanAppTarget,
+    *,
+    artifact: Optional[Path],
+    immutable_artifact_url: Optional[str],
+    authorization_token: Optional[Path],
+    spix_public_key: Optional[Path],
+) -> None:
+    if (
+        artifact is None
+        and immutable_artifact_url is None
+        and authorization_token is None
+        and spix_public_key is None
+    ):
+        return
+    selected_artifact = artifact or target.apk
+    hasher = hashlib.sha256()
+    hasher.update(target.digest.encode("ascii"))
+    for label, path in (
+        ("artifact", selected_artifact),
+        ("authorization", authorization_token),
+        ("spix_public_key", spix_public_key),
+    ):
+        if path is not None:
+            resolved = path.resolve(strict=True)
+            if not resolved.is_file():
+                raise ValueError(f"publication {label} must be a file")
+            target.metadata[
+                {
+                    "artifact": "publication_artifact_path",
+                    "authorization": "publication_authorization_token",
+                    "spix_public_key": "spix_public_key",
+                }[label]
+            ] = str(resolved)
+            hasher.update(b"\0")
+            hasher.update(label.encode("ascii"))
+            hasher.update(b"\0")
+            hasher.update(resolved.read_bytes())
+    if immutable_artifact_url is not None:
+        target.metadata["immutable_artifact_url"] = immutable_artifact_url
+        hasher.update(b"\0immutable_url\0")
+        hasher.update(immutable_artifact_url.encode("utf-8"))
+    target.digest = hasher.hexdigest()
+
+
 def _digest(adapter: str, uri: str, body: bytes, apk: Optional[Path]) -> str:
     hasher = hashlib.sha256()
     hasher.update(adapter.encode("utf-8"))

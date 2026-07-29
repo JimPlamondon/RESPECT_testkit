@@ -12,6 +12,7 @@ from .android_apk import probe_android_device
 from .android_runtime_runner import run_native_android_runtime
 from .ambiguity_router import route_claim
 from .app_links_validator import validate_app_links
+from .certification_keys import ensure_testing_certification_key
 from .fake_launcher import build_launch_session
 from .fake_lrs import FakeLrs
 from .engine import execute
@@ -25,6 +26,7 @@ from .profile import load_profile
 from .report import suite_json_payload, verify_suite_payload, write_reports, write_suite_reports
 from .security_labels import SecurityContext
 from .target import (
+    attach_publication_inputs,
     load_apk_target,
     load_fixture_target,
     load_server_target,
@@ -92,6 +94,18 @@ def main(argv: Optional[list[str]] = None) -> int:
     parser.add_argument("--runtime-driver-apk", type=Path)
     parser.add_argument("--runtime-driver-receipt", type=Path)
     parser.add_argument("--runtime-scenario", type=Path)
+    parser.add_argument("--publication-artifact", type=Path)
+    parser.add_argument("--immutable-artifact-url")
+    parser.add_argument("--publication-authorization-token", type=Path)
+    parser.add_argument(
+        "--spix-public-key",
+        type=Path,
+        help=(
+            "Exercise rejection of a submission-supplied key; this input "
+            "cannot establish Spix trust in certification mode."
+        ),
+    )
+    parser.add_argument("--certification-key-state-dir", type=Path)
     parser.add_argument(
         "--run-seed",
         help="Deterministic test/replay seed; forbidden in certification mode.",
@@ -136,6 +150,39 @@ def main(argv: Optional[list[str]] = None) -> int:
                 apk=args.apk,
                 ca_cert=args.ca_cert,
             )
+        key_path = args.spix_public_key
+        if key_path is None:
+            key_state_dir = (
+                args.certification_key_state_dir
+                or args.output_dir.parent
+                / ".respect-testkit-state"
+                / "certification-keys"
+            )
+            testing_key = ensure_testing_certification_key(key_state_dir)
+            key_path = testing_key.public_key
+            target.metadata.update(
+                {
+                    "_testing_certification_private_key": str(
+                        testing_key.private_key
+                    ),
+                    "_spix_key_provenance": testing_key.provenance,
+                    "_spix_key_id": testing_key.key_id,
+                    "_spix_key_fingerprint": (
+                        testing_key.fingerprint_sha256
+                    ),
+                }
+            )
+        else:
+            target.metadata["_spix_key_provenance"] = (
+                "submitted_untrusted"
+            )
+        attach_publication_inputs(
+            target,
+            artifact=args.publication_artifact,
+            immutable_artifact_url=args.immutable_artifact_url,
+            authorization_token=args.publication_authorization_token,
+            spix_public_key=key_path,
+        )
     except (FileNotFoundError, json.JSONDecodeError, ValueError, OSError) as error:
         parser.error(str(error))
     if args.device_id:

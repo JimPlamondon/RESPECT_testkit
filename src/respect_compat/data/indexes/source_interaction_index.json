@@ -291,6 +291,14 @@
   ],
   "evidence_items": [
     {
+      "disposition": "owner_decision",
+      "evidence_class": "accepted_direct_evidence",
+      "locator": "docs/respect_compat/publication_pipeline.md",
+      "observation": "The Foundation requires legal authority to publish the exact certified build and an immutable HTTPS acquisition URL for that same artifact before automated registry publication.",
+      "source_lock_id": "LOCK-SPIX-PUBLICATION-POLICY",
+      "source_ref": "SRC-SPIX-PUBLICATION-POLICY"
+    },
+    {
       "disposition": "invoked_platform_surface",
       "evidence_class": "accepted_direct_evidence",
       "locator": "Verify Android App Links and add intent filters",
@@ -807,6 +815,45 @@
   "index_id": "respect-source-interaction-index-v0.1",
   "index_version": "0.2.0",
   "interactions": [
+    {
+      "actors": [
+        {
+          "actor": "Candidate App publisher",
+          "responsibility": "Signs the Foundation agreement and publishes the exact submitted artifact."
+        },
+        {
+          "actor": "Spix Foundation",
+          "responsibility": "Verifies authority, issues exact-build authorization, independently tests the artifact, and publishes a passing build to the registry."
+        }
+      ],
+      "binding_id": null,
+      "branch_predicate": "The exact submitted build has passed all applicable Candidate App requirements and is eligible for Foundation publication.",
+      "entry_point": "A publisher prepares a Candidate App build for independent Foundation certification.",
+      "evidence_status": "accepted_source_observation",
+      "exclusion": null,
+      "feature_ids": [
+        "RCF-PUBLICATION-REGISTRY",
+        "RCF-SPIX-CERTIFICATION-KEY"
+      ],
+      "inspection_method": "Direct owner decision recorded as project publication policy and implemented by independent signed-token and artifact-byte verification.",
+      "interaction_id": "INT-SPIX-REGISTRY-PUBLICATION",
+      "inventory_class_ids": [
+        "DISC-15"
+      ],
+      "locator": "docs/respect_compat/publication_pipeline.md",
+      "observable_result": "An independently passing exact build can enter the global RESPECT Compatible app registry without manual data re-entry.",
+      "record_type": "owner_decision",
+      "row_ids": [
+        "PUBLISH-001",
+        "PUBLISH-002",
+        "PUBLISH-003"
+      ],
+      "semantic_contract_id": "SC-PUBLICATION-REGISTRY",
+      "source_lock_id": "LOCK-SPIX-PUBLICATION-POLICY",
+      "source_ref": "SRC-SPIX-PUBLICATION-POLICY",
+      "symbol": "Certified-build publication prerequisites",
+      "terminal_effect": "The pipeline either publishes the exact independently certified artifact or retains an explicit Provisional reason."
+    },
     {
       "actors": [
         {
@@ -3617,9 +3664,11 @@
       "inspected_source_areas": [
         "Current JiMS harness",
         "legacy runtime projection",
-        "Matrix validator and report"
+        "Matrix validator and report",
+        "Spix certified-build publication policy"
       ],
       "interaction_ids": [
+        "INT-SPIX-REGISTRY-PUBLICATION",
         "INT-STANDARD-ANDROID-APP-LINKS",
         "INT-STANDARD-HTTP",
         "INT-STANDARD-HTTP-CACHE",
@@ -3784,6 +3833,7 @@
     "LOCK-RFC9110",
     "LOCK-RFC9111",
     "LOCK-RUSTICI-LAUNCH",
+    "LOCK-SPIX-PUBLICATION-POLICY",
     "LOCK-XAPI-103"
   ]
 }

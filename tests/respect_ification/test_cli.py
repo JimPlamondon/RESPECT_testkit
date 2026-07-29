@@ -1,6 +1,7 @@
 # SPDX-FileCopyrightText: 2026 Jim Plamondon
 # SPDX-License-Identifier: Apache-2.0
 
+import hashlib
 import json
 
 from respect_compat.handoff import canonical_hash
@@ -58,10 +59,43 @@ def test_full_test_cli_preserves_test_suite_verdict(tmp_path):
     report = json.loads((output / "respect-report.json").read_text())
     assert report["verdict"]["certified"] is False
     assert report["verdict"]["display"] == (
-        "Provisional (suite fixture evidence)"
+        "Provisional (immutable certified-build URL missing; "
+        "publication authorization missing; suite fixture evidence; "
+        "RESPECT certification key is testing-only)"
     )
     assert (output / "respect-evidence-manifest.json").is_file()
     assert (output / "respect-ification-task-packet.json").is_file()
+
+
+def test_full_test_reuses_one_testing_certification_key(tmp_path):
+    root = resource("data/fixtures/v1_0/positive/web_reference")
+    state = tmp_path / "key-state"
+    first_output = tmp_path / "first"
+    second_output = tmp_path / "second"
+    common = [
+        "full-test",
+        "--fixture-dir",
+        str(root),
+        "--profile",
+        "PROFILE-WEB",
+        "--certification-key-state-dir",
+        str(state),
+    ]
+
+    assert main([*common, "--output-dir", str(first_output)]) == 2
+    private_key = state / "testing-certification-private.pem"
+    public_key = state / "testing-certification-public.pem"
+    first_private = private_key.read_bytes()
+    first_public = public_key.read_bytes()
+    assert main([*common, "--output-dir", str(second_output)]) == 2
+
+    assert private_key.read_bytes() == first_private
+    assert public_key.read_bytes() == first_public
+    report_text = (
+        second_output / "respect-report.json"
+    ).read_text(encoding="utf-8")
+    assert "RESPECT certification key is testing-only" in report_text
+    assert str(private_key) not in report_text
 
 
 def test_full_test_cli_forwards_apk_only_assessment(tmp_path):
@@ -163,9 +197,9 @@ def test_truth_audit_cli_accounts_for_every_matrix_row(tmp_path):
         ("semantic_hash",),
     )
     assert audit["summary"] == {
-        "row_count": 84,
+        "row_count": 87,
         "canapp_repair_row_count": 57,
-        "protected_non_canapp_row_count": 27,
+        "protected_non_canapp_row_count": 30,
         "uncovered_row_count": 0,
     }
 
@@ -258,6 +292,8 @@ def test_production_publication_is_not_verified_without_live_origin(tmp_path):
     }
     fingerprint = "AA:" * 31 + "AA"
     pack = tmp_path / "production-pack"
+    apk = tmp_path / "candidate.apk"
+    apk.write_bytes(b"exact submitted apk")
     build_publication_pack(
         manifest,
         source,
@@ -269,8 +305,9 @@ def test_production_publication_is_not_verified_without_live_origin(tmp_path):
         apk_binding={
             "package_id": "example.owner.app",
             "signer_sha256": fingerprint.replace(":", ""),
-            "apk_sha256": "ab" * 32,
+            "apk_sha256": hashlib.sha256(apk.read_bytes()).hexdigest(),
         },
+        certified_artifact=apk,
     )
     receipt = tmp_path / "production-verification.json"
 

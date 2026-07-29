@@ -24,10 +24,20 @@ from .provisions import (
     derive_provisions,
     provisional_display,
 )
+from .routing import (
+    ClassificationInput,
+    ControlOwner,
+    ObservedResult,
+    RoutingEvidence,
+    SubstituteFidelity,
+    VerificationMode,
+    classify_result,
+)
+from .models import ResponsibleParty
 from .target import CanAppTarget
 
 
-SUITE_VERSION = "1.0.0"
+SUITE_VERSION = "2.0.0"
 Executor = Callable[["ExecutionContext", MatrixRow], MatrixRowResult]
 
 
@@ -40,6 +50,10 @@ class ExecutionContext:
     run_id: str
     scenario_nonce: str
     actors: List[ActorHealth] = field(default_factory=list)
+
+    @property
+    def challenge(self) -> str:
+        return self.scenario_nonce
 
     def evidence(
         self,
@@ -74,6 +88,7 @@ class ExecutionContext:
     ) -> MatrixRowResult:
         feature = self.matrix.feature_for(row)
         repair = feature.guidance if row.owner == RequirementOwner.CANAPP.value and state == ResultState.FAIL else None
+        atomic_result = self._classify(row, state, observed, evidence)
         return MatrixRowResult(
             row_id=row.row_id,
             test_case_ids=row.test_case_ids,
@@ -88,7 +103,165 @@ class ExecutionContext:
             evidence=evidence,
             source_refs=row.source_refs,
             failure_domain=row.outcomes[state.value]["failure_domain"],
+            atomic_result=atomic_result,
             repair_guidance=repair,
+        )
+
+    def _classify(
+        self,
+        row: MatrixRow,
+        state: ResultState,
+        observed: object,
+        evidence: List[EvidenceRecord],
+    ):
+        owner = RequirementOwner(row.owner)
+        control_owner = ControlOwner(row.control_owner)
+        responsible_party = ResponsibleParty(row.responsible_party)
+        verification_mode = (
+            VerificationMode.PRODUCTION_META_TEST
+            if owner == RequirementOwner.TEST_SUITE
+            else VerificationMode.REAL
+        )
+        routing_evidence = RoutingEvidence(attributable=bool(evidence))
+        observed_result = ObservedResult.PASS
+
+        publication_kind = classify_evidence_environment(self.target)[
+            "publication"
+        ]["kind"]
+        if state == ResultState.NOT_APPLICABLE:
+            observed_result = ObservedResult.NOT_APPLICABLE
+            verification_mode = VerificationMode.UNAVAILABLE
+            control_owner = ControlOwner.NONE
+            responsible_party = ResponsibleParty.NONE
+        elif state == ResultState.HARNESS_ERROR:
+            observed_result = ObservedResult.HARNESS_ERROR
+            control_owner = ControlOwner.TESTKIT
+            responsible_party = ResponsibleParty.TESTKIT_OPERATOR
+            routing_evidence = RoutingEvidence(
+                attributable=bool(evidence), actor_malfunction=True
+            )
+        elif state in {
+            ResultState.BLOCKED,
+            ResultState.INCOMPLETE,
+            ResultState.DEFERRED,
+        }:
+            verification_mode = VerificationMode.UNAVAILABLE
+            if owner in {
+                RequirementOwner.RESPECT_LAUNCHER,
+                RequirementOwner.RESPECT_SERVICE,
+                RequirementOwner.TEST_SUITE,
+            }:
+                observed_result = ObservedResult.TESTKIT_CAPABILITY_GAP
+                control_owner = ControlOwner.TESTKIT
+                responsible_party = ResponsibleParty.TESTKIT_TEAM
+                routing_evidence = RoutingEvidence(
+                    attributable=bool(evidence), observer_present=False
+                )
+            else:
+                observed_result = (
+                    ObservedResult.UNMEASURED_EXTERNAL_DEPENDENCY
+                )
+        elif state == ResultState.FAIL:
+            platform_evidence = (
+                observed.get("platform_evidence")
+                if isinstance(observed, dict)
+                else None
+            )
+            if (
+                owner
+                in {
+                    RequirementOwner.RESPECT_LAUNCHER,
+                    RequirementOwner.RESPECT_SERVICE,
+                }
+                and isinstance(platform_evidence, dict)
+            ):
+                observed_result = ObservedResult.RESPECT_PLATFORM_GAP
+                control_owner = ControlOwner.RESPECT_PLATFORM
+                responsible_party = ResponsibleParty.RESPECT_PLATFORM_TEAM
+                verification_mode = VerificationMode.REAL
+                routing_evidence = RoutingEvidence(
+                    attributable=bool(evidence),
+                    signed=platform_evidence.get("signed") is True,
+                    real_platform=platform_evidence.get("real_platform") is True,
+                    independently_attributed=(
+                        platform_evidence.get("independently_attributed") is True
+                    ),
+                    real_build_id=platform_evidence.get("real_build_id"),
+                    respect_revision=platform_evidence.get("respect_revision"),
+                    first_applicable_version=platform_evidence.get(
+                        "first_applicable_version"
+                    ),
+                    last_applicable_version=platform_evidence.get(
+                        "last_applicable_version"
+                    ),
+                )
+            elif (
+                owner == RequirementOwner.CANAPP
+                and control_owner == ControlOwner.CANAPP_ARTIFACT
+            ):
+                observed_result = ObservedResult.CANAPP_IMPLEMENTATION_FAIL
+            elif owner == RequirementOwner.TEST_SUITE:
+                observed_result = ObservedResult.TESTKIT_CAPABILITY_GAP
+                control_owner = ControlOwner.TESTKIT
+                responsible_party = ResponsibleParty.TESTKIT_TEAM
+            else:
+                observed_result = (
+                    ObservedResult.UNMEASURED_EXTERNAL_DEPENDENCY
+                )
+        elif (
+            state == ResultState.PASS
+            and owner == RequirementOwner.CANAPP
+            and publication_kind == "local_https"
+            and row.substitute_fidelity_contract is not None
+        ):
+            contract = row.substitute_fidelity_contract
+            fidelity = SubstituteFidelity(
+                substitute_id=contract["substitute_id"],
+                substitute_version=contract["substitute_version"],
+                owner=ResponsibleParty(contract["owner"]),
+                covered_semantics=tuple(contract["covered_semantics"]),
+                excluded_semantics=tuple(contract["excluded_semantics"]),
+                fidelity_guarantees=tuple(contract["fidelity_guarantees"]),
+                evidence_schema=contract["evidence_schema"],
+                real_dependency=contract["real_dependency"],
+                clearance=contract["clearance"],
+                promotion_test=contract["promotion_test"],
+                rerun_scope=contract["rerun_scope"],
+            )
+            observed_result = (
+                ObservedResult.CODE_COMPATIBLE_THROUGH_SUBSTITUTE
+            )
+            verification_mode = VerificationMode.SUBSTITUTE
+            routing_evidence = RoutingEvidence(
+                attributable=True,
+                positive_substitute=True,
+                claimed_semantics=fidelity.covered_semantics,
+                substitute_fidelity=fidelity,
+            )
+        elif (
+            state == ResultState.PASS
+            and owner == RequirementOwner.CANAPP
+            and self.target.adapter == "fixture"
+        ):
+            observed_result = (
+                ObservedResult.UNMEASURED_EXTERNAL_DEPENDENCY
+            )
+            verification_mode = VerificationMode.FIXTURE
+
+        return classify_result(
+            row.row_id,
+            ClassificationInput(
+                requirement_owner=owner,
+                control_owner=control_owner,
+                responsible_party=(
+                    None
+                    if observed_result == ObservedResult.PASS
+                    else responsible_party
+                ),
+                verification_mode=verification_mode,
+                observed_result=observed_result,
+                evidence=routing_evidence,
+            ),
         )
 
 
@@ -157,29 +330,37 @@ def reduce_verdict(
             f"coverage mismatch; missing={missing}, extra={extra}",
             provisions,
         )
-    canapp_results = [
-        result for result in results if result.owner == RequirementOwner.CANAPP
+    required = [
+        result.atomic_result
+        for result in results
+        if result.atomic_result.policy_required
     ]
-    nonpass = [
-        result
-        for result in canapp_results
-        if result.state not in {ResultState.PASS, ResultState.NOT_APPLICABLE}
-    ]
-    if nonpass:
+    nonfinal = [result for result in required if not result.final_affirmative]
+    if nonfinal and not (
+        provisions
+        and all(
+            result.observed_result
+            == ObservedResult.CODE_COMPATIBLE_THROUGH_SUBSTITUTE
+            for result in nonfinal
+        )
+    ):
         return CertificationVerdict(
             False,
             "not_certified",
             "Not certified",
-            "applicable CanApp rows did not pass: "
-            + ", ".join(f"{item.row_id}={item.state.value}" for item in nonpass),
+            "policy-required dimensions are non-final: "
+            + ", ".join(
+                f"{item.row_id}={item.observed_result.value}"
+                for item in nonfinal
+            ),
             provisions,
         )
-    if not canapp_results:
+    if not required:
         return CertificationVerdict(
             False,
             "incomplete",
             "Incomplete",
-            "profile selected no CanApp-owned rows",
+            "profile selected no policy-required dimensions",
             provisions,
         )
     if provisions:
@@ -188,7 +369,7 @@ def reduce_verdict(
             "provisional",
             provisional_display(provisions),
             (
-                "all applicable CanApp-owned rows passed; "
+                "all remaining non-final dimensions are qualified substitutes; "
                 f"{len(provisions)} certification provision(s) remain"
             ),
             provisions,
@@ -197,7 +378,7 @@ def reduce_verdict(
         True,
         "certified",
         "Certified",
-        "all applicable CanApp-owned rows passed",
+        "every policy-required dimension is final and affirmative",
     )
 
 
@@ -209,6 +390,7 @@ def execute(
     registry: ExecutorRegistry,
     run_seed: Optional[str] = None,
     selected_row_ids: Optional[List[str]] = None,
+    challenge: Optional[str] = None,
 ) -> SuiteRun:
     profile = matrix.resolve_profile(profile_value)
     selected = matrix.selected_rows(profile.profile_id)
@@ -227,7 +409,11 @@ def execute(
     run_id = hashlib.sha256(
         f"{effective_seed}:{matrix.semantic_hash}:{profile.profile_id}:{target.digest}:{mode}".encode("utf-8")
     ).hexdigest()[:24]
-    nonce = hashlib.sha256(f"{run_id}:scenario".encode("utf-8")).hexdigest()[:24]
+    nonce = challenge or hashlib.sha256(
+        f"{run_id}:challenge".encode("utf-8")
+    ).hexdigest()[:24]
+    if len(nonce) < 16:
+        raise ValueError("challenge must contain at least 16 characters")
     context = ExecutionContext(
         matrix=matrix,
         target=target,

@@ -12,6 +12,7 @@
     "matrix_version",
     "matrix_semantic_hash",
     "profile_id",
+    "target_id",
     "target_digest",
     "challenge",
     "results"
@@ -49,6 +50,10 @@
     "target_digest": {
       "type": "string",
       "pattern": "^[a-f0-9]{64}$"
+    },
+    "target_id": {
+      "type": "string",
+      "pattern": "^urn:sha256:[a-f0-9]{64}$"
     },
     "challenge": {
       "type": "string",

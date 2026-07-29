@@ -462,6 +462,8 @@ def build_repair_adapter(
 ) -> Dict[str, Any]:
     if work_plan.get("artifact_type") != "respect_ification_local_work_plan":
         raise ValueError("repair adaptation requires a local work plan")
+    if work_plan.get("format_version") != "2.0.0":
+        raise ValueError("legacy work plans are read-only and cannot generate work")
     if work_plan.get("semantic_hash") != canonical_hash(
         work_plan, ("semantic_hash",)
     ):
@@ -518,7 +520,7 @@ def build_repair_adapter(
     ]
     core = {
         "artifact_type": "respect_ification_generated_repair_adapter",
-        "format_version": "1.0.0",
+        "format_version": "2.0.0",
         "adapter_scope": "kit_time_only",
         "testkit_commit": testkit_commit,
         "matrix_semantic_hash": work_plan.get("matrix_semantic_hash"),

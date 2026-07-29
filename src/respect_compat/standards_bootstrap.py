@@ -6,7 +6,7 @@ import argparse
 import os
 import subprocess
 from pathlib import Path
-from typing import Optional
+from typing import Optional, Sequence
 
 
 SOURCES = {
@@ -60,12 +60,40 @@ def provision(cache: Path) -> None:
             raise RuntimeError(f"{name} checkout contains no schema files")
 
 
-def main() -> int:
+def check(cache: Path) -> None:
+    if not cache.is_dir():
+        raise RuntimeError(f"standards cache does not exist: {cache}")
+    for name, (_, revision) in SOURCES.items():
+        destination = cache / name
+        if not (destination / ".git").exists():
+            raise RuntimeError(f"{name} checkout is missing")
+        observed = git("rev-parse", "HEAD", cwd=destination)
+        if observed != revision:
+            raise RuntimeError(
+                f"{name} revision mismatch: expected {revision}, observed {observed}"
+            )
+        schema_dir = destination / "schema"
+        if not schema_dir.is_dir() or not list(
+            schema_dir.rglob("*.schema.json")
+        ):
+            raise RuntimeError(f"{name} checkout contains no schema files")
+
+
+def main(argv: Optional[Sequence[str]] = None) -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--cache", type=Path, default=default_cache())
-    args = parser.parse_args()
-    provision(args.cache.expanduser().resolve())
-    print(args.cache.expanduser().resolve())
+    parser.add_argument(
+        "--check",
+        action="store_true",
+        help="Verify the existing cache without modifying it or using the network.",
+    )
+    args = parser.parse_args(argv)
+    cache = args.cache.expanduser().resolve()
+    if args.check:
+        check(cache)
+    else:
+        provision(cache)
+    print(cache)
     return 0
 
 

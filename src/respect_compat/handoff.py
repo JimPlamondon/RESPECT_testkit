@@ -11,9 +11,6 @@ from .matrix_runtime import load_matrix
 from .models import SuiteRun
 
 
-ACTIONABLE_STATES = {"fail", "incomplete", "blocked", "deferred"}
-
-
 def canonical_hash(data: Any, excluded_keys: Tuple[str, ...] = ()) -> str:
     candidate = copy.deepcopy(data)
     if isinstance(candidate, dict):
@@ -33,8 +30,9 @@ def _shared(report: Dict[str, Any]) -> Dict[str, Any]:
         "matrix_version": report["matrix_version"],
         "matrix_semantic_hash": report["matrix_semantic_hash"],
         "profile_id": report["profile_id"],
+        "target_id": report["target_id"],
         "target_digest": report["target_digest"],
-        "scenario_nonce": report["scenario_nonce"],
+        "challenge": report["challenge"],
         "evidence_environment": copy.deepcopy(report["evidence_environment"]),
     }
 
@@ -76,14 +74,14 @@ def build_handoff(
     evidence_items.sort(key=lambda item: (item["row_id"], item["evidence_id"]))
     evidence_manifest = {
         "artifact_type": "respect_evidence_manifest",
-        "format_version": "1.0.0",
+        "format_version": "2.0.0",
         **shared,
         "evidence": evidence_items,
     }
     matrix = load_matrix()
     tasks = []
     for result in report["results"]:
-        if result["owner"] != "canapp" or result["state"] not in ACTIONABLE_STATES:
+        if "kit_task" not in result.get("artifacts", []):
             continue
         task_id = f"repair:{result['row_id']}"
         tasks.append(
@@ -97,6 +95,9 @@ def build_handoff(
                 "observed": copy.deepcopy(result["observed"]),
                 "message": result["message"],
                 "failure_domain": result["failure_domain"],
+                "observed_result": result["observed_result"],
+                "workflow_disposition": result["workflow_disposition"],
+                "responsible_party": result["responsible_party"],
                 "evidence_ids": [
                     item["evidence_id"] for item in result["evidence"]
                 ],
@@ -120,13 +121,13 @@ def build_handoff(
     tasks.sort(key=lambda item: item["task_id"])
     task_packet = {
         "artifact_type": "respect_ification_task_packet",
-        "format_version": "1.0.0",
+        "format_version": "2.0.0",
         **shared,
         "summary": {
             "actionable_task_count": len(tasks),
             "states": {
                 state: sum(task["state"] == state for task in tasks)
-                for state in sorted(ACTIONABLE_STATES)
+                for state in sorted({task["state"] for task in tasks})
             },
         },
         "tasks": tasks,
@@ -162,6 +163,11 @@ def validate_handoff(
 
     errors = list(verify_suite_payload(report))
     artifacts = [report, evidence_manifest, task_packet]
+    for artifact in artifacts:
+        if artifact.get("format_version") != "2.0.0":
+            errors.append(
+                f"{artifact.get('artifact_type', 'report')} is not v2"
+            )
     try:
         shared = _shared(report)
     except KeyError as error:
@@ -230,6 +236,9 @@ def validate_handoff(
             "observed": result.get("observed"),
             "message": result.get("message"),
             "failure_domain": result.get("failure_domain"),
+            "observed_result": result.get("observed_result"),
+            "workflow_disposition": result.get("workflow_disposition"),
+            "responsible_party": result.get("responsible_party"),
             "evidence_ids": [
                 item.get("evidence_id") for item in result.get("evidence", [])
             ],
@@ -277,8 +286,7 @@ def validate_handoff(
     actionable = {
         item["row_id"]
         for item in report.get("results", [])
-        if item.get("owner") == "canapp"
-        and item.get("state") in ACTIONABLE_STATES
+        if "kit_task" in item.get("artifacts", [])
     }
     if {item.get("row_id") for item in tasks} != actionable:
         errors.append("task packet does not exactly map actionable CanApp rows")

@@ -17,7 +17,8 @@ def _work_plan(profile_id="PROFILE-NATIVE_ANDROID"):
     matrix = load_matrix()
     core = {
         "artifact_type": "respect_ification_local_work_plan",
-        "format_version": "1.0.0",
+        "format_version": "2.0.0",
+        "challenge": "synthetic-repair-challenge",
         "profile_id": profile_id,
         "matrix_semantic_hash": matrix.semantic_hash,
         "target_digest": "target-digest",

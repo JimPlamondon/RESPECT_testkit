@@ -475,3 +475,19 @@ def ensure_work_generation_allowed(
         raise ValueError(
             f"{generation} routing artifacts are read-only and cannot generate work"
         )
+
+
+def verify_legacy_routing_artifact(value: Dict[str, Any]) -> Tuple[str, ...]:
+    """Perform frozen structural verification without interpreting old routes."""
+
+    generation = _artifact_generation(value)
+    errors = []
+    if generation == "v2":
+        errors.append("artifact is not legacy")
+    elif generation == "legacy_v1":
+        if not value.get("artifact_type"):
+            errors.append("legacy v1 artifact type is missing")
+    elif generation == "legacy_unversioned":
+        if not isinstance(value.get("results"), list):
+            errors.append("legacy unversioned Suite results are missing")
+    return tuple(sorted(errors))

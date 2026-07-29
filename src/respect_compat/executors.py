@@ -973,16 +973,52 @@ def environment_executor(context: ExecutionContext, row: MatrixRow):
             "suite-controlled RESPECT environment observation",
         )
     if isinstance(record, dict) and record.get("state") in {state.value for state in ResultState}:
+        observed = record.get("observed")
+        if "platform_evidence" in record:
+            observed = {
+                "observation": observed,
+                "platform_evidence": record["platform_evidence"],
+            }
         return _result(
             context,
             row,
             ResultState(record["state"]),
-            record.get("observed"),
+            observed,
             record.get("message", "RESPECT environment observation completed."),
             kind="environment_observation",
             source=str(record.get("source", "respect-environment")),
         )
     return _blocked(context, row, "reference RESPECT runtime observation")
+
+
+def suite_selected_coverage_contract(context: ExecutionContext) -> bool:
+    selected = [
+        item.row_id
+        for item in context.matrix.selected_rows(context.profile_id)
+    ]
+    return bool(selected) and len(selected) == len(set(selected))
+
+
+def suite_nonfinal_cannot_certify_contract() -> bool:
+    from .routing import ROUTING_TABLE, ObservedResult
+
+    return all(
+        not rule.final_affirmative
+        for observed, rule in ROUTING_TABLE.items()
+        if observed
+        not in {ObservedResult.PASS, ObservedResult.NOT_APPLICABLE}
+    )
+
+
+def suite_independent_oracle_contract() -> bool:
+    from .report import verify_suite_payload
+
+    invalid = {
+        "artifact_type": "respect_suite_report",
+        "format_version": "2.0.0",
+        "challenge": "negative-control-challenge",
+    }
+    return bool(verify_suite_payload(invalid))
 
 
 def suite_executor(context: ExecutionContext, row: MatrixRow):
@@ -992,9 +1028,9 @@ def suite_executor(context: ExecutionContext, row: MatrixRow):
     checks = {
         "SUITE-001": context.target.digest != "" and context.target.adapter != "",
         "SUITE-002": bool(context.matrix.semantic_hash and context.scenario_nonce and context.target.digest),
-        "SUITE-003": True,
-        "SUITE-004": True,
-        "SUITE-005": True,
+        "SUITE-003": suite_selected_coverage_contract(context),
+        "SUITE-004": suite_nonfinal_cannot_certify_contract(),
+        "SUITE-005": suite_independent_oracle_contract(),
         "SUITE-006": bool(
             xapi_equivalence_result
             and xapi_equivalence_result.get("equivalent")

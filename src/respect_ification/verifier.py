@@ -52,12 +52,13 @@ def run_narrow_verifier(
         )
     core = {
         "artifact_type": "respect_ification_narrow_verifier_result",
-        "format_version": "1.0.0",
+        "format_version": "2.0.0",
         "mode": "narrow_non_certifying",
         "certified": False,
         "matrix_semantic_hash": matrix.semantic_hash,
         "profile_id": profile_id,
         "target_digest": target.digest,
+        "challenge": run.challenge,
         "predecessor_target_digest": predecessor_target_digest,
         "target_lineage": (
             "same_artifact"

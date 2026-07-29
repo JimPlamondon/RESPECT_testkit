@@ -58,11 +58,7 @@ def test_full_test_cli_preserves_test_suite_verdict(tmp_path):
     )
     report = json.loads((output / "respect-report.json").read_text())
     assert report["verdict"]["certified"] is False
-    assert report["verdict"]["display"] == (
-        "Provisional (immutable certified-build URL missing; "
-        "publication authorization missing; suite fixture evidence; "
-        "RESPECT certification key is testing-only)"
-    )
+    assert report["verdict"]["display"] == "Not certified"
     assert (output / "respect-evidence-manifest.json").is_file()
     assert (output / "respect-ification-task-packet.json").is_file()
 
@@ -116,9 +112,10 @@ def test_full_test_cli_forwards_apk_only_assessment(tmp_path):
                 str(output),
             ]
         )
-        == 2
+        == 0
     )
     report = json.loads((output / "respect-report.json").read_text())
+    assert report["verdict"]["certified"] is True
     assert report["target_adapter"] == "apk_only"
 
 
@@ -148,6 +145,8 @@ def test_repair_plan_cli_writes_adapter_and_prompt(tmp_path):
     ]
     plan = {
         "artifact_type": "respect_ification_local_work_plan",
+        "format_version": "2.0.0",
+        "challenge": "synthetic-repair-challenge",
         "profile_id": "PROFILE-NATIVE_ANDROID",
         "matrix_semantic_hash": matrix.semantic_hash,
         "target_digest": "target-digest",

@@ -11,6 +11,7 @@ path = [
   "src/respect_compat/data/**",
   "src/respect_ification/data/**",
   "src/respect_upgrade_dossier/data/**",
+  "tests/fixtures/**",
   "src/*.egg-info/**",
 ]
 precedence = "aggregate"

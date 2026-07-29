@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import json
+from pathlib import Path
 
 import pytest
 from jsonschema import Draft202012Validator
@@ -26,6 +27,7 @@ from respect_compat.routing import (
     classify_result,
     ensure_work_generation_allowed,
     validate_routing_artifact_set,
+    verify_legacy_routing_artifact,
 )
 
 
@@ -336,6 +338,23 @@ def test_routing_family_legacy_is_read_only_and_mixed_versions_fail():
         ensure_work_generation_allowed([unversioned])
 
 
+def test_frozen_legacy_golden_artifacts_verify_but_cannot_generate_work():
+    fixture_root = Path(__file__).parents[1] / "fixtures" / "routing"
+    artifacts = [
+        json.loads(path.read_text())
+        for path in (
+            fixture_root / "legacy_task_packet_v1.json",
+            fixture_root / "legacy_suite_report_unversioned.json",
+        )
+    ]
+    for artifact in artifacts:
+        assert verify_legacy_routing_artifact(artifact) == ()
+        with pytest.raises(ValueError, match="read-only"):
+            ensure_work_generation_allowed([artifact])
+    with pytest.raises(ValueError, match="mixed"):
+        validate_routing_artifact_set(artifacts)
+
+
 def test_v2_atomic_result_and_suite_schemas_reject_unknown_dimensions():
     atomic_schema = json.loads(
         resource("data/schemas/atomic_result_v2.schema.json").read_text(
@@ -369,6 +388,7 @@ def test_v2_atomic_result_and_suite_schemas_reject_unknown_dimensions():
         "matrix_version": "1.0.0",
         "matrix_semantic_hash": "a" * 64,
         "profile_id": "profile",
+        "target_id": "urn:sha256:" + "c" * 64,
         "target_digest": "b" * 64,
         "challenge": "challenge-challenge-value",
         "results": [payload],

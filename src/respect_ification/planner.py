@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 from respect_compat.handoff import canonical_hash, validate_handoff
+from respect_compat.routing import ensure_work_generation_allowed
 
 
 def build_work_plan(
@@ -14,6 +15,7 @@ def build_work_plan(
     task_packet: Dict[str, Any],
     private_prep: Optional[Dict[str, Any]] = None,
 ) -> Dict[str, Any]:
+    ensure_work_generation_allowed([report, evidence_manifest, task_packet])
     errors = validate_handoff(report, evidence_manifest, task_packet)
     if errors:
         raise ValueError(f"invalid Test Suite handoff: {errors}")
@@ -57,12 +59,15 @@ def build_work_plan(
         )
     plan = {
         "artifact_type": "respect_ification_local_work_plan",
-        "format_version": "1.0.0",
+        "format_version": "2.0.0",
         "matrix_id": report["matrix_id"],
+        "matrix_version": report["matrix_version"],
         "matrix_semantic_hash": report["matrix_semantic_hash"],
         "profile_id": report["profile_id"],
+        "target_id": report["target_id"],
         "target_digest": report["target_digest"],
         "run_id": report["run_id"],
+        "challenge": report["challenge"],
         "handoff_id": task_packet["artifact_set"]["handoff_id"],
         "task_packet_core_hash": task_packet["core_hash"],
         "private_prep_semantic_hash": (

@@ -7,6 +7,7 @@ import pytest
 from jsonschema import Draft202012Validator
 
 from respect_compat.resources import resource
+from respect_compat.matrix_runtime import load_matrix
 
 from respect_compat.routing import (
     ArtifactKind,
@@ -373,3 +374,56 @@ def test_v2_atomic_result_and_suite_schemas_reject_unknown_dimensions():
         "results": [payload],
     }
     Draft202012Validator(suite_schema).validate(suite)
+
+
+def test_matrix_exposes_executable_routing_and_dossier_bindings():
+    matrix = load_matrix()
+    raw_rows = {item["row_id"]: item for item in matrix.raw["rows"]}
+    raw_features = {
+        item["feature_id"]: item for item in matrix.raw["features"]
+    }
+    respect_owners = {"respect_launcher", "respect_service"}
+
+    for row in matrix.rows.values():
+        raw = raw_rows[row.row_id]
+        assert row.control_owner == raw["control_owner"]
+        assert row.responsible_party == raw["responsible_party"]
+        assert row.applicability_evaluator == raw[
+            "applicability_evaluator"
+        ]
+        assert row.routing_contract == "respect_compat.routing.ROUTING_TABLE"
+        assert raw["verification_modes"]
+        if row.owner in respect_owners:
+            assert row.platform_gap_eligible is True
+            assert row.dossier_acceptance_test == (
+                f"matrix-row:{row.row_id}"
+            )
+        else:
+            assert row.platform_gap_eligible is False
+        if (
+            row.owner == "canapp"
+            and row.row_id.split("-", 1)[0]
+            in {"DESC", "HTTP", "OPDS"}
+        ):
+            contract = raw["substitute_fidelity_contract"]
+            assert contract["substitute_id"] == "local_https_publication"
+            assert contract["covered_semantics"]
+            assert contract["excluded_semantics"]
+
+    rowless_upstream = [
+        item
+        for item in raw_features.values()
+        if (
+            item["requirement_status"] == "upstream_gap"
+            or item["conformance_disposition"] == "upstream_gap"
+        )
+        and not item["row_ids"]
+    ]
+    assert len(rowless_upstream) == 13
+    for feature in raw_features.values():
+        assert feature["respect_upgrade_guidance"]
+    for feature in rowless_upstream:
+        assert feature["feature_work_unit"]["feature_id"] == feature[
+            "feature_id"
+        ]
+        assert feature["feature_work_unit"]["closure_requires_executable_acceptance"]

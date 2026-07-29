@@ -312,7 +312,7 @@ def execute(
                 )
     coverage = _coverage([row.row_id for row in selected], results)
     evidence_environment = classify_evidence_environment(target)
-    provisions = derive_provisions(selected, evidence_environment)
+    provisions = derive_provisions(selected, evidence_environment, results)
     verdict = reduce_verdict(selected, results, mode, provisions)
     return SuiteRun(
         suite_version=SUITE_VERSION,

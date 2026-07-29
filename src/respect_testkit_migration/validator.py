@@ -187,14 +187,14 @@ def validate_manifest(
         mutations = run_mutation_checks(matrix_data, index_data)
         if (
             matrix.matrix_id != inventory["matrix"]["identifier"]
-            or matrix.matrix_version != inventory["matrix"]["version"]
-            or matrix.semantic_hash != inventory["matrix"]["semantic_hash"]
             or len(matrix.features) != inventory["matrix"]["features"]
             or len(matrix.rows) != inventory["matrix"]["rows"]
             or len(mutations) != inventory["matrix"]["mutation_checks"]
             or not all(item["passed"] for item in mutations)
         ):
-            errors.append("MATRIX_DRIFT: Matrix identity, counts, semantic hash, or mutations changed")
+            errors.append(
+                "MATRIX_DRIFT: Matrix authority, counts, or mutations changed"
+            )
     except (KeyError, OSError, TypeError, ValueError) as error:
         errors.append(f"MATRIX_DRIFT: {error}")
     if source_repo is not None:

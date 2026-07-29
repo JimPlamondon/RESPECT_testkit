@@ -57,7 +57,7 @@ def passing_executor(context, row):
 
 def test_canonical_matrix_loads_and_selects_active_profiles():
     matrix = load_matrix()
-    assert matrix.matrix_version == "1.0.0"
+    assert matrix.matrix_version == "1.1.0"
     assert len(matrix.features) == 45
     assert len(matrix.rows) == 87
     assert matrix.selected_rows("PROFILE-WEB")
@@ -676,6 +676,32 @@ def test_local_https_preserves_row_passes_and_yields_named_provisional_approval(
     text_report = (tmp_path / "respect-report.txt").read_text()
     assert "Approval: Provisional (local HTTPS publication)" in text_report
     assert "Provision LOCAL_HTTPS_PUBLICATION:" in text_report
+
+
+def test_local_https_without_positive_row_evidence_cannot_grant_provisional():
+    matrix = load_matrix()
+    registry = ExecutorRegistry()
+    selected = matrix.selected_rows("PROFILE-WEB")
+    for row in selected:
+        registry.register(
+            row.row_id,
+            lambda context, selected_row: context.result(
+                selected_row,
+                ResultState.BLOCKED,
+                None,
+                "No positive publication evidence.",
+                [],
+            ),
+        )
+    canapp = target()
+    canapp.uri = "https://127.0.0.1:8443/descriptor.json"
+
+    run = execute(matrix, canapp, "PROFILE-WEB", "certification", registry)
+
+    assert all(
+        provision.code != "LOCAL_HTTPS_PUBLICATION"
+        for provision in run.verdict.provisions
+    )
 
 
 def test_multiple_provisional_reasons_are_retained_and_displayed_together():

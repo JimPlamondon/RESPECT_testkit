@@ -141,6 +141,7 @@ def recompute_serialized_verdict(payload: Dict[str, Any]) -> Dict[str, Any]:
     provisions = derive_provisions(
         [matrix.rows[row_id] for row_id in selected if row_id in matrix.rows],
         payload.get("evidence_environment", {}),
+        results,
     )
     serialized_provisions = [
         provision.to_json_dict() for provision in provisions

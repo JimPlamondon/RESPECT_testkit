@@ -16,4 +16,6 @@ Every run emits the authoritative JSON report, a sanitized evidence manifest, an
 
 CanApp-owned rows alone determine CanApp compatibility. RESPECT-owned and Test-Suite-owned rows remain separately attributed, and a RESPECT environment defect is never reported as a CanApp defect.
 
+The publisher-owned `PUBLISH-001` and `PUBLISH-002` rows gate the later Foundation registry-publication step without mislabeling missing paperwork or hosting as Candidate App defects. `PUBLISH-003` separately requires Spix to supply the independently source-locked Ed25519 trust anchor. Until that key exists, the Test Suite generates and persistently reuses a testing keypair, exercises the token path with a testing-only authorization when the other exact-build facts are available, and reports `Provisional (RESPECT certification key is testing-only)`. A submission-supplied key cannot establish Spix trust.
+
 Native Android rows that require attributable device behavior use the Test Suite-owned companion and Android Debug Bridge controller documented in [NATIVE_ANDROID_RUNTIME_DRIVER.md](NATIVE_ANDROID_RUNTIME_DRIVER.md). The controller accepts no imported row outcomes and validates its companion build receipt before enabling controlled-runtime evidence.

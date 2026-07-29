@@ -98,9 +98,9 @@ def test_truth_audit_covers_every_matrix_row_without_owner_substitution():
     audit = build_matrix_truth_audit(matrix)
 
     assert audit["summary"] == {
-        "row_count": 84,
+        "row_count": 87,
         "canapp_repair_row_count": 57,
-        "protected_non_canapp_row_count": 27,
+        "protected_non_canapp_row_count": 30,
         "uncovered_row_count": 0,
     }
     assert {item["row_id"] for item in audit["rows"]} == set(matrix.rows)
@@ -136,7 +136,7 @@ def test_each_adapter_task_contains_its_complete_row_truth_contract(tmp_path):
     assert contract["durable_product_change_required"] is True
     assert "source-derived OPDS" in contract["implementation_targets"][0]
     assert "owner-authored pass flag" in contract["forbidden_substitutes"][0]
-    assert adapter["matrix_truth_audit"]["summary"]["row_count"] == 84
+    assert adapter["matrix_truth_audit"]["summary"]["row_count"] == 87
 
 
 def test_repair_adapter_rejects_non_canapp_repair_task(tmp_path):

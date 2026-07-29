@@ -40,17 +40,28 @@ def make_publication_handler(
     media_types = deployment.get("media_types")
     if not isinstance(media_types, dict):
         raise ValueError("deployment metadata has no media-type map")
+    immutable_url = deployment.get("immutable_artifact_url")
+    immutable_path = (
+        urlsplit(immutable_url).path
+        if isinstance(immutable_url, str)
+        else None
+    )
 
     class PublicationHandler(http.server.SimpleHTTPRequestHandler):
         protocol_version = "HTTP/1.1"
         current_etag: Optional[str] = None
+        current_immutable = False
 
         def end_headers(self) -> None:
             if self.current_etag is not None:
                 self.send_header("ETag", self.current_etag)
             self.send_header(
                 "Cache-Control",
-                "public, max-age=0, no-transform",
+                (
+                    "public, max-age=31536000, immutable, no-transform"
+                    if self.current_immutable
+                    else "public, max-age=0, no-transform"
+                ),
             )
             self.send_header("Content-Encoding", "identity")
             super().end_headers()
@@ -64,6 +75,10 @@ def make_publication_handler(
 
         def send_head(self):
             self.current_etag = None
+            self.current_immutable = (
+                immutable_path is not None
+                and urlsplit(self.path).path == immutable_path
+            )
             path = Path(self.translate_path(self.path))
             if not path.is_file():
                 return super().send_head()

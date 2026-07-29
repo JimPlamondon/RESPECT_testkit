@@ -450,6 +450,8 @@ def build_publication_pack(
     provision: str,
     signer_kind: Optional[str] = None,
     apk_binding: Optional[Dict[str, str]] = None,
+    certified_artifact: Optional[Path] = None,
+    publication_authorization_token: Optional[Path] = None,
 ) -> Dict[str, Any]:
     source_root = source_root.resolve(strict=True)
     if not source_root.is_dir():
@@ -489,6 +491,28 @@ def build_publication_pack(
             raise ValueError(
                 "production requires signing evidence bound to the submitted APK"
             )
+        if certified_artifact is None:
+            raise ValueError(
+                "production requires the exact submitted APK in the publication pack"
+            )
+    artifact_source = (
+        certified_artifact.resolve(strict=True)
+        if certified_artifact is not None
+        else None
+    )
+    if artifact_source is not None:
+        if not artifact_source.is_file():
+            raise ValueError("certified artifact must be a file")
+        artifact_sha256 = _sha256(artifact_source)
+        if (
+            isinstance(apk_binding, dict)
+            and apk_binding.get("apk_sha256") != artifact_sha256
+        ):
+            raise ValueError(
+                "certified artifact bytes do not match the APK binding"
+            )
+    else:
+        artifact_sha256 = None
     output = output.resolve()
     if output.exists() and any(output.iterdir()):
         raise ValueError("publication pack output directory must be empty")
@@ -497,6 +521,19 @@ def build_publication_pack(
     public.mkdir()
     canapp = normalized["canapp"]
     public_path = canapp["public_path"]
+    immutable_artifact_path = None
+    immutable_artifact_url = None
+    if artifact_source is not None and artifact_sha256 is not None:
+        immutable_artifact_path = (
+            f"{public_path}/builds/{artifact_sha256}/"
+            f"{artifact_source.name}"
+        )
+        immutable_artifact_url = f"{origin}{immutable_artifact_path}"
+        artifact_destination = _public_file(
+            public, immutable_artifact_path
+        )
+        artifact_destination.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(artifact_source, artifact_destination)
     default_lesson = next(
         lesson
         for lesson in normalized["lessons"]
@@ -690,6 +727,13 @@ def build_publication_pack(
             association_path: "application/json",
         }
     )
+    if immutable_artifact_path is not None:
+        media_types[immutable_artifact_path] = (
+            "application/vnd.android.package-archive"
+            if artifact_source is not None
+            and artifact_source.suffix.lower() == ".apk"
+            else "application/octet-stream"
+        )
     deployable_manifest = {
         "format_version": normalized["format_version"],
         "canapp": canapp,
@@ -711,6 +755,16 @@ def build_publication_pack(
             "data/publication/publication_manifest.schema.json"
         ).read_bytes()
     )
+    authorization_ref = None
+    if publication_authorization_token is not None:
+        token_source = publication_authorization_token.resolve(strict=True)
+        token = json.loads(token_source.read_text(encoding="utf-8"))
+        if not isinstance(token, dict):
+            raise ValueError(
+                "publication authorization token must be a JSON object"
+            )
+        authorization_ref = "submission/publication-authorization.json"
+        _write_json(output / authorization_ref, token)
     deployment = {
         "artifact_type": "respect_publication_pack_deployment",
         "format_version": "1.0.0",
@@ -719,6 +773,9 @@ def build_publication_pack(
         "signer_kind": signer_kind,
         "signing_fingerprint": fingerprint,
         "apk_binding": apk_binding,
+        "immutable_artifact_path": immutable_artifact_path,
+        "immutable_artifact_url": immutable_artifact_url,
+        "publication_authorization_token": authorization_ref,
         "descriptor_path": descriptor_path,
         "catalog_path": catalog_path,
         "association_path": association_path,
@@ -766,6 +823,8 @@ def build_publication_pack(
         "signer_kind": signer_kind,
         "signing_fingerprint": fingerprint,
         "apk_binding": apk_binding,
+        "immutable_artifact_url": immutable_artifact_url,
+        "publication_authorization_token": authorization_ref,
         "canapp_identifier": canapp["identifier"],
         "application_id": canapp["application_id"],
         "lesson_count": len(inventory),
@@ -871,12 +930,37 @@ def verify_publication_pack(pack: Path) -> List[str]:
             )
         ):
             errors.append("PRODUCTION_APK_BINDING_INVALID")
+        immutable_url = deployment.get("immutable_artifact_url")
+        immutable_path = deployment.get("immutable_artifact_path")
+        if (
+            not isinstance(immutable_url, str)
+            or not isinstance(immutable_path, str)
+            or immutable_url
+            != f"{str(deployment.get('origin', '')).rstrip('/')}"
+            f"{immutable_path}"
+        ):
+            errors.append("PRODUCTION_IMMUTABLE_ARTIFACT_URL_INVALID")
+        else:
+            try:
+                artifact = _public_file(pack / "public", immutable_path)
+                if (
+                    not artifact.is_file()
+                    or _sha256(artifact) != binding.get("apk_sha256")
+                    or binding.get("apk_sha256") not in immutable_path
+                ):
+                    errors.append(
+                        "PRODUCTION_IMMUTABLE_ARTIFACT_INVALID"
+                    )
+            except ValueError:
+                errors.append("PRODUCTION_IMMUTABLE_ARTIFACT_INVALID")
     for field in (
         "origin",
         "provision",
         "signer_kind",
         "signing_fingerprint",
         "apk_binding",
+        "immutable_artifact_url",
+        "publication_authorization_token",
     ):
         if receipt.get(field) != deployment.get(field):
             errors.append(f"RECEIPT_DEPLOYMENT_MISMATCH: {field}")

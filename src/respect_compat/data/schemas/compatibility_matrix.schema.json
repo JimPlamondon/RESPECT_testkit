@@ -503,6 +503,8 @@
     "owner": {
       "enum": [
         "canapp",
+        "publisher",
+        "spix_foundation",
         "respect_launcher",
         "respect_service",
         "learning_record_store",

@@ -17,7 +17,7 @@ SOURCE_REPOSITORY = "https://github.com/JimPlamondon/jims"
 PR_NUMBER = 50
 MATRIX_ID = "respect-compatibility-matrix-v0.1"
 MATRIX_VERSION = "1.0.0"
-MATRIX_SEMANTIC_HASH = "c10090db5b2112a1fe5bfa39a13ca86aecca1d36d98f37ebe86592a6a196812c"
+MATRIX_SEMANTIC_HASH = "5a059124de6875ad8fa2e23c7244343f70eab6033ad26fbefeb46407d20421ee"
 AUTHORING_COMMITS = [
     ("0658140c5b33a30ce2747c4f4742c87b9880513c", "RESPECT Compatible Test Suite v0.1 harness"),
     ("438e10b7fe028e73b444592d293f1c6fa5bad856", "canonical Matrix merge"),
@@ -220,8 +220,8 @@ def main() -> int:
                 "identifier": MATRIX_ID,
                 "version": MATRIX_VERSION,
                 "semantic_hash": MATRIX_SEMANTIC_HASH,
-                "features": 43,
-                "rows": 84,
+                "features": 45,
+                "rows": 87,
                 "mutation_checks": 21,
             },
             "closures": {
@@ -310,7 +310,7 @@ def main() -> int:
             "",
             f"- Inventory: `migration/source_inventory.json`; SHA-256 (Secure Hash Algorithm 256-bit) aggregate `{inventory['inventory_hash']}`.",
             f"- Manifest: `migration/source_manifest.json`; SHA-256 aggregate `{manifest['manifest_hash']}`.",
-            f"- Canonical Matrix: `{MATRIX_ID}` version `{MATRIX_VERSION}`; semantic hash `{MATRIX_SEMANTIC_HASH}`; 43 features; 84 atomic rows; 21 mutation checks.",
+            f"- Canonical Matrix: `{MATRIX_ID}` version `{MATRIX_VERSION}`; semantic hash `{MATRIX_SEMANTIC_HASH}`; 45 features; 87 atomic rows; 21 mutation checks.",
             "- Historical profile: `src/respect_compat/data/profiles/compatibility_matrix_v0_1.json`, preserved byte-for-byte as a distinct non-canonical runtime profile.",
             "- OPDS revision: `8fda670fc72f110abcf68ad5d26e99ecfeeabf03`.",
             "- Readium Web Publication Manifest revision: `655ee4bcea7f63e1226f166f6b128d9bea6c655b`.",

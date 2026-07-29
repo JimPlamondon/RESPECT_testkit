@@ -6,7 +6,7 @@ import hashlib
 import json
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Dict, Iterable, List
+from typing import Any, Callable, Dict, Iterable, List, Optional
 
 from .resources import resource
 
@@ -45,6 +45,8 @@ class MatrixFeature:
     profile_ids: List[str]
     row_ids: List[str]
     guidance: str
+    respect_upgrade_guidance: str
+    feature_work_unit: Optional[Dict[str, Any]]
 
 
 @dataclass(frozen=True)
@@ -60,6 +62,39 @@ class MatrixRow:
     expected_output: str
     source_refs: List[str]
     outcomes: Dict[str, Any]
+    control_owner: str
+    responsible_party: str
+    applicability_evaluator: str
+    routing_contract: str
+    platform_gap_eligible: bool
+    dossier_acceptance_test: Optional[str]
+    verification_modes: List[str]
+    substitute_fidelity_contract: Optional[Dict[str, Any]]
+
+
+ApplicabilityEvaluator = Callable[
+    [MatrixRow, MatrixFeature, str], bool
+]
+
+
+def _profile_and_feature_selection(
+    row: MatrixRow, feature: MatrixFeature, profile_id: str
+) -> bool:
+    return (
+        profile_id in row.profile_ids
+        and profile_id in feature.profile_ids
+        and feature.testability_status
+        in {
+            "executable_now",
+            "executable_with_tooling",
+            "partially_executable",
+        }
+    )
+
+
+APPLICABILITY_EVALUATORS: Dict[str, ApplicabilityEvaluator] = {
+    "profile_and_feature_selection": _profile_and_feature_selection,
+}
 
 
 @dataclass(frozen=True)
@@ -86,15 +121,15 @@ class CompatibilityMatrix:
         selected = []
         for row in self.rows.values():
             feature = self.features[row.feature_id]
-            if profile_id not in row.profile_ids:
-                continue
-            if profile_id not in feature.profile_ids:
-                continue
-            if feature.testability_status not in {
-                "executable_now",
-                "executable_with_tooling",
-                "partially_executable",
-            }:
+            evaluator = APPLICABILITY_EVALUATORS.get(
+                row.applicability_evaluator
+            )
+            if evaluator is None:
+                raise ValueError(
+                    "unknown Matrix applicability evaluator: "
+                    f"{row.applicability_evaluator}"
+                )
+            if not evaluator(row, feature, profile_id):
                 continue
             selected.append(row)
         return sorted(selected, key=lambda item: item.row_id)
@@ -143,6 +178,12 @@ def load_matrix(path: Path = DEFAULT_MATRIX_PATH) -> CompatibilityMatrix:
                 profile_ids=list(item["profile_ids"]),
                 row_ids=list(item["row_ids"]),
                 guidance=item["respect_ification_guidance"],
+                respect_upgrade_guidance=item[
+                    "respect_upgrade_guidance"
+                ],
+                feature_work_unit=copy.deepcopy(
+                    item["feature_work_unit"]
+                ),
             )
             for item in data["features"]
         }
@@ -159,6 +200,22 @@ def load_matrix(path: Path = DEFAULT_MATRIX_PATH) -> CompatibilityMatrix:
                 expected_output=item["requirement_statement"]["expected_output"],
                 source_refs=list(item["source_refs"]),
                 outcomes=copy.deepcopy(item["outcomes"]),
+                control_owner=item["control_owner"],
+                responsible_party=item["responsible_party"],
+                applicability_evaluator=item[
+                    "applicability_evaluator"
+                ],
+                routing_contract=item["routing_contract"],
+                platform_gap_eligible=bool(
+                    item["platform_gap_eligible"]
+                ),
+                dossier_acceptance_test=item[
+                    "dossier_acceptance_test"
+                ],
+                verification_modes=list(item["verification_modes"]),
+                substitute_fidelity_contract=copy.deepcopy(
+                    item["substitute_fidelity_contract"]
+                ),
             )
             for item in data["rows"]
         }

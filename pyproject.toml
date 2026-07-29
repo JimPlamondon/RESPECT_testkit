@@ -28,6 +28,7 @@ respect-ification = "respect_ification.cli:main"
 respect-matrix-validate = "respect_compat.matrix_validator:main"
 respect-standards-bootstrap = "respect_compat.standards_bootstrap:main"
 respect-runtime-driver-build = "respect_compat.runtime_driver_build:main"
+respect-upgrade-dossier = "respect_upgrade_dossier.cli:main"
 
 [tool.setuptools]
 include-package-data = true
@@ -45,6 +46,7 @@ respect_compat = [
   "data/fixtures/**/*",
 ]
 respect_ification = ["data/publication/*.json", "data/schemas/*.json"]
+respect_upgrade_dossier = ["data/schemas/*.json"]
 
 [tool.pytest.ini_options]
 addopts = "-ra"

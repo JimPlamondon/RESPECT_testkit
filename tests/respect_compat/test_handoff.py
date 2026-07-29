@@ -53,12 +53,40 @@ def test_handoff_maps_actionable_canapp_rows_exactly():
     actionable = {
         item["row_id"]
         for item in report["results"]
-        if item["owner"] == "canapp"
-        and item["state"] in {"fail", "incomplete", "blocked", "deferred"}
+        if "kit_task" in item["artifacts"]
     }
     assert {item["row_id"] for item in tasks["tasks"]} == actionable
     assert tasks["summary"]["actionable_task_count"] == len(actionable)
     assert validate_handoff(report, evidence, tasks) == []
+    assert {
+        report["format_version"],
+        evidence["format_version"],
+        tasks["format_version"],
+    } == {"2.0.0"}
+    assert report["challenge"] == evidence["challenge"] == tasks["challenge"]
+
+
+def test_handoff_does_not_turn_canapp_observation_gap_into_kit_work():
+    matrix = load_matrix()
+    registry = ExecutorRegistry()
+
+    def blocked(context, row):
+        evidence = [
+            context.evidence(row, "controlled", context.target.uri, "blocked")
+        ]
+        return context.result(
+            row,
+            ResultState.BLOCKED,
+            None,
+            "dependency absent",
+            evidence,
+        )
+
+    for row in matrix.selected_rows("PROFILE-WEB"):
+        registry.register(row.row_id, blocked)
+    run = execute(matrix, _target(), "PROFILE-WEB", "test", registry)
+    _, _, tasks = build_handoff(run)
+    assert tasks["tasks"] == []
 
 
 def test_handoff_writes_three_bound_artifacts(tmp_path):

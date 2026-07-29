@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import argparse
+import hashlib
 import json
 import secrets
 from pathlib import Path
@@ -110,11 +111,24 @@ def main(argv: Optional[list[str]] = None) -> int:
         "--run-seed",
         help="Deterministic test/replay seed; forbidden in certification mode.",
     )
+    parser.add_argument(
+        "--challenge",
+        help="Canonical v2 run challenge (generated when omitted).",
+    )
     parser.add_argument("--mode", choices=sorted(["certification", "test", "replay"]), required=True)
     parser.add_argument("--output-dir", type=Path, required=True)
     args = parser.parse_args(argv)
     if args.mode == "certification" and args.run_seed:
         parser.error("--run-seed is forbidden in certification mode")
+    challenge = args.challenge or (
+        hashlib.sha256(
+            f"{args.run_seed}:challenge".encode("utf-8")
+        ).hexdigest()[:48]
+        if args.run_seed
+        else secrets.token_hex(24)
+    )
+    if len(challenge) < 16:
+        parser.error("--challenge must contain at least 16 characters")
     runtime_values = (
         args.runtime_driver_apk,
         args.runtime_driver_receipt,
@@ -199,7 +213,7 @@ def main(argv: Optional[list[str]] = None) -> int:
                 driver_apk=args.runtime_driver_apk,
                 driver_receipt=args.runtime_driver_receipt,
                 scenario_path=args.runtime_scenario,
-                scenario_nonce=secrets.token_hex(12),
+                scenario_nonce=challenge,
                 certification_mode=args.mode == "certification",
             )
             target.capabilities.add("controlled_android_runtime")
@@ -212,6 +226,7 @@ def main(argv: Optional[list[str]] = None) -> int:
         args.mode,
         build_registry(matrix),
         run_seed=args.run_seed,
+        challenge=challenge,
     )
     write_suite_reports(run, args.output_dir)
     verification_errors = verify_suite_payload(suite_json_payload(run))

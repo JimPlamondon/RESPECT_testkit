@@ -565,7 +565,7 @@ def validate_matrix(matrix: Any, index: Any) -> Validation:
     if not isinstance(matrix, dict):
         return validation
 
-    validation.require(matrix.get("schema_version") == "1.1.0", "unsupported schema_version")
+    validation.require(matrix.get("schema_version") == "1.2.0", "unsupported schema_version")
     validation.require(
         matrix.get("status") in {"draft", "incomplete", "ready", "blocked"},
         "matrix.status has an invalid value",

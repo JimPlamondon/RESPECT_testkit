@@ -6,6 +6,25 @@ The canonical RESPECT Compatibility Matrix is bundled once as package data owned
 
 Install the project or its built wheel, provision the source-locked standards cache with `respect-standards-bootstrap`, and inspect the command interfaces with `respect-compat --help`, `respect-ification --help`, and `respect-matrix-validate --help`.
 
+Current routing-family writers emit version `2.0.0` artifacts bound to one
+target identity and digest, Matrix identity/version/hash, canonical run
+challenge, evidence set, and artifact set. The six independent result
+dimensions are requirement owner, control owner, responsible party,
+verification mode, observed result, and workflow disposition. A Kit task is
+emitted only for an attributable CanApp implementation failure. Missing
+observers and unavailable infrastructure do not become CanApp or RESPECT
+defects.
+
+`respect-upgrade-dossier` is a separate, non-certifying verifier for the
+fail-closed Upgrade Dossier format. Dossier generation requires a
+cryptographically trusted, Suite-issued platform-gap packet based on
+independently attributable real-platform evidence. The package neither
+classifies blame nor modifies RESPECT.
+
+After provisioning the standards cache, use
+`respect-standards-bootstrap --check` for a read-only, network-free
+verification of its pinned revisions and required schemas.
+
 For a raw native Android Candidate App that has no RESPECT discovery surface, use `--apk-only --apk <path>`. The Test Suite binds the submitted APK (Android Package Kit) while representing the descriptor as absent, so missing descriptor, publication, Android routing, and runtime behavior become honest Matrix results rather than requiring a fabricated bootstrap manifest.
 
 For repair work with available Candidate App source, use `respect-ification repair-plan` to generate a Kit-time, source-derived repair adapter and implementation prompt. The adapter is format-agnostic Kit scaffolding: it discovers content candidates and implementation seams from the CanApp's own references, then directs durable changes into the CanApp, its build, its tests, and genuinely external services.

@@ -1,9 +1,13 @@
 # SPDX-FileCopyrightText: 2026 Jim Plamondon
 # SPDX-License-Identifier: Apache-2.0
 
+import hashlib
 from dataclasses import asdict, dataclass, field
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import TYPE_CHECKING, Any, Dict, List, Optional
+
+if TYPE_CHECKING:
+    from .routing import AtomicResult
 
 
 class ResultState(str, Enum):
@@ -55,6 +59,22 @@ class RequirementOwner(str, Enum):
     PROFILE_OWNER = "profile_owner"
 
 
+class ResponsibleParty(str, Enum):
+    CANAPP_OWNER = "canapp_owner"
+    CANAPP_ARTIFACT_OWNER = "canapp_artifact_owner"
+    APPDEV_HARNESS = "appdev_harness"
+    APPDEV_PROVISIONING = "appdev_provisioning"
+    APPDEV_PUBLICATION = "appdev_publication"
+    RESPECT_PLATFORM_TEAM = "respect_platform_team"
+    PUBLISHER = "publisher"
+    SPIX_FOUNDATION = "spix_foundation"
+    TESTKIT_TEAM = "testkit_team"
+    TESTKIT_OPERATOR = "testkit_operator"
+    CERTIFICATION_AUTHORITY = "certification_authority"
+    SPECIFICATION_AUTHORITY = "specification_authority"
+    NONE = "none"
+
+
 @dataclass(frozen=True)
 class ActorHealth:
     actor_id: str
@@ -78,7 +98,9 @@ class EvidenceRecord:
     actor_id: Optional[str] = None
 
     def to_json_dict(self) -> Dict[str, Any]:
-        return asdict(self)
+        data = asdict(self)
+        data["challenge"] = data.pop("scenario_nonce")
+        return data
 
 
 @dataclass(frozen=True)
@@ -96,6 +118,7 @@ class MatrixRowResult:
     evidence: List[EvidenceRecord]
     source_refs: List[str]
     failure_domain: str
+    atomic_result: "AtomicResult"
     repair_guidance: Optional[str] = None
 
     @property
@@ -104,8 +127,12 @@ class MatrixRowResult:
 
     def to_json_dict(self) -> Dict[str, Any]:
         data = asdict(self)
+        data.pop("atomic_result")
         data["owner"] = self.owner.value
         data["state"] = self.state.value
+        data["challenge"] = data.pop("scenario_nonce")
+        data["evidence"] = [item.to_json_dict() for item in self.evidence]
+        data.update(self.atomic_result.to_json_dict())
         data["contributes_to_canapp_verdict"] = self.contributes_to_canapp_verdict
         return data
 
@@ -135,10 +162,20 @@ class CertificationProvision:
     evidence: Dict[str, Any]
     clearance: str
     rerun_scope: str
-    responsible_party: str
+    responsible_party: ResponsibleParty
+
+    def __post_init__(self) -> None:
+        if not isinstance(self.responsible_party, ResponsibleParty):
+            object.__setattr__(
+                self,
+                "responsible_party",
+                ResponsibleParty(self.responsible_party),
+            )
 
     def to_json_dict(self) -> Dict[str, Any]:
-        return asdict(self)
+        data = asdict(self)
+        data["responsible_party"] = self.responsible_party.value
+        return data
 
 
 @dataclass(frozen=True)
@@ -177,8 +214,20 @@ class SuiteRun:
     capabilities: List[str]
     evidence_environment: Dict[str, Any]
 
+    @property
+    def challenge(self) -> str:
+        return self.scenario_nonce
+
+    @property
+    def target_id(self) -> str:
+        return "urn:sha256:" + hashlib.sha256(
+            self.target_uri.encode("utf-8")
+        ).hexdigest()
+
     def to_json_dict(self) -> Dict[str, Any]:
         return {
+            "artifact_type": "respect_suite_report",
+            "format_version": "2.0.0",
             "suite_version": self.suite_version,
             "run_id": self.run_id,
             "matrix_id": self.matrix_id,
@@ -187,9 +236,10 @@ class SuiteRun:
             "profile_id": self.profile_id,
             "mode": self.mode,
             "target_uri": self.target_uri,
+            "target_id": self.target_id,
             "target_adapter": self.target_adapter,
             "target_digest": self.target_digest,
-            "scenario_nonce": self.scenario_nonce,
+            "challenge": self.challenge,
             "capabilities": sorted(self.capabilities),
             "evidence_environment": self.evidence_environment,
             "actor_health": [item.to_json_dict() for item in self.actor_health],

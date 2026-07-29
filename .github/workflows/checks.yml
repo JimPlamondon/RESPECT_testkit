@@ -27,6 +27,12 @@ jobs:
         env:
           RESPECT_STANDARDS_CACHE: ${{ runner.temp }}/respect-standards
         run: respect-standards-bootstrap
+      - name: Prove standards check mode is read-only and fail-closed
+        env:
+          RESPECT_STANDARDS_CACHE: ${{ runner.temp }}/respect-standards
+        run: |
+          respect-standards-bootstrap --check
+          python -m pytest -q tests/respect_compat/test_standards_bootstrap_check.py::test_standards_bootstrap_check_is_read_only_and_fail_closed
       - name: Validate committed migration evidence offline
         run: python tools/validate_migration_manifest.py --manifest migration/source_manifest.json
       - name: Validate Matrix and mutation checks
@@ -53,6 +59,7 @@ jobs:
           env -u PYTHONPATH "${run_root}/venv/bin/python" -m respect_ification.cli --help
           env -u PYTHONPATH "${run_root}/venv/bin/respect-compat" --help
           env -u PYTHONPATH "${run_root}/venv/bin/respect-ification" --help
+          env -u PYTHONPATH "${run_root}/venv/bin/respect-upgrade-dossier" --help
           env -u PYTHONPATH "${run_root}/venv/bin/respect-matrix-validate" --self-test --require-ready
           env -u PYTHONPATH RESPECT_STANDARDS_CACHE="${RESPECT_STANDARDS_CACHE}" "${run_root}/venv/bin/python" -m respect_testkit_migration.installed_smoke --run-dir "${run_root}/run" --forbid-root "${GITHUB_WORKSPACE}"
       - name: Validate licenses and privacy scans

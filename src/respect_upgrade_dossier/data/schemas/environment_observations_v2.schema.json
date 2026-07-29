@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://jims.example/schemas/respect_upgrade_dossier/environment_observations_v2.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "artifact_type",
+    "format_version",
+    "provider_id",
+    "observations"
+  ],
+  "properties": {
+    "artifact_type": {"const": "respect_environment_observations"},
+    "format_version": {"const": "2.0.0"},
+    "provider_id": {"type": "string", "minLength": 1},
+    "observations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "observation_id",
+          "row_id",
+          "real_build_id",
+          "respect_revision",
+          "independently_attributable",
+          "signed"
+        ],
+        "properties": {
+          "observation_id": {"type": "string", "minLength": 1},
+          "row_id": {"type": "string", "minLength": 1},
+          "real_build_id": {"type": "string", "minLength": 1},
+          "respect_revision": {"type": "string", "minLength": 1},
+          "independently_attributable": {"type": "boolean"},
+          "signed": {"type": "boolean"}
+        }
+      }
+    }
+  }
+}

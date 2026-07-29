@@ -167,6 +167,95 @@
       ],
       "type": "object"
     },
+    "featureWorkUnit": {
+      "additionalProperties": false,
+      "properties": {
+        "acceptance_contract": {
+          "minLength": 20,
+          "type": "string"
+        },
+        "closure_requires_executable_acceptance": {
+          "const": true
+        },
+        "feature_id": {
+          "pattern": "^RCF-[A-Z0-9][A-Z0-9_-]*$",
+          "type": "string"
+        },
+        "responsible_party": {
+          "enum": [
+            "respect_platform_team",
+            "specification_authority"
+          ]
+        }
+      },
+      "required": [
+        "feature_id",
+        "responsible_party",
+        "acceptance_contract",
+        "closure_requires_executable_acceptance"
+      ],
+      "type": "object"
+    },
+    "substituteFidelityContract": {
+      "additionalProperties": false,
+      "properties": {
+        "clearance": {
+          "minLength": 10,
+          "type": "string"
+        },
+        "covered_semantics": {
+          "$ref": "#/$defs/nonEmptyStrings"
+        },
+        "evidence_schema": {
+          "minLength": 5,
+          "type": "string"
+        },
+        "excluded_semantics": {
+          "$ref": "#/$defs/nonEmptyStrings"
+        },
+        "fidelity_guarantees": {
+          "$ref": "#/$defs/nonEmptyStrings"
+        },
+        "owner": {
+          "const": "appdev_publication"
+        },
+        "promotion_test": {
+          "minLength": 10,
+          "type": "string"
+        },
+        "real_dependency": {
+          "minLength": 10,
+          "type": "string"
+        },
+        "rerun_scope": {
+          "enum": [
+            "affected_rows",
+            "full_selected_profile"
+          ]
+        },
+        "substitute_id": {
+          "const": "local_https_publication"
+        },
+        "substitute_version": {
+          "minLength": 1,
+          "type": "string"
+        }
+      },
+      "required": [
+        "substitute_id",
+        "substitute_version",
+        "owner",
+        "covered_semantics",
+        "excluded_semantics",
+        "fidelity_guarantees",
+        "evidence_schema",
+        "real_dependency",
+        "clearance",
+        "promotion_test",
+        "rerun_scope"
+      ],
+      "type": "object"
+    },
     "feature": {
       "additionalProperties": false,
       "properties": {
@@ -208,6 +297,16 @@
         "first_applicable_respect_version": {
           "minLength": 1,
           "type": "string"
+        },
+        "feature_work_unit": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/featureWorkUnit"
+            },
+            {
+              "type": "null"
+            }
+          ]
         },
         "implementation_sources": {
           "items": {
@@ -287,6 +386,10 @@
         },
         "respect_ification_guidance": {
           "minLength": 10,
+          "type": "string"
+        },
+        "respect_upgrade_guidance": {
+          "minLength": 20,
           "type": "string"
         },
         "respect_revision": {
@@ -369,6 +472,9 @@
         "support_status",
         "first_applicable_respect_version",
         "last_applicable_respect_version"
+        ,
+        "respect_upgrade_guidance",
+        "feature_work_unit"
       ],
       "type": "object"
     },
@@ -571,6 +677,9 @@
           "minLength": 8,
           "type": "string"
         },
+        "applicability_evaluator": {
+          "const": "profile_and_feature_selection"
+        },
         "binding_id": {
           "pattern": "^BIND-[A-Z0-9][A-Z0-9_-]*$",
           "type": [
@@ -582,6 +691,21 @@
           "type": [
             "string",
             "null"
+          ]
+        },
+        "control_owner": {
+          "enum": [
+            "canapp_artifact",
+            "appdev_harness",
+            "appdev_provisioning",
+            "appdev_publication",
+            "respect_platform",
+            "publisher",
+            "spix_foundation",
+            "testkit",
+            "certification_authority",
+            "specification_authority",
+            "none"
           ]
         },
         "current_suite_status": {
@@ -653,6 +777,12 @@
         "narrow_verifier": {
           "minLength": 8,
           "type": "string"
+        },
+        "dossier_acceptance_test": {
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "negative_case": {
           "minLength": 8,
@@ -744,11 +874,30 @@
           "type": "array",
           "uniqueItems": true
         },
+        "platform_gap_eligible": {
+          "type": "boolean"
+        },
         "required_tooling": {
           "$ref": "#/$defs/nonEmptyStrings"
         },
         "requirement_owner": {
           "$ref": "#/$defs/owner"
+        },
+        "responsible_party": {
+          "enum": [
+            "canapp_artifact_owner",
+            "appdev_harness",
+            "appdev_provisioning",
+            "appdev_publication",
+            "respect_platform_team",
+            "publisher",
+            "spix_foundation",
+            "testkit_team",
+            "testkit_operator",
+            "certification_authority",
+            "specification_authority",
+            "none"
+          ]
         },
         "requirement_statement": {
           "additionalProperties": false,
@@ -801,6 +950,9 @@
           "minLength": 2,
           "type": "string"
         },
+        "routing_contract": {
+          "const": "respect_compat.routing.ROUTING_TABLE"
+        },
         "row_id": {
           "pattern": "^[A-Z][A-Z0-9_-]*-[0-9]{3}$",
           "type": "string"
@@ -828,12 +980,37 @@
           "type": "array",
           "uniqueItems": true
         },
+        "substitute_fidelity_contract": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/substituteFidelityContract"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
         "title": {
           "minLength": 8,
           "type": "string"
         },
         "tooling_health_preconditions": {
           "$ref": "#/$defs/nonEmptyStrings"
+        },
+        "verification_modes": {
+          "items": {
+            "enum": [
+              "real",
+              "substitute",
+              "fixture",
+              "static",
+              "unavailable",
+              "production_meta_test"
+            ]
+          },
+          "minItems": 1,
+          "type": "array",
+          "uniqueItems": true
         }
       },
       "required": [
@@ -866,6 +1043,15 @@
         "narrow_verifier",
         "test_case_ids",
         "failure_classification"
+        ,
+        "control_owner",
+        "responsible_party",
+        "applicability_evaluator",
+        "routing_contract",
+        "platform_gap_eligible",
+        "dossier_acceptance_test",
+        "verification_modes",
+        "substitute_fidelity_contract"
       ],
       "type": "object"
     },
@@ -1159,7 +1345,7 @@
       "type": "array"
     },
     "schema_version": {
-      "const": "1.1.0"
+      "const": "1.2.0"
     },
     "semantic_contracts": {
       "items": {

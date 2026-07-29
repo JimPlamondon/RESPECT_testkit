@@ -1,0 +1,97 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://jims.example/schemas/respect_compat/suite_report_v2.schema.json",
+  "title": "RESPECT TestKit v2 Suite Report",
+  "type": "object",
+  "required": [
+    "artifact_type",
+    "format_version",
+    "suite_version",
+    "run_id",
+    "matrix_id",
+    "matrix_version",
+    "matrix_semantic_hash",
+    "profile_id",
+    "target_id",
+    "target_digest",
+    "challenge",
+    "results"
+  ],
+  "properties": {
+    "artifact_type": {
+      "const": "respect_suite_report"
+    },
+    "format_version": {
+      "const": "2.0.0"
+    },
+    "suite_version": {
+      "type": "string"
+    },
+    "run_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "matrix_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "matrix_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "matrix_semantic_hash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "profile_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "target_digest": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "target_id": {
+      "type": "string",
+      "pattern": "^urn:sha256:[a-f0-9]{64}$"
+    },
+    "challenge": {
+      "type": "string",
+      "minLength": 16
+    },
+    "results": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "requirement_owner",
+          "control_owner",
+          "responsible_party",
+          "verification_mode",
+          "observed_result",
+          "workflow_disposition"
+        ],
+        "properties": {
+          "requirement_owner": {
+            "type": "string"
+          },
+          "control_owner": {
+            "type": "string"
+          },
+          "responsible_party": {
+            "type": "string"
+          },
+          "verification_mode": {
+            "type": "string"
+          },
+          "observed_result": {
+            "type": "string"
+          },
+          "workflow_disposition": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

@@ -7,6 +7,7 @@ import shutil
 import threading
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
+from xml.etree import ElementTree
 
 import pytest
 
@@ -57,7 +58,7 @@ def passing_executor(context, row):
 
 def test_canonical_matrix_loads_and_selects_active_profiles():
     matrix = load_matrix()
-    assert matrix.matrix_version == "1.0.0"
+    assert matrix.matrix_version == "1.1.0"
     assert len(matrix.features) == 45
     assert len(matrix.rows) == 87
     assert matrix.selected_rows("PROFILE-WEB")
@@ -134,7 +135,7 @@ def test_current_descriptor_makes_legacy_manifest_rows_not_applicable():
     }
 
 
-def test_respect_owned_failure_does_not_fail_canapp_verdict():
+def test_respect_owned_nonfinal_dimension_prevents_unqualified_certification():
     matrix = load_matrix()
     registry = ExecutorRegistry()
 
@@ -153,7 +154,9 @@ def test_respect_owned_failure_does_not_fail_canapp_verdict():
     for row in matrix.selected_rows("PROFILE-WEB"):
         registry.register(row.row_id, executor)
     run = execute(matrix, target(), "PROFILE-WEB", "certification", registry)
-    assert run.verdict.certified
+    assert not run.verdict.certified
+    assert run.verdict.state == "not_certified"
+    assert "policy-required dimensions are non-final" in run.verdict.reason
     assert any(
         result.state == ResultState.FAIL
         and result.owner != RequirementOwner.CANAPP
@@ -678,6 +681,32 @@ def test_local_https_preserves_row_passes_and_yields_named_provisional_approval(
     assert "Provision LOCAL_HTTPS_PUBLICATION:" in text_report
 
 
+def test_local_https_without_positive_row_evidence_cannot_grant_provisional():
+    matrix = load_matrix()
+    registry = ExecutorRegistry()
+    selected = matrix.selected_rows("PROFILE-WEB")
+    for row in selected:
+        registry.register(
+            row.row_id,
+            lambda context, selected_row: context.result(
+                selected_row,
+                ResultState.BLOCKED,
+                None,
+                "No positive publication evidence.",
+                [],
+            ),
+        )
+    canapp = target()
+    canapp.uri = "https://127.0.0.1:8443/descriptor.json"
+
+    run = execute(matrix, canapp, "PROFILE-WEB", "certification", registry)
+
+    assert all(
+        provision.code != "LOCAL_HTTPS_PUBLICATION"
+        for provision in run.verdict.provisions
+    )
+
+
 def test_multiple_provisional_reasons_are_retained_and_displayed_together():
     matrix = load_matrix()
     registry = ExecutorRegistry()
@@ -738,7 +767,7 @@ def test_independent_report_verifier_rejects_tampered_owner():
     assert any("owner does not match" in error for error in verify_suite_payload(payload))
 
 
-def test_reference_web_fixture_is_provisional_despite_passing_canapp_rows():
+def test_reference_web_fixture_cannot_claim_qualified_substitute_provisional():
     fixture = REFERENCE_FIXTURE
     matrix = load_matrix()
     run = execute(
@@ -749,13 +778,8 @@ def test_reference_web_fixture_is_provisional_despite_passing_canapp_rows():
         build_registry(matrix),
     )
     assert not run.verdict.certified
-    assert run.verdict.state == "provisional"
-    assert run.verdict.display == (
-        "Provisional (immutable certified-build URL missing; "
-        "publication authorization missing; "
-        "Spix certification trust anchor missing; "
-        "suite fixture evidence)"
-    )
+    assert run.verdict.state == "not_certified"
+    assert run.verdict.display == "Not certified"
     assert [item.code for item in run.verdict.provisions] == [
         "IMMUTABLE_CERTIFIED_BUILD_URL_MISSING",
         "PUBLICATION_AUTHORIZATION_MISSING",
@@ -772,6 +796,58 @@ def test_reference_web_fixture_is_provisional_despite_passing_canapp_rows():
     assert run.actor_health
 
 
+def test_json_text_and_junit_preserve_each_classified_route(tmp_path):
+    matrix = load_matrix()
+    registry = ExecutorRegistry()
+    failed_canapp = False
+
+    def routed(context, row):
+        nonlocal failed_canapp
+        if row.owner == RequirementOwner.CANAPP.value and not failed_canapp:
+            state = ResultState.FAIL
+            failed_canapp = True
+        elif row.owner in {
+            RequirementOwner.RESPECT_LAUNCHER.value,
+            RequirementOwner.RESPECT_SERVICE.value,
+        }:
+            state = ResultState.BLOCKED
+        else:
+            state = ResultState.PASS
+        evidence = [
+            context.evidence(row, "route-consistency", "synthetic", state.value)
+        ]
+        return context.result(
+            row, state, state.value, "classified route", evidence
+        )
+
+    for row in matrix.selected_rows("PROFILE-WEB"):
+        registry.register(row.row_id, routed)
+    canapp = target(digest="a" * 64)
+    canapp.uri = "https://localhost:8443/descriptor.json"
+    run = execute(matrix, canapp, "PROFILE-WEB", "test", registry)
+    write_suite_reports(run, tmp_path)
+    report = json.loads((tmp_path / "respect-report.json").read_text())
+    text = (tmp_path / "respect-report.txt").read_text()
+    junit = ElementTree.parse(tmp_path / "junit.xml")
+    cases = {
+        case.attrib["name"]: {
+            item.attrib["name"]: item.attrib["value"]
+            for item in case.findall("./properties/property")
+        }
+        for case in junit.findall(".//testcase")
+    }
+
+    for result in report["results"]:
+        assert (
+            f"[{result['observed_result']} -> "
+            f"{result['workflow_disposition']}]"
+        ) in text
+        assert cases[result["row_id"]]["observed_result"] == result[
+            "observed_result"
+        ]
+        assert cases[result["row_id"]]["workflow_disposition"] == result[
+            "workflow_disposition"
+        ]
 def test_reference_single_fault_identity_mutation_fails_only_desc_002(tmp_path):
     source = REFERENCE_FIXTURE
     fixture = tmp_path / "identity-missing"

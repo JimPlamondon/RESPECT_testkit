@@ -3,7 +3,7 @@
 
 import ipaddress
 import urllib.parse
-from typing import Any, Dict, Iterable, List
+from typing import Any, Dict, Iterable, List, Mapping, Optional
 
 from .models import CertificationProvision
 
@@ -91,9 +91,37 @@ def classify_evidence_environment(target: Any) -> Dict[str, Any]:
 def derive_provisions(
     selected_rows: Iterable[Any],
     evidence_environment: Dict[str, Any],
+    results: Optional[Iterable[Any]] = None,
 ) -> List[CertificationProvision]:
     rows = list(selected_rows)
     row_ids = {row.row_id for row in rows}
+    result_by_id: Dict[str, Any] = {}
+    for result in results or ():
+        row_id = (
+            result.get("row_id")
+            if isinstance(result, Mapping)
+            else getattr(result, "row_id", None)
+        )
+        if row_id:
+            result_by_id[row_id] = result
+
+    def positively_attributed(row_id: str) -> bool:
+        result = result_by_id.get(row_id)
+        if result is None:
+            return False
+        state = (
+            result.get("state")
+            if isinstance(result, Mapping)
+            else getattr(result, "state", None)
+        )
+        state_value = getattr(state, "value", state)
+        evidence = (
+            result.get("evidence", [])
+            if isinstance(result, Mapping)
+            else getattr(result, "evidence", [])
+        )
+        return state_value == "pass" and bool(evidence)
+
     provisions: List[CertificationProvision] = []
     prerequisites = evidence_environment.get(
         "publication_prerequisites", {}
@@ -182,9 +210,12 @@ def derive_provisions(
     publication = evidence_environment.get("publication", {})
     if publication.get("kind") == "fixture":
         affected = sorted(
-            row.row_id for row in rows if row.owner == "canapp"
+            row.row_id
+            for row in rows
+            if row.owner == "canapp" and positively_attributed(row.row_id)
         )
-        provisions.append(
+        if affected:
+            provisions.append(
             CertificationProvision(
                 code="SUITE_FIXTURE_EVIDENCE",
                 label="suite fixture evidence",
@@ -209,6 +240,7 @@ def derive_provisions(
             row.row_id
             for row in rows
             if "tier_1_device" in row.required_tooling
+            and positively_attributed(row.row_id)
         )
         if affected:
             provisions.append(
@@ -235,8 +267,10 @@ def derive_provisions(
             for row in rows
             if row.owner == "canapp"
             and row.row_id.split("-", 1)[0] in PUBLICATION_ROW_PREFIXES
+            and positively_attributed(row.row_id)
         )
-        provisions.append(
+        if affected:
+            provisions.append(
             CertificationProvision(
                 code="LOCAL_HTTPS_PUBLICATION",
                 label="local HTTPS publication",

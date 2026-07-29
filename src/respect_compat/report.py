@@ -1,6 +1,7 @@
 # SPDX-FileCopyrightText: 2026 Jim Plamondon
 # SPDX-License-Identifier: Apache-2.0
 
+import hashlib
 import json
 from pathlib import Path
 from typing import Any, Dict, Iterable, List
@@ -8,6 +9,7 @@ from xml.etree.ElementTree import Element, ElementTree, SubElement
 
 from .matrix_runtime import load_matrix
 from .models import RequirementOwner, ResultState, RuleResult, SuiteRun
+from .routing import AtomicResult, ObservedResult, ROUTING_TABLE
 from .handoff import build_handoff, write_handoff
 from .provisions import (
     classify_publication_environment,
@@ -141,38 +143,49 @@ def recompute_serialized_verdict(payload: Dict[str, Any]) -> Dict[str, Any]:
     provisions = derive_provisions(
         [matrix.rows[row_id] for row_id in selected if row_id in matrix.rows],
         payload.get("evidence_environment", {}),
+        results,
     )
     serialized_provisions = [
         provision.to_json_dict() for provision in provisions
     ]
-    canapp = [
-        item
-        for item in results
-        if item.get("row_id") in matrix.rows
-        and matrix.rows[item["row_id"]].owner == RequirementOwner.CANAPP.value
-    ]
-    nonpass = [
-        item
-        for item in canapp
-        if item.get("state")
-        not in {ResultState.PASS.value, ResultState.NOT_APPLICABLE.value}
-    ]
-    if not canapp:
+    try:
+        atomic_results = [
+            AtomicResult.from_json_dict(item) for item in results
+        ]
+    except ValueError as error:
+        return {
+            "certified": False,
+            "state": "harness_error",
+            "display": "Harness error",
+            "reason": f"invalid atomic result: {error}",
+            "provisions": serialized_provisions,
+        }
+    required = [item for item in atomic_results if item.policy_required]
+    nonfinal = [item for item in required if not item.final_affirmative]
+    if not required:
         return {
             "certified": False,
             "state": "incomplete",
             "display": "Incomplete",
-            "reason": "profile selected no CanApp-owned rows",
+            "reason": "profile selected no policy-required dimensions",
             "provisions": serialized_provisions,
         }
-    if nonpass:
+    if nonfinal and not (
+        provisions
+        and all(
+            item.observed_result
+            == ObservedResult.CODE_COMPATIBLE_THROUGH_SUBSTITUTE
+            for item in nonfinal
+        )
+    ):
         return {
             "certified": False,
             "state": "not_certified",
             "display": "Not certified",
-            "reason": "applicable CanApp rows did not pass: "
+            "reason": "policy-required dimensions are non-final: "
             + ", ".join(
-                f"{item.get('row_id')}={item.get('state')}" for item in nonpass
+                f"{item.row_id}={item.observed_result.value}"
+                for item in nonfinal
             ),
             "provisions": serialized_provisions,
         }
@@ -182,7 +195,7 @@ def recompute_serialized_verdict(payload: Dict[str, Any]) -> Dict[str, Any]:
             "state": "provisional",
             "display": provisional_display(provisions),
             "reason": (
-                "all applicable CanApp-owned rows passed; "
+                "all remaining non-final dimensions are qualified substitutes; "
                 f"{len(provisions)} certification provision(s) remain"
             ),
             "provisions": serialized_provisions,
@@ -191,13 +204,25 @@ def recompute_serialized_verdict(payload: Dict[str, Any]) -> Dict[str, Any]:
         "certified": True,
         "state": "certified",
         "display": "Certified",
-        "reason": "all applicable CanApp-owned rows passed",
+        "reason": "every policy-required dimension is final and affirmative",
         "provisions": [],
     }
 
 
 def verify_suite_payload(payload: Dict[str, Any]) -> List[str]:
     errors: List[str] = []
+    if payload.get("artifact_type") != "respect_suite_report":
+        errors.append("report artifact type is not v2 Suite report")
+    if payload.get("format_version") != "2.0.0":
+        errors.append("report format version is not 2.0.0")
+    challenge = payload.get("challenge")
+    if not isinstance(challenge, str) or len(challenge) < 16:
+        errors.append("report challenge is missing or too short")
+    expected_target_id = "urn:sha256:" + hashlib.sha256(
+        str(payload.get("target_uri", "")).encode("utf-8")
+    ).hexdigest()
+    if payload.get("target_id") != expected_target_id:
+        errors.append("report target identity does not match target URI")
     environment = payload.get("evidence_environment", {})
     publication = (
         environment.get("publication", {})
@@ -258,6 +283,19 @@ def verify_suite_payload(payload: Dict[str, Any]) -> List[str]:
                 errors.append(
                     f"row {row_id} test-case identifiers do not match canonical Matrix"
                 )
+            try:
+                atomic = AtomicResult.from_json_dict(item)
+                rule = ROUTING_TABLE[atomic.observed_result]
+                if atomic.workflow_disposition != rule.disposition:
+                    errors.append(f"row {row_id} disposition contradicts routing table")
+                if atomic.artifacts != rule.artifacts:
+                    errors.append(f"row {row_id} artifacts contradict routing table")
+                if atomic.final_affirmative != rule.final_affirmative:
+                    errors.append(
+                        f"row {row_id} finality contradicts routing table"
+                    )
+            except (KeyError, ValueError) as error:
+                errors.append(f"row {row_id} atomic result invalid: {error}")
     except Exception as error:
         errors.append(
             f"canonical Matrix verification failed: {type(error).__name__}: {error}"
@@ -299,9 +337,9 @@ def verify_suite_payload(payload: Dict[str, Any]) -> List[str]:
                 errors.append(
                     f"row {item.get('row_id')} evidence is not bound to target"
                 )
-            if evidence.get("scenario_nonce") != payload.get("scenario_nonce"):
+            if evidence.get("challenge") != payload.get("challenge"):
                 errors.append(
-                    f"row {item.get('row_id')} evidence is not bound to scenario"
+                    f"row {item.get('row_id')} evidence is not bound to challenge"
                 )
     return sorted(set(errors))
 
@@ -334,7 +372,9 @@ def write_suite_reports(run: SuiteRun, output_dir: Path) -> None:
         lines.append("")
     for result in sorted(run.results, key=lambda item: item.row_id):
         lines.append(
-            f"{result.row_id} [{result.owner.value}] {result.state.value}: "
+            f"{result.row_id} [{result.owner.value}] {result.state.value} "
+            f"[{result.atomic_result.observed_result.value} -> "
+            f"{result.atomic_result.workflow_disposition.value}]: "
             f"{result.message}"
         )
         if result.repair_guidance:
@@ -356,12 +396,45 @@ def write_suite_reports(run: SuiteRun, output_dir: Path) -> None:
             classname=f"respect_compatible.{result.owner.value}",
             name=result.row_id,
         )
-        if result.state == ResultState.FAIL:
-            failure = SubElement(case, "failure", message=result.message)
+        properties = SubElement(case, "properties")
+        for name, value in (
+            ("requirement_owner", result.atomic_result.requirement_owner.value),
+            ("control_owner", result.atomic_result.control_owner.value),
+            ("responsible_party", result.atomic_result.responsible_party.value),
+            ("verification_mode", result.atomic_result.verification_mode.value),
+            ("observed_result", result.atomic_result.observed_result.value),
+            (
+                "workflow_disposition",
+                result.atomic_result.workflow_disposition.value,
+            ),
+        ):
+            SubElement(properties, "property", name=name, value=value)
+        if result.atomic_result.observed_result == ObservedResult.HARNESS_ERROR:
+            failure = SubElement(
+                case,
+                "error",
+                message=result.message,
+                type=result.atomic_result.workflow_disposition.value,
+            )
             failure.text = json.dumps(result.to_json_dict(), sort_keys=True)
-        elif result.state != ResultState.PASS:
-            skipped = SubElement(case, "skipped", message=result.message)
-            skipped.text = result.state.value
+        elif result.atomic_result.observed_result == (
+            ObservedResult.CANAPP_IMPLEMENTATION_FAIL
+        ):
+            failure = SubElement(
+                case,
+                "failure",
+                message=result.message,
+                type=result.atomic_result.workflow_disposition.value,
+            )
+            failure.text = json.dumps(result.to_json_dict(), sort_keys=True)
+        elif not result.atomic_result.final_affirmative:
+            skipped = SubElement(
+                case,
+                "skipped",
+                message=result.message,
+                type=result.atomic_result.workflow_disposition.value,
+            )
+            skipped.text = result.atomic_result.observed_result.value
     ElementTree(testsuite).write(
         output_dir / "junit.xml",
         encoding="utf-8",

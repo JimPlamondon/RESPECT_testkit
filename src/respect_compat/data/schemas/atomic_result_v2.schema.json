@@ -1,0 +1,122 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://jims.example/schemas/respect_compat/atomic_result_v2.schema.json",
+  "title": "RESPECT TestKit v2 Atomic Result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "row_id",
+    "requirement_owner",
+    "control_owner",
+    "responsible_party",
+    "verification_mode",
+    "observed_result",
+    "workflow_disposition",
+    "artifacts",
+    "policy_required",
+    "final_affirmative"
+  ],
+  "properties": {
+    "row_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "requirement_owner": {
+      "enum": [
+        "canapp",
+        "publisher",
+        "spix_foundation",
+        "respect_launcher",
+        "respect_service",
+        "test_suite",
+        "profile_owner"
+      ]
+    },
+    "control_owner": {
+      "enum": [
+        "canapp_artifact",
+        "appdev_harness",
+        "appdev_provisioning",
+        "appdev_publication",
+        "respect_platform",
+        "publisher",
+        "spix_foundation",
+        "testkit",
+        "certification_authority",
+        "specification_authority",
+        "none"
+      ]
+    },
+    "responsible_party": {
+      "enum": [
+        "canapp_artifact_owner",
+        "appdev_harness",
+        "appdev_provisioning",
+        "appdev_publication",
+        "respect_platform_team",
+        "publisher",
+        "spix_foundation",
+        "testkit_team",
+        "testkit_operator",
+        "certification_authority",
+        "specification_authority",
+        "none"
+      ]
+    },
+    "verification_mode": {
+      "enum": [
+        "real",
+        "substitute",
+        "fixture",
+        "static",
+        "unavailable",
+        "production_meta_test"
+      ]
+    },
+    "observed_result": {
+      "enum": [
+        "pass",
+        "canapp_implementation_fail",
+        "code_compatible_through_substitute",
+        "unmeasured_external_dependency",
+        "testkit_capability_gap",
+        "harness_error",
+        "respect_platform_gap",
+        "specification_blocked",
+        "not_applicable"
+      ]
+    },
+    "workflow_disposition": {
+      "enum": [
+        "none",
+        "kit_repair",
+        "provisional_promotion_required",
+        "provision_or_capability_work",
+        "testkit_engineering",
+        "diagnostic_incident",
+        "dossier_eligible",
+        "specification_decision"
+      ]
+    },
+    "artifacts": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "enum": [
+          "kit_task",
+          "promotion_packet",
+          "testkit_engineering_item",
+          "diagnostic_incident",
+          "platform_gap_packet",
+          "specification_item"
+        ]
+      }
+    },
+    "policy_required": {
+      "type": "boolean"
+    },
+    "final_affirmative": {
+      "type": "boolean"
+    }
+  }
+}

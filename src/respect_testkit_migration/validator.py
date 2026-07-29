@@ -75,6 +75,7 @@ def validate_manifest(
         errors.append("INVENTORY_DRIFT: manifest inventory hash does not bind committed inventory")
     inventory_entries = inventory.get("entries", [])
     manifest_entries = manifest.get("entries", [])
+    native_entries = manifest.get("native_entries", [])
     inventory_paths = [item.get("source_path") for item in inventory_entries]
     manifest_paths = [item.get("source_path") for item in manifest_entries]
     if inventory_paths != sorted(inventory_paths, key=lambda value: value.encode() if isinstance(value, str) else b""):
@@ -126,6 +127,44 @@ def validate_manifest(
                 errors.append(f"HASH_MISMATCH: {source_path}: migrated bytes changed")
         elif disposition not in {"excluded", "historical_only"}:
             errors.append(f"ILLEGAL_DISPOSITION: {source_path}: {disposition}")
+    native_paths = [
+        item.get("destination_path") for item in native_entries
+    ]
+    if native_paths != sorted(
+        native_paths,
+        key=lambda value: value.encode() if isinstance(value, str) else b"",
+    ):
+        errors.append("SCHEMA: native authority paths are not sorted bytewise")
+    if len(native_paths) != len(set(native_paths)):
+        errors.append("DUPLICATE_DESTINATION: native authority paths are not unique")
+    overlap = sorted(set(native_paths) & declared_destinations)
+    if overlap:
+        errors.append(
+            f"DUPLICATE_DESTINATION: migrated/native overlap={overlap}"
+        )
+    for entry in native_entries:
+        relative = entry.get("destination_path")
+        if not isinstance(relative, str):
+            errors.append("MISSING_DESTINATION: native authority")
+            continue
+        candidate = (repository_root / relative).resolve()
+        try:
+            candidate.relative_to(repository_root.resolve())
+        except ValueError:
+            errors.append(f"PATH_ESCAPE: native authority: {relative}")
+            continue
+        if not candidate.is_file():
+            errors.append(f"MISSING_DESTINATION: native authority: {relative}")
+            continue
+        if not any(relative.startswith(root) for root in MIGRATED_AUTHORITY_ROOTS):
+            errors.append(f"ILLEGAL_DESTINATION: native authority: {relative}")
+            continue
+        actual_hash = sha256_bytes(candidate.read_bytes())
+        if actual_hash != entry.get("destination_sha256"):
+            errors.append(
+                f"HASH_MISMATCH: native authority: {relative}"
+            )
+        declared_destinations.add(relative)
     actual_authorities = {
         path.relative_to(repository_root).as_posix()
         for root_name in MIGRATED_AUTHORITY_ROOTS

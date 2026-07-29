@@ -8,11 +8,12 @@
     "source_inventory",
     "source_inventory_hash",
     "manifest_hash",
-    "entries"
+    "entries",
+    "native_entries"
   ],
   "properties": {
     "schema_version": {
-      "const": "1.0.0"
+      "const": "1.1.0"
     },
     "source_inventory": {
       "const": "migration/source_inventory.json"
@@ -28,12 +29,52 @@
       "items": {
         "$ref": "#/$defs/entry"
       }
+    },
+    "native_entries": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/nativeEntry"
+      }
     }
   },
   "$defs": {
     "sha256": {
       "type": "string",
       "pattern": "^[0-9a-f]{64}$"
+    },
+    "nativeEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "destination_path",
+        "destination_sha256",
+        "item_class",
+        "provenance",
+        "reason"
+      ],
+      "properties": {
+        "destination_path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "destination_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "item_class": {
+          "enum": [
+            "runtime",
+            "schema",
+            "fixture"
+          ]
+        },
+        "provenance": {
+          "const": "post_extraction"
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
     },
     "entry": {
       "type": "object",

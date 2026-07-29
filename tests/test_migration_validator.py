@@ -119,3 +119,16 @@ def test_missing_destination_and_hash_mismatch_fail_closed(tmp_path):
         error.startswith("HASH_MISMATCH:")
         for error in validate_manifest(mismatch_path, ROOT)
     )
+
+
+def test_native_post_extraction_authority_hash_mismatch_fails_closed(
+    tmp_path,
+):
+    def mismatch(data):
+        data["native_entries"][0]["destination_sha256"] = "0" * 64
+
+    path = mutated_manifest(tmp_path, mismatch)
+    assert any(
+        error.startswith("HASH_MISMATCH: native authority")
+        for error in validate_manifest(path, ROOT)
+    )

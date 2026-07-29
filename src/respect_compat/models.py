@@ -55,6 +55,22 @@ class RequirementOwner(str, Enum):
     PROFILE_OWNER = "profile_owner"
 
 
+class ResponsibleParty(str, Enum):
+    CANAPP_OWNER = "canapp_owner"
+    CANAPP_ARTIFACT_OWNER = "canapp_artifact_owner"
+    APPDEV_HARNESS = "appdev_harness"
+    APPDEV_PROVISIONING = "appdev_provisioning"
+    APPDEV_PUBLICATION = "appdev_publication"
+    RESPECT_PLATFORM_TEAM = "respect_platform_team"
+    PUBLISHER = "publisher"
+    SPIX_FOUNDATION = "spix_foundation"
+    TESTKIT_TEAM = "testkit_team"
+    TESTKIT_OPERATOR = "testkit_operator"
+    CERTIFICATION_AUTHORITY = "certification_authority"
+    SPECIFICATION_AUTHORITY = "specification_authority"
+    NONE = "none"
+
+
 @dataclass(frozen=True)
 class ActorHealth:
     actor_id: str
@@ -135,10 +151,20 @@ class CertificationProvision:
     evidence: Dict[str, Any]
     clearance: str
     rerun_scope: str
-    responsible_party: str
+    responsible_party: ResponsibleParty
+
+    def __post_init__(self) -> None:
+        if not isinstance(self.responsible_party, ResponsibleParty):
+            object.__setattr__(
+                self,
+                "responsible_party",
+                ResponsibleParty(self.responsible_party),
+            )
 
     def to_json_dict(self) -> Dict[str, Any]:
-        return asdict(self)
+        data = asdict(self)
+        data["responsible_party"] = self.responsible_party.value
+        return data
 
 
 @dataclass(frozen=True)

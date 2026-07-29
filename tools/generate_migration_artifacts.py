@@ -24,6 +24,14 @@ AUTHORING_COMMITS = [
     ("1025e89011d42e75111ef9d541110f5a516bd4af", "Matrix-driven Test Suite"),
     ("4361643cb27e4710d21c87673ef4fa4dcd23d102", "RESPECT-ification Kit"),
 ]
+MIGRATED_AUTHORITY_ROOTS = (
+    "src/respect_compat/data/fixtures/",
+    "src/respect_compat/data/indexes/",
+    "src/respect_compat/data/matrix/",
+    "src/respect_compat/data/profiles/",
+    "src/respect_compat/data/schemas/",
+    "src/respect_ification/data/schemas/",
+)
 
 
 def run_git(source: Path, *args: str) -> bytes:
@@ -278,11 +286,46 @@ def main() -> int:
             if disposition == "adapted":
                 entry["adaptation_reason"] = "standalone package layout, installed-resource access, or destination documentation"
         manifest_entries.append(entry)
+    migrated_destinations = {
+        item["destination_path"]
+        for item in manifest_entries
+        if item.get("disposition") in {"migrated", "adapted"}
+    }
+    native_entries = []
+    for root_name in MIGRATED_AUTHORITY_ROOTS:
+        for path in sorted(
+            (root / root_name).rglob("*"),
+            key=lambda item: item.as_posix().encode(),
+        ):
+            if not path.is_file() or path.name == "__pycache__":
+                continue
+            relative = path.relative_to(root).as_posix()
+            if relative in migrated_destinations:
+                continue
+            if "/schemas/" in relative:
+                native_item_class = "schema"
+            elif "/fixtures/" in relative:
+                native_item_class = "fixture"
+            else:
+                native_item_class = "runtime"
+            native_entries.append(
+                {
+                    "destination_path": relative,
+                    "destination_sha256": sha256_bytes(path.read_bytes()),
+                    "item_class": native_item_class,
+                    "provenance": "post_extraction",
+                    "reason": (
+                        "post-extraction TestKit authority introduced through "
+                        "the repository's reviewed source/generator workflow"
+                    ),
+                }
+            )
     manifest = {
-        "schema_version": "1.0.0",
+        "schema_version": "1.1.0",
         "source_inventory": "migration/source_inventory.json",
         "source_inventory_hash": inventory["inventory_hash"],
         "entries": manifest_entries,
+        "native_entries": native_entries,
     }
     manifest["manifest_hash"] = canonical_hash(manifest, "manifest_hash")
     write_json(root / "migration/source_manifest.json", manifest)

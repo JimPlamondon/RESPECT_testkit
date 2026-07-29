@@ -1547,7 +1547,7 @@
       "adaptation_reason": "standalone package layout, installed-resource access, or destination documentation",
       "blob_oid": "1a748c83066c7219e0291c40db385389fb9b4ed1",
       "destination_path": "src/respect_compat/models.py",
-      "destination_sha256": "0d064a0bd88c9d17883de19b86b5b1165c95e747666f28813365f56700ded481",
+      "destination_sha256": "80f284713a015fa3a1f0c35b2f94b141074cfb7995ddd4973c8121bc385a67e9",
       "disposition": "adapted",
       "item_class": "runtime",
       "license": "Apache-2.0",
@@ -2277,8 +2277,24 @@
       "source_repository": "https://github.com/JimPlamondon/jims"
     }
   ],
-  "manifest_hash": "4080d05db298f16e68213c38d37c4abc57a8a61efd1c658f4e24f15cb3e4e8a7",
-  "schema_version": "1.0.0",
+  "manifest_hash": "ce2961e1d148d5a10f0799836a62a941add404eef844a012e62704ac49fb3505",
+  "native_entries": [
+    {
+      "destination_path": "src/respect_compat/data/schemas/atomic_result_v2.schema.json",
+      "destination_sha256": "f9c6c0d015e0a55445d29b4b5aac20c45f793cd176faba5444f6ba46435c6116",
+      "item_class": "schema",
+      "provenance": "post_extraction",
+      "reason": "post-extraction TestKit authority introduced through the repository's reviewed source/generator workflow"
+    },
+    {
+      "destination_path": "src/respect_compat/data/schemas/suite_report_v2.schema.json",
+      "destination_sha256": "50f3d2d14531ce409cf979cf8942e18ffe662e1d302fb2d86f02dc11ab50121a",
+      "item_class": "schema",
+      "provenance": "post_extraction",
+      "reason": "post-extraction TestKit authority introduced through the repository's reviewed source/generator workflow"
+    }
+  ],
+  "schema_version": "1.1.0",
   "source_inventory": "migration/source_inventory.json",
   "source_inventory_hash": "253be61d741605244ffcc30cbb3c4523b091625abb6048dcea2e089dc50a2112"
 }

@@ -9,7 +9,12 @@ from xml.etree.ElementTree import Element, ElementTree, SubElement
 
 from .matrix_runtime import load_matrix
 from .models import RequirementOwner, ResultState, RuleResult, SuiteRun
-from .routing import AtomicResult, ObservedResult, ROUTING_TABLE
+from .routing import (
+    AtomicResult,
+    ObservedResult,
+    ROUTING_TABLE,
+    is_provisional_nonfinal,
+)
 from .handoff import build_handoff, write_handoff
 from .provisions import (
     classify_publication_environment,
@@ -170,14 +175,20 @@ def recompute_serialized_verdict(payload: Dict[str, Any]) -> Dict[str, Any]:
             "reason": "profile selected no policy-required dimensions",
             "provisions": serialized_provisions,
         }
-    if nonfinal and not (
-        provisions
-        and all(
-            item.observed_result
-            == ObservedResult.CODE_COMPATIBLE_THROUGH_SUBSTITUTE
-            for item in nonfinal
+    state_by_row = {
+        str(item.get("row_id")): item.get("state")
+        for item in results
+        if isinstance(item, dict)
+    }
+    disqualifying = [
+        item
+        for item in nonfinal
+        if not is_provisional_nonfinal(
+            item,
+            state_by_row.get(item.row_id, ""),
         )
-    ):
+    ]
+    if disqualifying or (nonfinal and not provisions):
         return {
             "certified": False,
             "state": "not_certified",
@@ -185,7 +196,7 @@ def recompute_serialized_verdict(payload: Dict[str, Any]) -> Dict[str, Any]:
             "reason": "policy-required dimensions are non-final: "
             + ", ".join(
                 f"{item.row_id}={item.observed_result.value}"
-                for item in nonfinal
+                for item in disqualifying or nonfinal
             ),
             "provisions": serialized_provisions,
         }
@@ -195,7 +206,7 @@ def recompute_serialized_verdict(payload: Dict[str, Any]) -> Dict[str, Any]:
             "state": "provisional",
             "display": provisional_display(provisions),
             "reason": (
-                "all remaining non-final dimensions are qualified substitutes; "
+                "all CanApp-owned dimensions are final or qualified substitutes; "
                 f"{len(provisions)} certification provision(s) remain"
             ),
             "provisions": serialized_provisions,

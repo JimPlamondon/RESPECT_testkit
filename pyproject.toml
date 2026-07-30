@@ -28,6 +28,9 @@ respect-ification = "respect_ification.cli:main"
 respect-matrix-validate = "respect_compat.matrix_validator:main"
 respect-standards-bootstrap = "respect_compat.standards_bootstrap:main"
 respect-runtime-driver-build = "respect_compat.runtime_driver_build:main"
+respect-platform-receipt = "respect_compat.respect_platform_receipt:main"
+respect-platform-adb-provider = "respect_compat.respect_platform_adb_provider:main"
+respect-school-harness = "respect_compat.school_harness:main"
 respect-upgrade-dossier = "respect_upgrade_dossier.cli:main"
 
 [tool.setuptools]

@@ -25,6 +25,7 @@ from .models import RequirementOwner, ResultState, RuleResult, worst_exit_code
 from .opds_validator import validate_opds
 from .profile import load_profile
 from .report import suite_json_payload, verify_suite_payload, write_reports, write_suite_reports
+from .respect_platform_emulator import run_respect_platform_emulator
 from .security_labels import SecurityContext
 from .target import (
     attach_publication_inputs,
@@ -95,6 +96,9 @@ def main(argv: Optional[list[str]] = None) -> int:
     parser.add_argument("--runtime-driver-apk", type=Path)
     parser.add_argument("--runtime-driver-receipt", type=Path)
     parser.add_argument("--runtime-scenario", type=Path)
+    parser.add_argument("--respect-platform-apk", type=Path)
+    parser.add_argument("--respect-platform-build-receipt", type=Path)
+    parser.add_argument("--respect-platform-scenario", type=Path)
     parser.add_argument("--publication-artifact", type=Path)
     parser.add_argument("--immutable-artifact-url")
     parser.add_argument("--publication-authorization-token", type=Path)
@@ -142,6 +146,21 @@ def main(argv: Optional[list[str]] = None) -> int:
     if args.runtime_driver_apk and (not args.apk or not args.device_id):
         parser.error(
             "native runtime execution requires --apk and --device-id"
+        )
+    platform_values = (
+        args.respect_platform_apk,
+        args.respect_platform_build_receipt,
+        args.respect_platform_scenario,
+    )
+    if any(platform_values) and not all(platform_values):
+        parser.error(
+            "--respect-platform-apk, "
+            "--respect-platform-build-receipt, and "
+            "--respect-platform-scenario must be supplied together"
+        )
+    if args.respect_platform_apk and not args.device_id:
+        parser.error(
+            "RESPECT Platform runtime execution requires --device-id"
         )
     try:
         matrix = load_matrix()
@@ -218,6 +237,25 @@ def main(argv: Optional[list[str]] = None) -> int:
             )
             target.capabilities.add("controlled_android_runtime")
         except (FileNotFoundError, json.JSONDecodeError, OSError, RuntimeError, ValueError) as error:
+            parser.error(str(error))
+    if args.respect_platform_apk:
+        try:
+            run_respect_platform_emulator(
+                target,
+                device_id=args.device_id,
+                respect_apk=args.respect_platform_apk,
+                build_receipt=args.respect_platform_build_receipt,
+                scenario_path=args.respect_platform_scenario,
+                challenge=challenge,
+            )
+            target.capabilities.add("controlled_respect_platform")
+        except (
+            FileNotFoundError,
+            json.JSONDecodeError,
+            OSError,
+            RuntimeError,
+            ValueError,
+        ) as error:
             parser.error(str(error))
     run = execute(
         matrix,

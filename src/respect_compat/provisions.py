@@ -105,6 +105,17 @@ def derive_provisions(
         if row_id:
             result_by_id[row_id] = result
 
+    def routed_value(result: Any, field: str) -> Any:
+        if isinstance(result, Mapping):
+            value = result.get(field)
+        else:
+            value = getattr(
+                getattr(result, "atomic_result", None),
+                field,
+                None,
+            )
+        return getattr(value, "value", value)
+
     def positively_attributed(row_id: str) -> bool:
         result = result_by_id.get(row_id)
         if result is None:
@@ -122,7 +133,58 @@ def derive_provisions(
         )
         return state_value == "pass" and bool(evidence)
 
+    def emulator_platform_observation(row_id: str) -> bool:
+        result = result_by_id.get(row_id)
+        if result is None:
+            return False
+        observed = (
+            result.get("observed")
+            if isinstance(result, Mapping)
+            else getattr(result, "observed", None)
+        )
+        if not isinstance(observed, Mapping):
+            return False
+        platform_evidence = observed.get("platform_evidence")
+        if not isinstance(platform_evidence, Mapping):
+            return False
+        device_environment = platform_evidence.get(
+            "device_environment"
+        )
+        return (
+            isinstance(device_environment, Mapping)
+            and device_environment.get("emulator") is True
+        )
+
     provisions: List[CertificationProvision] = []
+    testkit_gap_rows = sorted(
+        row_id
+        for row_id, result in result_by_id.items()
+        if routed_value(result, "observed_result")
+        == "testkit_capability_gap"
+    )
+    if testkit_gap_rows:
+        provisions.append(
+            CertificationProvision(
+                code="TESTKIT_CAPABILITY_GAPS",
+                label="reference RESPECT runtime evidence unavailable",
+                explanation=(
+                    "The Test Suite cannot yet observe the selected "
+                    "RESPECT-owned launcher or service behavior; this absence "
+                    "is not attributable to the Candidate App."
+                ),
+                affected_rows=testkit_gap_rows,
+                evidence={
+                    "status": "testkit_capability_gap",
+                    "row_count": len(testkit_gap_rows),
+                },
+                clearance=(
+                    "Add independently attributable reference RESPECT runtime "
+                    "observation for the affected rows and rerun them."
+                ),
+                rerun_scope="affected_rows",
+                responsible_party="testkit_team",
+            )
+        )
     prerequisites = evidence_environment.get(
         "publication_prerequisites", {}
     )
@@ -239,7 +301,10 @@ def derive_provisions(
         affected = sorted(
             row.row_id
             for row in rows
-            if "tier_1_device" in row.required_tooling
+            if (
+                "tier_1_device" in row.required_tooling
+                or emulator_platform_observation(row.row_id)
+            )
             and positively_attributed(row.row_id)
         )
         if affected:

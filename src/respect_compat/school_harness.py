@@ -172,6 +172,20 @@ def _git_status(source: Path) -> str:
     return completed.stdout
 
 
+def _respect_gradle_command(
+    respect_source: Path,
+    ca_certificate: Path,
+) -> List[str]:
+    return [
+        str(respect_source / "gradlew"),
+        ":respect-server:shadowJar",
+        ":app-android:assembleDebug",
+        f"-PrespectTestkitCa={ca_certificate}",
+        "--no-daemon",
+        "--console=plain",
+    ]
+
+
 class RunState:
     """Small idempotent state authority for one ephemeral lab run."""
 
@@ -834,29 +848,16 @@ class SchoolHarness:
             / "raw"
             / "respect_testkit_ca.pem"
         )
-        respect_debug_ca = (
-            respect_source
-            / "app-android"
-            / "src"
-            / "debug"
-            / "res"
-            / "raw"
-            / "respect_testkit_ca.pem"
-        )
-        for debug_ca in (mobile_debug_ca, respect_debug_ca):
-            debug_ca.parent.mkdir(parents=True, exist_ok=True)
-            shutil.copy2(tls["ca_cert"], debug_ca)
+        mobile_debug_ca.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(tls["ca_cert"], mobile_debug_ca)
         publication_origin = (
             f"https://localhost:{self.args.publisher_port}"
         )
         self.commands.run(
-            [
-                str(respect_source / "gradlew"),
-                ":respect-server:shadowJar",
-                ":app-android:assembleDebug",
-                "--no-daemon",
-                "--console=plain",
-            ],
+            _respect_gradle_command(
+                respect_source,
+                Path(tls["ca_cert"]),
+            ),
             cwd=respect_source,
             env=self._java_env(),
             timeout=3600,

@@ -15,11 +15,11 @@ emitted only for an attributable CanApp implementation failure. Missing
 observers and unavailable infrastructure do not become CanApp or RESPECT
 defects.
 
-`respect-upgrade-dossier` is a separate, non-certifying verifier for the
-fail-closed Upgrade Dossier format. Dossier generation requires a
-cryptographically trusted, Suite-issued platform-gap packet based on
-independently attributable real-platform evidence. The package neither
-classifies blame nor modifies RESPECT.
+Future RESPECT Platform requirements are governed independently by the
+standalone RESPECT Upgrade Dossier repository. This TestKit records neutral,
+signed attribution when a real RESPECT-controlled outcome is observed, but it
+does not generate upgrade work, carry Dossier lifecycle policy, or package the
+Dossier command.
 
 After provisioning the standards cache, use
 `respect-standards-bootstrap --check` for a read-only, network-free

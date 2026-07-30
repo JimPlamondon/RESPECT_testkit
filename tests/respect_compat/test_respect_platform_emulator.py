@@ -15,6 +15,7 @@ from respect_compat.respect_platform_emulator import (
     run_respect_platform_emulator,
 )
 from respect_compat.respect_platform_adb_provider import (
+    main as adb_provider_main,
     run_provider_scenario,
 )
 from respect_compat.engine import execute
@@ -23,6 +24,15 @@ from respect_compat.matrix_runtime import load_matrix
 from respect_compat.models import ResultState
 from respect_compat.provisions import derive_provisions
 from respect_compat.target import CanAppTarget
+
+
+def test_adb_provider_help_does_not_require_provider_environment(
+    capsys,
+):
+    with pytest.raises(SystemExit) as raised:
+        adb_provider_main(["--help"])
+    assert raised.value.code == 0
+    assert "observation scenario" in capsys.readouterr().out
 
 
 def _passing_observations():

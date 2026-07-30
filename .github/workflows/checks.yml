@@ -59,7 +59,10 @@ jobs:
           env -u PYTHONPATH "${run_root}/venv/bin/python" -m respect_ification.cli --help
           env -u PYTHONPATH "${run_root}/venv/bin/respect-compat" --help
           env -u PYTHONPATH "${run_root}/venv/bin/respect-ification" --help
-          env -u PYTHONPATH "${run_root}/venv/bin/respect-upgrade-dossier" --help
+          env -u PYTHONPATH "${run_root}/venv/bin/respect-runtime-driver-build" --help
+          env -u PYTHONPATH "${run_root}/venv/bin/respect-platform-receipt" --help
+          env -u PYTHONPATH "${run_root}/venv/bin/respect-platform-adb-provider" --help
+          env -u PYTHONPATH "${run_root}/venv/bin/respect-school-harness" --help
           env -u PYTHONPATH "${run_root}/venv/bin/respect-matrix-validate" --self-test --require-ready
           env -u PYTHONPATH RESPECT_STANDARDS_CACHE="${RESPECT_STANDARDS_CACHE}" "${run_root}/venv/bin/python" -m respect_testkit_migration.installed_smoke --run-dir "${run_root}/run" --forbid-root "${GITHUB_WORKSPACE}"
       - name: Validate licenses and privacy scans

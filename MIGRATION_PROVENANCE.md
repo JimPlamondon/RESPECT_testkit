@@ -2,6 +2,23 @@
 
 The RESPECT testkit was extracted without history rewriting from [JiMS pull request 50](https://github.com/JimPlamondon/jims/pull/50) at merge commit `eccf623b1978ddcd50ef16b0353193fbf2152ede`. Complete pre-extraction history remains in `JimPlamondon/jims`.
 
+## Post-separation authority
+
+At TestKit commit baseline
+`3417dd40e69039a5dfb26d18aec6e823b18f8b19`, future-platform requirements
+were reproducibly imported into a separate local Upgrade Dossier repository
+through a history-preserving subtree extraction. The TestKit Matrix is now
+descriptive only: version `1.2.0`, schema `1.3.0`, semantic hash
+`f48aa4931c1b0b7c94a64d19f4ed02e3f87221a73076d465fae6f929de34d57c`,
+45 features, 87 rows, and 22 validator mutations.
+
+The TestKit's append-only migration manifest has aggregate
+`4d50fb929c81d033f575ae2cd446a885ab4834dc17da2d94bd84c64d0114e16e`.
+The frozen legacy requirement-provenance audit has semantic hash
+`3d36ed8a9d559c85eb36c51f69d29a2e3220697604863112bb161bfebbb2e98c`;
+all 132 legacy feature/row records remain honestly unresolved rather than
+being described as owner-authorized.
+
 ## Authoring commits
 
 - `0658140c5b33a30ce2747c4f4742c87b9880513c` — RESPECT Compatible Test Suite v0.1 harness.

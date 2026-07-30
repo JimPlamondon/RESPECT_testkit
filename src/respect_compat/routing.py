@@ -57,7 +57,7 @@ class WorkflowDisposition(str, Enum):
     PROVISION_OR_CAPABILITY_WORK = "provision_or_capability_work"
     TESTKIT_ENGINEERING = "testkit_engineering"
     DIAGNOSTIC_INCIDENT = "diagnostic_incident"
-    DOSSIER_ELIGIBLE = "dossier_eligible"
+    PLATFORM_OBSERVATION_RECORDED = "platform_observation_recorded"
     SPECIFICATION_DECISION = "specification_decision"
 
 
@@ -66,7 +66,6 @@ class ArtifactKind(str, Enum):
     PROMOTION_PACKET = "promotion_packet"
     TESTKIT_ENGINEERING_ITEM = "testkit_engineering_item"
     DIAGNOSTIC_INCIDENT = "diagnostic_incident"
-    PLATFORM_GAP_PACKET = "platform_gap_packet"
     SPECIFICATION_ITEM = "specification_item"
 
 
@@ -165,8 +164,8 @@ ROUTING_TABLE: Mapping[ObservedResult, RoutingRule] = {
         False,
     ),
     ObservedResult.RESPECT_PLATFORM_GAP: RoutingRule(
-        WorkflowDisposition.DOSSIER_ELIGIBLE,
-        (ArtifactKind.PLATFORM_GAP_PACKET,),
+        WorkflowDisposition.PLATFORM_OBSERVATION_RECORDED,
+        (),
         ResponsibleParty.RESPECT_PLATFORM_TEAM,
         False,
     ),
@@ -372,7 +371,7 @@ def _validate(classification_input: ClassificationInput) -> None:
         )
         if not qualifying:
             raise RoutingClassificationError(
-                "Dossier eligibility requires qualifying real, signed, "
+                "platform attribution requires qualifying real, signed, "
                 "independently attributable platform evidence with pinned build "
                 "and version bounds"
             )

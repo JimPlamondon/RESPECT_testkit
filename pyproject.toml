@@ -31,7 +31,6 @@ respect-runtime-driver-build = "respect_compat.runtime_driver_build:main"
 respect-platform-receipt = "respect_compat.respect_platform_receipt:main"
 respect-platform-adb-provider = "respect_compat.respect_platform_adb_provider:main"
 respect-school-harness = "respect_compat.school_harness:main"
-respect-upgrade-dossier = "respect_upgrade_dossier.cli:main"
 
 [tool.setuptools]
 include-package-data = true
@@ -49,7 +48,6 @@ respect_compat = [
   "data/fixtures/**/*",
 ]
 respect_ification = ["data/publication/*.json", "data/schemas/*.json"]
-respect_upgrade_dossier = ["data/schemas/*.json"]
 
 [tool.pytest.ini_options]
 addopts = "-ra"

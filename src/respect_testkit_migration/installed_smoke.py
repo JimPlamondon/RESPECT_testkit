@@ -37,8 +37,8 @@ def main() -> int:
     matrix = load_matrix()
     if (
         matrix.matrix_id != "respect-compatibility-matrix-v0.1"
-        or matrix.matrix_version != "1.1.0"
-        or matrix.semantic_hash != "af083beaf4991d333795fc6a6827421997fe2a32e7cc544d764e9ae2b3358f94"
+        or matrix.matrix_version != "1.2.0"
+        or matrix.semantic_hash != "f48aa4931c1b0b7c94a64d19f4ed02e3f87221a73076d465fae6f929de34d57c"
         or len(matrix.features) != 45
         or len(matrix.rows) != 87
     ):

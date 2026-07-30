@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+- Separate all future-platform requirements, acceptance policy, and prompt
+  generation into the independent RESPECT Upgrade Dossier repository; remove
+  the embedded package and command from the TestKit.
+- Preserve signed real-platform observations as neutral TestKit attribution
+  without generating upgrade work.
+- Add the two-origin contract for new or changed TestKit requirements and a
+  frozen, unresolved legacy-provenance audit for all 45 features and 87 rows.
 - Add a suite-controlled emulator provider for the 13 RESPECT-owned Native Android rows, with pinned RESPECT APK receipts, replay-resistant evidence binding, and row-specific positive and isolated-negative oracles.
 - Add publisher-owned Matrix rows for legal publication authorization and immutable exact-build acquisition, each with explicit Provisional reasons when absent.
 - Add a Spix-owned certification trust-anchor row and a persistent permission-restricted testing keypair fallback that always produces an explicit testing-only Provisional reason.

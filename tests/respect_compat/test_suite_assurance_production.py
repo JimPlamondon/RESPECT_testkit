@@ -7,7 +7,7 @@ from respect_compat import executors
 from respect_compat.engine import execute
 from respect_compat.matrix_runtime import load_matrix
 from respect_compat.models import ResultState
-from respect_compat.routing import ArtifactKind, ObservedResult
+from respect_compat.routing import ObservedResult, WorkflowDisposition
 from respect_compat.target import CanAppTarget
 
 
@@ -49,7 +49,7 @@ def test_suite_meta_test_fails_when_production_contract_is_removed(
     assert run.results[0].atomic_result.final_affirmative is False
 
 
-def test_real_signed_platform_observation_routes_to_packet_eligibility_only():
+def test_real_signed_platform_observation_is_neutral_and_generates_no_work():
     matrix = load_matrix()
     row = next(
         item
@@ -85,8 +85,11 @@ def test_real_signed_platform_observation_routes_to_packet_eligibility_only():
     )
     atomic = run.results[0].atomic_result
     assert atomic.observed_result == ObservedResult.RESPECT_PLATFORM_GAP
-    assert atomic.artifacts == (ArtifactKind.PLATFORM_GAP_PACKET,)
-    assert ArtifactKind.KIT_TASK not in atomic.artifacts
+    assert (
+        atomic.workflow_disposition
+        == WorkflowDisposition.PLATFORM_OBSERVATION_RECORDED
+    )
+    assert atomic.artifacts == ()
 
     target.metadata["environment_observations"] = {}
     missing = execute(
@@ -99,4 +102,3 @@ def test_real_signed_platform_observation_routes_to_packet_eligibility_only():
         selected_row_ids=[row.row_id],
     ).results[0].atomic_result
     assert missing.observed_result == ObservedResult.TESTKIT_CAPABILITY_GAP
-    assert ArtifactKind.PLATFORM_GAP_PACKET not in missing.artifacts

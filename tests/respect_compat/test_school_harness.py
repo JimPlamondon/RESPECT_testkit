@@ -16,12 +16,29 @@ from respect_compat.school_harness import (
     EVIDENCE_FILES,
     SCHOOL_ROW_ORDER,
     RunState,
+    _respect_gradle_command,
     build_parser,
     build_run_manifest,
     validate_observation_sets,
     validate_row_record,
     validate_scenario_routing,
 )
+
+
+def test_respect_build_passes_run_local_ca_without_mutating_source():
+    command = _respect_gradle_command(
+        Path("/checkout/respect"),
+        Path("/run/tls/ca.pem"),
+    )
+    assert command == [
+        "/checkout/respect/gradlew",
+        ":respect-server:shadowJar",
+        ":app-android:assembleDebug",
+        "-PrespectTestkitCa=/run/tls/ca.pem",
+        "--no-daemon",
+        "--console=plain",
+    ]
+    assert all("src/debug/res/raw" not in argument for argument in command)
 
 
 def _positive_observations() -> dict:

@@ -12,7 +12,7 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any, Dict, Iterable, Mapping, Optional, Tuple
 
-from .models import RequirementOwner, ResponsibleParty
+from .models import RequirementOwner, ResponsibleParty, ResultState
 
 
 class ControlOwner(str, Enum):
@@ -282,6 +282,27 @@ class CertificationSummary:
     state: str
     display: str
     reason: str
+
+
+def is_provisional_nonfinal(
+    result: AtomicResult,
+    state: Any,
+) -> bool:
+    state_value = getattr(state, "value", state)
+    if (
+        result.observed_result
+        == ObservedResult.CODE_COMPATIBLE_THROUGH_SUBSTITUTE
+    ):
+        return True
+    return (
+        result.requirement_owner != RequirementOwner.CANAPP
+        and state_value
+        in {
+            ResultState.BLOCKED.value,
+            ResultState.INCOMPLETE.value,
+            ResultState.DEFERRED.value,
+        }
+    )
 
 
 def _validate(classification_input: ClassificationInput) -> None:

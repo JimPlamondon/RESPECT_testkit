@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Add a suite-controlled emulator provider for the 13 RESPECT-owned Native Android rows, with pinned RESPECT APK receipts, replay-resistant evidence binding, and row-specific positive and isolated-negative oracles.
 - Add publisher-owned Matrix rows for legal publication authorization and immutable exact-build acquisition, each with explicit Provisional reasons when absent.
 - Add a Spix-owned certification trust-anchor row and a persistent permission-restricted testing keypair fallback that always produces an explicit testing-only Provisional reason.
 - Add an idempotent Spix/DocuSign agreement workflow that persists request state, avoids duplicate envelopes and repeated signing-page launches, and emits build-specific authorization tokens without exposing Spix secrets.

@@ -76,6 +76,9 @@ def _add_target(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--runtime-driver-apk", type=Path)
     parser.add_argument("--runtime-driver-receipt", type=Path)
     parser.add_argument("--runtime-scenario", type=Path)
+    parser.add_argument("--respect-platform-apk", type=Path)
+    parser.add_argument("--respect-platform-build-receipt", type=Path)
+    parser.add_argument("--respect-platform-scenario", type=Path)
     parser.add_argument("--publication-artifact", type=Path)
     parser.add_argument("--immutable-artifact-url")
     parser.add_argument("--publication-authorization-token", type=Path)
@@ -146,6 +149,17 @@ def _load_target(args: argparse.Namespace) -> CanAppTarget:
             scenario_nonce=secrets.token_hex(12),
         )
         target.capabilities.add("controlled_android_runtime")
+    platform_values = (
+        args.respect_platform_apk,
+        args.respect_platform_build_receipt,
+        args.respect_platform_scenario,
+    )
+    if any(platform_values) and not all(platform_values):
+        raise ValueError(
+            "--respect-platform-apk, "
+            "--respect-platform-build-receipt, and "
+            "--respect-platform-scenario must be supplied together"
+        )
     return target
 
 
@@ -172,6 +186,24 @@ def _suite_target_args(args: argparse.Namespace) -> List[str]:
         )
     if args.runtime_scenario:
         values.extend(["--runtime-scenario", str(args.runtime_scenario)])
+    if args.respect_platform_apk:
+        values.extend(
+            ["--respect-platform-apk", str(args.respect_platform_apk)]
+        )
+    if args.respect_platform_build_receipt:
+        values.extend(
+            [
+                "--respect-platform-build-receipt",
+                str(args.respect_platform_build_receipt),
+            ]
+        )
+    if args.respect_platform_scenario:
+        values.extend(
+            [
+                "--respect-platform-scenario",
+                str(args.respect_platform_scenario),
+            ]
+        )
     if args.publication_artifact:
         values.extend(
             ["--publication-artifact", str(args.publication_artifact)]

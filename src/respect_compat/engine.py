@@ -32,6 +32,7 @@ from .routing import (
     SubstituteFidelity,
     VerificationMode,
     classify_result,
+    is_provisional_nonfinal,
 )
 from .models import ResponsibleParty
 from .target import CanAppTarget
@@ -336,14 +337,16 @@ def reduce_verdict(
         if result.atomic_result.policy_required
     ]
     nonfinal = [result for result in required if not result.final_affirmative]
-    if nonfinal and not (
-        provisions
-        and all(
-            result.observed_result
-            == ObservedResult.CODE_COMPATIBLE_THROUGH_SUBSTITUTE
-            for result in nonfinal
+    state_by_row = {result.row_id: result.state for result in results}
+    disqualifying = [
+        result
+        for result in nonfinal
+        if not is_provisional_nonfinal(
+            result,
+            state_by_row[result.row_id],
         )
-    ):
+    ]
+    if disqualifying or (nonfinal and not provisions):
         return CertificationVerdict(
             False,
             "not_certified",
@@ -351,7 +354,7 @@ def reduce_verdict(
             "policy-required dimensions are non-final: "
             + ", ".join(
                 f"{item.row_id}={item.observed_result.value}"
-                for item in nonfinal
+                for item in disqualifying or nonfinal
             ),
             provisions,
         )
@@ -369,7 +372,7 @@ def reduce_verdict(
             "provisional",
             provisional_display(provisions),
             (
-                "all remaining non-final dimensions are qualified substitutes; "
+                "all CanApp-owned dimensions are final or qualified substitutes; "
                 f"{len(provisions)} certification provision(s) remain"
             ),
             provisions,

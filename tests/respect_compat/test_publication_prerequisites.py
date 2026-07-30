@@ -110,8 +110,10 @@ def test_missing_publication_inputs_are_named_provisions(tmp_path):
     )
 
     assert not run.verdict.certified
-    assert run.verdict.display == "Not certified"
-    assert "policy-required dimensions are non-final" in run.verdict.reason
+    assert run.verdict.state == "provisional"
+    assert "publication authorization missing" in run.verdict.display
+    assert "immutable certified-build URL missing" in run.verdict.display
+    assert "Spix certification trust anchor missing" in run.verdict.display
     assert {
         result.row_id: result.state
         for result in run.results
@@ -329,5 +331,7 @@ def test_testing_only_key_exercises_signature_path_but_remains_provisional(
     assert next(
         item for item in run.results if item.row_id == "PUBLISH-003"
     ).state == ResultState.INCOMPLETE
-    assert run.verdict.display == "Not certified"
-    assert "policy-required dimensions are non-final" in run.verdict.reason
+    assert run.verdict.state == "provisional"
+    assert run.verdict.display == (
+        "Provisional (RESPECT certification key is testing-only)"
+    )

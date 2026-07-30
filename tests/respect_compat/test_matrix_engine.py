@@ -164,6 +164,72 @@ def test_respect_owned_nonfinal_dimension_prevents_unqualified_certification():
     )
 
 
+def test_respect_owned_capability_gaps_yield_named_provisional_approval():
+    matrix = load_matrix()
+    registry = ExecutorRegistry()
+
+    def executor(context, row):
+        state = (
+            ResultState.BLOCKED
+            if row.owner
+            in {
+                RequirementOwner.RESPECT_LAUNCHER.value,
+                RequirementOwner.RESPECT_SERVICE.value,
+            }
+            else ResultState.PASS
+        )
+        evidence = [
+            context.evidence(row, "test_observation", "test", state.value)
+        ]
+        return context.result(
+            row,
+            state,
+            state.value,
+            "controlled result",
+            evidence,
+        )
+
+    for row in matrix.selected_rows("PROFILE-WEB"):
+        registry.register(row.row_id, executor)
+    canapp = target()
+    canapp.uri = "https://127.0.0.1/descriptor.json"
+
+    run = execute(
+        matrix,
+        canapp,
+        "PROFILE-WEB",
+        "certification",
+        registry,
+    )
+
+    assert not [
+        result
+        for result in run.results
+        if result.owner == RequirementOwner.CANAPP
+        and result.state not in {ResultState.PASS, ResultState.NOT_APPLICABLE}
+    ]
+    assert run.verdict.state == "provisional"
+    assert "reference RESPECT runtime evidence unavailable" in (
+        run.verdict.display
+    )
+    capability_provision = next(
+        provision
+        for provision in run.verdict.provisions
+        if provision.code == "TESTKIT_CAPABILITY_GAPS"
+    )
+    assert capability_provision.affected_rows == sorted(
+        result.row_id
+        for result in run.results
+        if result.owner
+        in {
+            RequirementOwner.RESPECT_LAUNCHER,
+            RequirementOwner.RESPECT_SERVICE,
+        }
+        and result.state == ResultState.BLOCKED
+    )
+    assert verify_suite_payload(suite_json_payload(run)) == []
+
+
 def test_target_substitution_invalidates_evidence():
     matrix = load_matrix()
     registry = ExecutorRegistry()
@@ -784,7 +850,8 @@ def test_reference_web_fixture_cannot_claim_qualified_substitute_provisional():
         "IMMUTABLE_CERTIFIED_BUILD_URL_MISSING",
         "PUBLICATION_AUTHORIZATION_MISSING",
         "SPIX_CERTIFICATION_TRUST_ANCHOR_MISSING",
-        "SUITE_FIXTURE_EVIDENCE"
+        "SUITE_FIXTURE_EVIDENCE",
+        "TESTKIT_CAPABILITY_GAPS",
     ]
     assert not [
         result

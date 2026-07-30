@@ -1234,7 +1234,7 @@
       "adaptation_reason": "standalone package layout, installed-resource access, or destination documentation",
       "blob_oid": "7308485b95dcdea858018bf3cf04282d481e55f5",
       "destination_path": "pyproject.toml",
-      "destination_sha256": "570fbf215d9354777e8b1a3243caae74d23d0c26a685e5a2a8f162db9f7af306",
+      "destination_sha256": "b4bdde0b4df873e2d0dc438d3b7224ec6473937a9b302b7086dd8f5d54dd33b3",
       "disposition": "adapted",
       "item_class": "repository_scaffold",
       "license": "Apache-2.0",
@@ -1529,7 +1529,7 @@
       "adaptation_reason": "standalone package layout, installed-resource access, or destination documentation",
       "blob_oid": "1a20f224fdad08ebc9bea88ac343163352098040",
       "destination_path": "src/respect_compat/matrix_runtime.py",
-      "destination_sha256": "4fdb67d5cac11fa02d6900ce78a3834a106547ebbb51d00723b1c506f2b11435",
+      "destination_sha256": "8e86466f1a60180d38f462a5375f34ec35313e83dcbea2734a6af2267635ec63",
       "disposition": "adapted",
       "item_class": "runtime",
       "license": "Apache-2.0",
@@ -1723,7 +1723,7 @@
       "adaptation_reason": "standalone package layout, installed-resource access, or destination documentation",
       "blob_oid": "03b9d1e34c8d7e6f9ce0b39cf581c7ccddfb89a2",
       "destination_path": "tests/respect_compat/test_matrix_engine.py",
-      "destination_sha256": "a774188cd92207daf04b2caa3102de5cf8a416d3977234439c2a3db4fa572293",
+      "destination_sha256": "31136081e18c6da8a5a13d8087be0f9cbfc2e07ab97e282e7a9fd5e8081431f1",
       "disposition": "adapted",
       "item_class": "test",
       "license": "Apache-2.0",
@@ -2026,7 +2026,7 @@
       "adaptation_reason": "standalone package layout, installed-resource access, or destination documentation",
       "blob_oid": "e876a4a172c4e506b59ef899e8c57e1ea8066854",
       "destination_path": "src/respect_compat/data/matrix/compatibility_matrix.json",
-      "destination_sha256": "0e14f0d3ef8c0246c7693c69e76a8c373ba7d24ef33eb4d4b72041dc91c776fc",
+      "destination_sha256": "f401c321f84e54aa7f0b0bb2c07ab56adf7e850a2a77f6cd1dd79a43df51159e",
       "disposition": "adapted",
       "item_class": "matrix",
       "license": "Apache-2.0",
@@ -2044,7 +2044,7 @@
       "adaptation_reason": "standalone package layout, installed-resource access, or destination documentation",
       "blob_oid": "416afc513c8012fa618dd14bc0d9f3fbe76e9e5b",
       "destination_path": "src/respect_compat/data/schemas/compatibility_matrix.schema.json",
-      "destination_sha256": "4afab88df87898fef45c59eb0bca16d245e15f31f958cc731ab5a4eeff8baa5c",
+      "destination_sha256": "f830322ced7d1eccc551df9d947ff2e39c7d9bc7960fc53efc5096780fa84fdb",
       "disposition": "adapted",
       "item_class": "schema",
       "license": "Apache-2.0",
@@ -2268,7 +2268,7 @@
       "adaptation_reason": "standalone package layout, installed-resource access, or destination documentation",
       "blob_oid": "33ea30736f9353bc5d745c2638d3a8fe5aca4ad3",
       "destination_path": "src/respect_compat/matrix_validator.py",
-      "destination_sha256": "6d950f2627dcda4219c1ac67c39b85c0e303da196966611efa7b0a4e6b5ae4f3",
+      "destination_sha256": "ca200cfb732390921866112160272b20272f605e59c3d77152d38589abe597bc",
       "disposition": "adapted",
       "item_class": "validator",
       "license": "Apache-2.0",
@@ -2283,21 +2283,21 @@
       "source_repository": "https://github.com/JimPlamondon/jims"
     }
   ],
-  "manifest_hash": "2b2fea651630104fa7f5651d904df8fe8ba38fe8ad4bb83049c2a2bdebe6f5bd",
+  "manifest_hash": "4d50fb929c81d033f575ae2cd446a885ab4834dc17da2d94bd84c64d0114e16e",
   "native_entries": [
     {
-      "destination_path": "src/respect_compat/data/schemas/atomic_result_v2.schema.json",
-      "destination_sha256": "f9c6c0d015e0a55445d29b4b5aac20c45f793cd176faba5444f6ba46435c6116",
+      "destination_path": "src/respect_compat/data/matrix/legacy_provenance_audit.json",
+      "destination_sha256": "ff6c02195fc4b1fae20dfff427b8e936295019765e396d57c9299f1dddec8e92",
       "item_class": "schema",
       "provenance": "post_extraction",
-      "reason": "post-extraction TestKit authority introduced through the repository's reviewed source/generator workflow"
+      "reason": "post-separation frozen audit enforcing the two-origin contract for new or changed TestKit requirements"
     },
     {
-      "destination_path": "src/respect_compat/data/schemas/platform_gap_packet_v2.schema.json",
-      "destination_sha256": "29f1411e22d5a8d7310461923e128153d9fbfdfaae9c7d8af076d4c4706397dd",
+      "destination_path": "src/respect_compat/data/schemas/atomic_result_v3.schema.json",
+      "destination_sha256": "fa0fd8d38432dab8a017fcc2385aec063c81bc3f604c3c3a6bda7f32516aea36",
       "item_class": "schema",
       "provenance": "post_extraction",
-      "reason": "post-extraction TestKit authority introduced through the repository's reviewed source/generator workflow"
+      "reason": "post-separation TestKit atomic-result authority with neutral platform attribution and no Dossier work artifact"
     },
     {
       "destination_path": "src/respect_compat/data/schemas/promotion_packet_v2.schema.json",

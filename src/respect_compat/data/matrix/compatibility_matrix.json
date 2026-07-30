@@ -195,7 +195,6 @@
       },
       "documentation_status": "documented",
       "feature_id": "RCF-SPIX-CERTIFICATION-KEY",
-      "feature_work_unit": null,
       "first_applicable_respect_version": "TestKit policy 2026-07-29",
       "implementation_sources": [
         {
@@ -218,7 +217,6 @@
       "requirement_status": "required",
       "respect_ification_guidance": "Do not ask the Candidate App publisher to supply the certification trust anchor. Use the source-locked Spix key when available; otherwise reuse the locally generated testing key and retain the testing-only Provisional reason.",
       "respect_revision": "TestKit policy 2026-07-29",
-      "respect_upgrade_guidance": "No RESPECT platform work is authorized by this feature; route observations through the typed responsibility classifier.",
       "row_ids": [
         "PUBLISH-003"
       ],
@@ -251,7 +249,6 @@
       },
       "documentation_status": "documented",
       "feature_id": "RCF-PUBLICATION-REGISTRY",
-      "feature_work_unit": null,
       "first_applicable_respect_version": "TestKit policy 2026-07-29",
       "implementation_sources": [
         {
@@ -274,7 +271,6 @@
       "requirement_status": "required",
       "respect_ification_guidance": "Do not modify the CanApp to manufacture these facts. Ensure the existing publisher agreement idempotently, obtain a Spix authorization bound to the exact build, and publish that build at its content-addressed HTTPS URL.",
       "respect_revision": "TestKit policy 2026-07-29",
-      "respect_upgrade_guidance": "No RESPECT platform work is authorized by this feature; route observations through the typed responsibility classifier.",
       "row_ids": [
         "PUBLISH-001",
         "PUBLISH-002"
@@ -303,7 +299,6 @@
       },
       "documentation_status": "partially_documented",
       "feature_id": "RCF-ANDROID-LAUNCH",
-      "feature_work_unit": null,
       "first_applicable_respect_version": "source revision cfa763b72793",
       "implementation_sources": [
         {
@@ -335,7 +330,6 @@
       "requirement_status": "required",
       "respect_ification_guidance": "Use the atomic rows for this feature to identify observable CanApp changes; do not infer obligations from unimplemented claims or excluded standard surfaces.",
       "respect_revision": "cfa763b7279331cec84673a3423ca713203e7cb6",
-      "respect_upgrade_guidance": "No RESPECT platform work is authorized by this feature; route observations through the typed responsibility classifier.",
       "row_ids": [
         "ANDROID-001",
         "ANDROID-002"
@@ -368,12 +362,6 @@
       },
       "documentation_status": "documented",
       "feature_id": "RCF-CANAPP-COMPLETION-CLAIM",
-      "feature_work_unit": {
-        "acceptance_contract": "Add a unique normative oracle, atomic Matrix rows, and production-path positive and isolated-negative tests.",
-        "closure_requires_executable_acceptance": true,
-        "feature_id": "RCF-CANAPP-COMPLETION-CLAIM",
-        "responsible_party": "respect_platform_team"
-      },
       "first_applicable_respect_version": "source revision cfa763b72793",
       "implementation_sources": [
         {
@@ -401,7 +389,6 @@
       "requirement_status": "proposed",
       "respect_ification_guidance": "The guide describes CanApp completion, but the pinned RESPECT implementation exposes no enforceable or observable completion contract. Do not fail a CanApp for this claim.",
       "respect_revision": "cfa763b7279331cec84673a3423ca713203e7cb6",
-      "respect_upgrade_guidance": "Resolve the normative behavior and preserve a feature-addressed acceptance contract before any platform implementation can close.",
       "row_ids": [],
       "scope_rationale": "Included because the pinned RESPECT implementation exposes this behavior to a CanApp or its publisher.",
       "semantic_contract_ids": [
@@ -423,7 +410,6 @@
       },
       "documentation_status": "partially_documented",
       "feature_id": "RCF-CANAPP-LIFECYCLE",
-      "feature_work_unit": null,
       "first_applicable_respect_version": "source revision cfa763b72793",
       "implementation_sources": [
         {
@@ -450,7 +436,6 @@
       "requirement_status": "required",
       "respect_ification_guidance": "Close the xAPI IPC client when the CanApp learning UI is disposed so the client unbinds and closes its resources.",
       "respect_revision": "cfa763b7279331cec84673a3423ca713203e7cb6",
-      "respect_upgrade_guidance": "No RESPECT platform work is authorized by this feature; route observations through the typed responsibility classifier.",
       "row_ids": [
         "LIFECYCLE-001"
       ],
@@ -474,12 +459,6 @@
       },
       "documentation_status": "undocumented",
       "feature_id": "RCF-CREDENTIAL-LIFECYCLE-GAPS",
-      "feature_work_unit": {
-        "acceptance_contract": "Add a unique normative oracle, atomic Matrix rows, and production-path positive and isolated-negative tests.",
-        "closure_requires_executable_acceptance": true,
-        "feature_id": "RCF-CREDENTIAL-LIFECYCLE-GAPS",
-        "responsible_party": "specification_authority"
-      },
       "first_applicable_respect_version": "source revision cfa763b72793",
       "implementation_sources": [
         {
@@ -508,7 +487,6 @@
       "requirement_status": "upstream_gap",
       "respect_ification_guidance": "Use credentials only for the launch session; RESPECT does not expose a stable expiry, renewal, or revocation protocol.",
       "respect_revision": "cfa763b7279331cec84673a3423ca713203e7cb6",
-      "respect_upgrade_guidance": "Resolve the normative behavior and preserve a feature-addressed acceptance contract before any platform implementation can close.",
       "row_ids": [],
       "scope_rationale": "The binding discovery manifest requires an explicit disposition, but the pinned RESPECT source exposes no stable CanApp-facing contract for this behavior.",
       "semantic_contract_ids": [
@@ -530,7 +508,6 @@
       },
       "documentation_status": "partially_documented",
       "feature_id": "RCF-DESCRIPTOR",
-      "feature_work_unit": null,
       "first_applicable_respect_version": "source revision cfa763b72793",
       "implementation_sources": [
         {
@@ -558,7 +535,6 @@
       "requirement_status": "required",
       "respect_ification_guidance": "Implement the CanApp-owned atomic rows and preserve the semantic contract across every supported binding.",
       "respect_revision": "cfa763b7279331cec84673a3423ca713203e7cb6",
-      "respect_upgrade_guidance": "No RESPECT platform work is authorized by this feature; route observations through the typed responsibility classifier.",
       "row_ids": [
         "DESC-001",
         "DESC-002",
@@ -598,7 +574,6 @@
       },
       "documentation_status": "partially_documented",
       "feature_id": "RCF-HTTP",
-      "feature_work_unit": null,
       "first_applicable_respect_version": "source revision cfa763b72793",
       "implementation_sources": [
         {
@@ -631,7 +606,6 @@
       "requirement_status": "required",
       "respect_ification_guidance": "Use the atomic rows for this feature to identify observable CanApp changes; do not infer obligations from unimplemented claims or excluded standard surfaces.",
       "respect_revision": "cfa763b7279331cec84673a3423ca713203e7cb6",
-      "respect_upgrade_guidance": "No RESPECT platform work is authorized by this feature; route observations through the typed responsibility classifier.",
       "row_ids": [
         "HTTP-001",
         "HTTP-002",
@@ -678,7 +652,6 @@
       },
       "documentation_status": "partially_documented",
       "feature_id": "RCF-LAUNCH",
-      "feature_work_unit": null,
       "first_applicable_respect_version": "source revision cfa763b72793",
       "implementation_sources": [
         {
@@ -706,7 +679,6 @@
       "requirement_status": "required",
       "respect_ification_guidance": "Use the atomic rows for this feature to identify observable CanApp changes; do not infer obligations from unimplemented claims or excluded standard surfaces.",
       "respect_revision": "cfa763b7279331cec84673a3423ca713203e7cb6",
-      "respect_upgrade_guidance": "Route only independently attributable, signed real-platform evidence through a platform-gap packet and Upgrade Dossier.",
       "row_ids": [
         "LAUNCH-001",
         "LAUNCH-002",
@@ -732,12 +704,6 @@
       },
       "documentation_status": "undocumented",
       "feature_id": "RCF-LAUNCH-OUTCOME-GAPS",
-      "feature_work_unit": {
-        "acceptance_contract": "Add a unique normative oracle, atomic Matrix rows, and production-path positive and isolated-negative tests.",
-        "closure_requires_executable_acceptance": true,
-        "feature_id": "RCF-LAUNCH-OUTCOME-GAPS",
-        "responsible_party": "specification_authority"
-      },
       "first_applicable_respect_version": "source revision cfa763b72793",
       "implementation_sources": [
         {
@@ -766,7 +732,6 @@
       "requirement_status": "upstream_gap",
       "respect_ification_guidance": "A CanApp must not infer a stable cancellation or timeout callback until RESPECT defines one.",
       "respect_revision": "cfa763b7279331cec84673a3423ca713203e7cb6",
-      "respect_upgrade_guidance": "Resolve the normative behavior and preserve a feature-addressed acceptance contract before any platform implementation can close.",
       "row_ids": [],
       "scope_rationale": "The binding discovery manifest requires an explicit disposition, but the pinned RESPECT source exposes no stable CanApp-facing contract for this behavior.",
       "semantic_contract_ids": [
@@ -794,7 +759,6 @@
       },
       "documentation_status": "documented_contradicted",
       "feature_id": "RCF-LAUNCH-VERSION",
-      "feature_work_unit": null,
       "first_applicable_respect_version": "source revision cfa763b72793",
       "implementation_sources": [
         {
@@ -837,7 +801,6 @@
       "requirement_status": "required",
       "respect_ification_guidance": "Use the atomic rows for this feature to identify observable CanApp changes; do not infer obligations from unimplemented claims or excluded standard surfaces.",
       "respect_revision": "cfa763b7279331cec84673a3423ca713203e7cb6",
-      "respect_upgrade_guidance": "No RESPECT platform work is authorized by this feature; route observations through the typed responsibility classifier.",
       "row_ids": [],
       "scope_rationale": "Retained because the pinned implementation, an active consumer, or a claims source exposes this interface or explicit profile boundary.",
       "semantic_contract_ids": [
@@ -860,12 +823,6 @@
       },
       "documentation_status": "undocumented",
       "feature_id": "RCF-LIFECYCLE-STATE-GAPS",
-      "feature_work_unit": {
-        "acceptance_contract": "Add a unique normative oracle, atomic Matrix rows, and production-path positive and isolated-negative tests.",
-        "closure_requires_executable_acceptance": true,
-        "feature_id": "RCF-LIFECYCLE-STATE-GAPS",
-        "responsible_party": "specification_authority"
-      },
       "first_applicable_respect_version": "source revision cfa763b72793",
       "implementation_sources": [
         {
@@ -894,7 +851,6 @@
       "requirement_status": "upstream_gap",
       "respect_ification_guidance": "A CanApp must not claim behavior for these lifecycle cases until RESPECT exposes versioned observable contracts.",
       "respect_revision": "cfa763b7279331cec84673a3423ca713203e7cb6",
-      "respect_upgrade_guidance": "Resolve the normative behavior and preserve a feature-addressed acceptance contract before any platform implementation can close.",
       "row_ids": [],
       "scope_rationale": "The binding discovery manifest requires an explicit disposition, but the pinned RESPECT source exposes no stable CanApp-facing contract for this behavior.",
       "semantic_contract_ids": [
@@ -922,12 +878,6 @@
       },
       "documentation_status": "documented_unimplemented",
       "feature_id": "RCF-LTI-AGS",
-      "feature_work_unit": {
-        "acceptance_contract": "Add a unique normative oracle, atomic Matrix rows, and production-path positive and isolated-negative tests.",
-        "closure_requires_executable_acceptance": true,
-        "feature_id": "RCF-LTI-AGS",
-        "responsible_party": "respect_platform_team"
-      },
       "first_applicable_respect_version": "source revision cfa763b72793",
       "implementation_sources": [],
       "implementation_status": "claimed_not_implemented",
@@ -949,7 +899,6 @@
       "requirement_status": "upstream_gap",
       "respect_ification_guidance": "Use the atomic rows for this feature to identify observable CanApp changes; do not infer obligations from unimplemented claims or excluded standard surfaces.",
       "respect_revision": "cfa763b7279331cec84673a3423ca713203e7cb6",
-      "respect_upgrade_guidance": "Route only independently attributable, signed real-platform evidence through a platform-gap packet and Upgrade Dossier.",
       "row_ids": [],
       "scope_rationale": "Retained because the pinned implementation, an active consumer, or a claims source exposes this interface or explicit profile boundary.",
       "semantic_contract_ids": [
@@ -977,12 +926,6 @@
       },
       "documentation_status": "documented_unimplemented",
       "feature_id": "RCF-LTI-LAUNCH",
-      "feature_work_unit": {
-        "acceptance_contract": "Add a unique normative oracle, atomic Matrix rows, and production-path positive and isolated-negative tests.",
-        "closure_requires_executable_acceptance": true,
-        "feature_id": "RCF-LTI-LAUNCH",
-        "responsible_party": "respect_platform_team"
-      },
       "first_applicable_respect_version": "source revision cfa763b72793",
       "implementation_sources": [],
       "implementation_status": "claimed_not_implemented",
@@ -1004,7 +947,6 @@
       "requirement_status": "upstream_gap",
       "respect_ification_guidance": "Use the atomic rows for this feature to identify observable CanApp changes; do not infer obligations from unimplemented claims or excluded standard surfaces.",
       "respect_revision": "cfa763b7279331cec84673a3423ca713203e7cb6",
-      "respect_upgrade_guidance": "Route only independently attributable, signed real-platform evidence through a platform-gap packet and Upgrade Dossier.",
       "row_ids": [],
       "scope_rationale": "Retained because the pinned implementation, an active consumer, or a claims source exposes this interface or explicit profile boundary.",
       "semantic_contract_ids": [
@@ -1044,7 +986,6 @@
       },
       "documentation_status": "partially_documented",
       "feature_id": "RCF-MANIFEST",
-      "feature_work_unit": null,
       "first_applicable_respect_version": "source revision cfa763b72793",
       "implementation_sources": [
         {
@@ -1067,7 +1008,6 @@
       "requirement_status": "optional",
       "respect_ification_guidance": "Prefer a current OPDS Publication descriptor. Use the legacy manifest only for backward compatibility and provide learningUnits plus defaultLaunchUri.",
       "respect_revision": "cfa763b7279331cec84673a3423ca713203e7cb6",
-      "respect_upgrade_guidance": "No RESPECT platform work is authorized by this feature; route observations through the typed responsibility classifier.",
       "row_ids": [
         "MANIFEST-001",
         "MANIFEST-002",
@@ -1109,7 +1049,6 @@
       },
       "documentation_status": "partially_documented",
       "feature_id": "RCF-MANIFEST-OPTIONAL",
-      "feature_work_unit": null,
       "first_applicable_respect_version": "source revision cfa763b72793",
       "implementation_sources": [
         {
@@ -1132,7 +1071,6 @@
       "requirement_status": "informative",
       "respect_ification_guidance": "Supplying these optional fields requires valid model types, but their absence is not a current CanApp failure.",
       "respect_revision": "cfa763b7279331cec84673a3423ca713203e7cb6",
-      "respect_upgrade_guidance": "No RESPECT platform work is authorized by this feature; route observations through the typed responsibility classifier.",
       "row_ids": [],
       "scope_rationale": "Android stores and sourceCode, web url and sourceCode, and screenshots are parseable model fields but have no separately observed validator or launch behavior.",
       "semantic_contract_ids": [
@@ -1160,12 +1098,6 @@
       },
       "documentation_status": "documented_unimplemented",
       "feature_id": "RCF-OAUTH",
-      "feature_work_unit": {
-        "acceptance_contract": "Add a unique normative oracle, atomic Matrix rows, and production-path positive and isolated-negative tests.",
-        "closure_requires_executable_acceptance": true,
-        "feature_id": "RCF-OAUTH",
-        "responsible_party": "respect_platform_team"
-      },
       "first_applicable_respect_version": "source revision cfa763b72793",
       "implementation_sources": [],
       "implementation_status": "claimed_not_implemented",
@@ -1187,7 +1119,6 @@
       "requirement_status": "upstream_gap",
       "respect_ification_guidance": "Use the atomic rows for this feature to identify observable CanApp changes; do not infer obligations from unimplemented claims or excluded standard surfaces.",
       "respect_revision": "cfa763b7279331cec84673a3423ca713203e7cb6",
-      "respect_upgrade_guidance": "Route only independently attributable, signed real-platform evidence through a platform-gap packet and Upgrade Dossier.",
       "row_ids": [],
       "scope_rationale": "Retained because the pinned implementation, an active consumer, or a claims source exposes this interface or explicit profile boundary.",
       "semantic_contract_ids": [
@@ -1209,7 +1140,6 @@
       },
       "documentation_status": "partially_documented",
       "feature_id": "RCF-OFFLINE",
-      "feature_work_unit": null,
       "first_applicable_respect_version": "source revision cfa763b72793",
       "implementation_sources": [
         {
@@ -1242,7 +1172,6 @@
       "requirement_status": "required",
       "respect_ification_guidance": "Declare every required publication resource and acquisition link. RESPECT pinning downloads the declared dependency set; internal cache size is not a CanApp contract.",
       "respect_revision": "cfa763b7279331cec84673a3423ca713203e7cb6",
-      "respect_upgrade_guidance": "Route only independently attributable, signed real-platform evidence through a platform-gap packet and Upgrade Dossier.",
       "row_ids": [
         "OFFLINE-001",
         "OFFLINE-002",
@@ -1283,12 +1212,6 @@
       },
       "documentation_status": "undocumented",
       "feature_id": "RCF-OFFLINE-FAILURE-GAPS",
-      "feature_work_unit": {
-        "acceptance_contract": "Add a unique normative oracle, atomic Matrix rows, and production-path positive and isolated-negative tests.",
-        "closure_requires_executable_acceptance": true,
-        "feature_id": "RCF-OFFLINE-FAILURE-GAPS",
-        "responsible_party": "specification_authority"
-      },
       "first_applicable_respect_version": "source revision cfa763b72793",
       "implementation_sources": [
         {
@@ -1317,7 +1240,6 @@
       "requirement_status": "upstream_gap",
       "respect_ification_guidance": "Declare complete dependencies; RESPECT does not expose a stable CanApp-facing stale or corrupt cache outcome contract.",
       "respect_revision": "cfa763b7279331cec84673a3423ca713203e7cb6",
-      "respect_upgrade_guidance": "Resolve the normative behavior and preserve a feature-addressed acceptance contract before any platform implementation can close.",
       "row_ids": [],
       "scope_rationale": "The binding discovery manifest requires an explicit disposition, but the pinned RESPECT source exposes no stable CanApp-facing contract for this behavior.",
       "semantic_contract_ids": [
@@ -1345,12 +1267,6 @@
       },
       "documentation_status": "documented_unimplemented",
       "feature_id": "RCF-OFFLINE-HTTP-IPC",
-      "feature_work_unit": {
-        "acceptance_contract": "Add a unique normative oracle, atomic Matrix rows, and production-path positive and isolated-negative tests.",
-        "closure_requires_executable_acceptance": true,
-        "feature_id": "RCF-OFFLINE-HTTP-IPC",
-        "responsible_party": "respect_platform_team"
-      },
       "first_applicable_respect_version": "source revision cfa763b72793",
       "implementation_sources": [
         {
@@ -1383,7 +1299,6 @@
       "requirement_status": "upstream_gap",
       "respect_ification_guidance": "Use the atomic rows for this feature to identify observable CanApp changes; do not infer obligations from unimplemented claims or excluded standard surfaces.",
       "respect_revision": "cfa763b7279331cec84673a3423ca713203e7cb6",
-      "respect_upgrade_guidance": "Route only independently attributable, signed real-platform evidence through a platform-gap packet and Upgrade Dossier.",
       "row_ids": [],
       "scope_rationale": "Requirements claim offline HTTP over IPC, but the pinned repository exposes only generic in-process HTTP adapters and no CanApp binding, launch parameter, or external service route.",
       "semantic_contract_ids": [
@@ -1411,12 +1326,6 @@
       },
       "documentation_status": "documented_unimplemented",
       "feature_id": "RCF-ONEROSTER",
-      "feature_work_unit": {
-        "acceptance_contract": "Add a unique normative oracle, atomic Matrix rows, and production-path positive and isolated-negative tests.",
-        "closure_requires_executable_acceptance": true,
-        "feature_id": "RCF-ONEROSTER",
-        "responsible_party": "respect_platform_team"
-      },
       "first_applicable_respect_version": "source revision cfa763b72793",
       "implementation_sources": [],
       "implementation_status": "claimed_not_implemented",
@@ -1438,7 +1347,6 @@
       "requirement_status": "upstream_gap",
       "respect_ification_guidance": "Use the atomic rows for this feature to identify observable CanApp changes; do not infer obligations from unimplemented claims or excluded standard surfaces.",
       "respect_revision": "cfa763b7279331cec84673a3423ca713203e7cb6",
-      "respect_upgrade_guidance": "Route only independently attributable, signed real-platform evidence through a platform-gap packet and Upgrade Dossier.",
       "row_ids": [],
       "scope_rationale": "Retained because the pinned implementation, an active consumer, or a claims source exposes this interface or explicit profile boundary.",
       "semantic_contract_ids": [
@@ -1472,7 +1380,6 @@
       },
       "documentation_status": "partially_documented",
       "feature_id": "RCF-OPDS",
-      "feature_work_unit": null,
       "first_applicable_respect_version": "source revision cfa763b72793",
       "implementation_sources": [
         {
@@ -1510,7 +1417,6 @@
       "requirement_status": "required",
       "respect_ification_guidance": "Use the atomic rows for this feature to identify observable CanApp changes; do not infer obligations from unimplemented claims or excluded standard surfaces.",
       "respect_revision": "cfa763b7279331cec84673a3423ca713203e7cb6",
-      "respect_upgrade_guidance": "No RESPECT platform work is authorized by this feature; route observations through the typed responsibility classifier.",
       "row_ids": [
         "OPDS-001",
         "OPDS-002",
@@ -1560,7 +1466,6 @@
       },
       "documentation_status": "partially_documented",
       "feature_id": "RCF-OPDS-SCOPE",
-      "feature_work_unit": null,
       "first_applicable_respect_version": "source revision cfa763b72793",
       "implementation_sources": [
         {
@@ -1604,7 +1509,6 @@
       "requirement_status": "out_of_profile",
       "respect_ification_guidance": "Use the atomic rows for this feature to identify observable CanApp changes; do not infer obligations from unimplemented claims or excluded standard surfaces.",
       "respect_revision": "cfa763b7279331cec84673a3423ca713203e7cb6",
-      "respect_upgrade_guidance": "No RESPECT platform work is authorized by this feature; route observations through the typed responsibility classifier.",
       "row_ids": [],
       "scope_rationale": "Retained because the pinned implementation, an active consumer, or a claims source exposes this interface or explicit profile boundary.",
       "semantic_contract_ids": [
@@ -1627,7 +1531,6 @@
       },
       "documentation_status": "partially_documented",
       "feature_id": "RCF-REGISTRATION",
-      "feature_work_unit": null,
       "first_applicable_respect_version": "source revision cfa763b72793",
       "implementation_sources": [
         {
@@ -1655,7 +1558,6 @@
       "requirement_status": "required",
       "respect_ification_guidance": "Keep the registered descriptor URL stable and resolvable. Registration state is maintained by RESPECT as xAPI listed-app and voiding statements.",
       "respect_revision": "cfa763b7279331cec84673a3423ca713203e7cb6",
-      "respect_upgrade_guidance": "Route only independently attributable, signed real-platform evidence through a platform-gap packet and Upgrade Dossier.",
       "row_ids": [
         "REG-001",
         "REG-002",
@@ -1691,12 +1593,6 @@
       },
       "documentation_status": "undocumented",
       "feature_id": "RCF-RESOURCE-REDIRECT-GAP",
-      "feature_work_unit": {
-        "acceptance_contract": "Add a unique normative oracle, atomic Matrix rows, and production-path positive and isolated-negative tests.",
-        "closure_requires_executable_acceptance": true,
-        "feature_id": "RCF-RESOURCE-REDIRECT-GAP",
-        "responsible_party": "specification_authority"
-      },
       "first_applicable_respect_version": "source revision cfa763b72793",
       "implementation_sources": [
         {
@@ -1725,7 +1621,6 @@
       "requirement_status": "upstream_gap",
       "respect_ification_guidance": "Use stable canonical resource URLs; redirect behavior currently follows the underlying HTTP client rather than a versioned RESPECT contract.",
       "respect_revision": "cfa763b7279331cec84673a3423ca713203e7cb6",
-      "respect_upgrade_guidance": "Resolve the normative behavior and preserve a feature-addressed acceptance contract before any platform implementation can close.",
       "row_ids": [],
       "scope_rationale": "The binding discovery manifest requires an explicit disposition, but the pinned RESPECT source exposes no stable CanApp-facing contract for this behavior.",
       "semantic_contract_ids": [
@@ -1749,7 +1644,6 @@
       },
       "documentation_status": "partially_documented",
       "feature_id": "RCF-RESPECT-IFICATION",
-      "feature_work_unit": null,
       "first_applicable_respect_version": "source revision cfa763b72793",
       "implementation_sources": [
         {
@@ -1771,7 +1665,6 @@
       "requirement_status": "required",
       "respect_ification_guidance": "Use the atomic rows for this feature to identify observable CanApp changes; do not infer obligations from unimplemented claims or excluded standard surfaces.",
       "respect_revision": "cfa763b7279331cec84673a3423ca713203e7cb6",
-      "respect_upgrade_guidance": "No RESPECT platform work is authorized by this feature; route observations through the typed responsibility classifier.",
       "row_ids": [
         "SUITE-007"
       ],
@@ -1805,7 +1698,6 @@
       },
       "documentation_status": "partially_documented",
       "feature_id": "RCF-RUSTICI-LAUNCH",
-      "feature_work_unit": null,
       "first_applicable_respect_version": "source revision cfa763b72793",
       "implementation_sources": [
         {
@@ -1843,7 +1735,6 @@
       "requirement_status": "required",
       "respect_ification_guidance": "Use the atomic rows for this feature to identify observable CanApp changes; do not infer obligations from unimplemented claims or excluded standard surfaces.",
       "respect_revision": "cfa763b7279331cec84673a3423ca713203e7cb6",
-      "respect_upgrade_guidance": "No RESPECT platform work is authorized by this feature; route observations through the typed responsibility classifier.",
       "row_ids": [
         "LAUNCH-003",
         "LAUNCH-004",
@@ -1881,7 +1772,6 @@
       },
       "documentation_status": "partially_documented",
       "feature_id": "RCF-SUITE-COVERAGE",
-      "feature_work_unit": null,
       "first_applicable_respect_version": "source revision cfa763b72793",
       "implementation_sources": [
         {
@@ -1908,7 +1798,6 @@
       "requirement_status": "required",
       "respect_ification_guidance": "Use the atomic rows for this feature to identify observable CanApp changes; do not infer obligations from unimplemented claims or excluded standard surfaces.",
       "respect_revision": "cfa763b7279331cec84673a3423ca713203e7cb6",
-      "respect_upgrade_guidance": "No RESPECT platform work is authorized by this feature; route observations through the typed responsibility classifier.",
       "row_ids": [
         "SUITE-003"
       ],
@@ -1936,7 +1825,6 @@
       },
       "documentation_status": "partially_documented",
       "feature_id": "RCF-SUITE-ORACLE",
-      "feature_work_unit": null,
       "first_applicable_respect_version": "source revision cfa763b72793",
       "implementation_sources": [
         {
@@ -1968,7 +1856,6 @@
       "requirement_status": "required",
       "respect_ification_guidance": "Use the atomic rows for this feature to identify observable CanApp changes; do not infer obligations from unimplemented claims or excluded standard surfaces.",
       "respect_revision": "cfa763b7279331cec84673a3423ca713203e7cb6",
-      "respect_upgrade_guidance": "No RESPECT platform work is authorized by this feature; route observations through the typed responsibility classifier.",
       "row_ids": [
         "SUITE-002",
         "SUITE-005"
@@ -1997,7 +1884,6 @@
       },
       "documentation_status": "partially_documented",
       "feature_id": "RCF-SUITE-TARGET",
-      "feature_work_unit": null,
       "first_applicable_respect_version": "source revision cfa763b72793",
       "implementation_sources": [
         {
@@ -2024,7 +1910,6 @@
       "requirement_status": "required",
       "respect_ification_guidance": "Use the atomic rows for this feature to identify observable CanApp changes; do not infer obligations from unimplemented claims or excluded standard surfaces.",
       "respect_revision": "cfa763b7279331cec84673a3423ca713203e7cb6",
-      "respect_upgrade_guidance": "No RESPECT platform work is authorized by this feature; route observations through the typed responsibility classifier.",
       "row_ids": [
         "SUITE-001"
       ],
@@ -2050,7 +1935,6 @@
       },
       "documentation_status": "partially_documented",
       "feature_id": "RCF-SUITE-VERDICT",
-      "feature_work_unit": null,
       "first_applicable_respect_version": "source revision cfa763b72793",
       "implementation_sources": [
         {
@@ -2077,7 +1961,6 @@
       "requirement_status": "required",
       "respect_ification_guidance": "Use the atomic rows for this feature to identify observable CanApp changes; do not infer obligations from unimplemented claims or excluded standard surfaces.",
       "respect_revision": "cfa763b7279331cec84673a3423ca713203e7cb6",
-      "respect_upgrade_guidance": "No RESPECT platform work is authorized by this feature; route observations through the typed responsibility classifier.",
       "row_ids": [
         "SUITE-004"
       ],
@@ -2105,7 +1988,6 @@
       },
       "documentation_status": "partially_documented",
       "feature_id": "RCF-SUITE-XAPI-ACTOR",
-      "feature_work_unit": null,
       "first_applicable_respect_version": "source revision cfa763b72793",
       "implementation_sources": [
         {
@@ -2142,7 +2024,6 @@
       "requirement_status": "required",
       "respect_ification_guidance": "Use the atomic rows for this feature to identify observable CanApp changes; do not infer obligations from unimplemented claims or excluded standard surfaces.",
       "respect_revision": "cfa763b7279331cec84673a3423ca713203e7cb6",
-      "respect_upgrade_guidance": "No RESPECT platform work is authorized by this feature; route observations through the typed responsibility classifier.",
       "row_ids": [
         "SUITE-006"
       ],
@@ -2167,12 +2048,6 @@
       },
       "documentation_status": "undocumented",
       "feature_id": "RCF-WEB-LIFECYCLE-GAPS",
-      "feature_work_unit": {
-        "acceptance_contract": "Add a unique normative oracle, atomic Matrix rows, and production-path positive and isolated-negative tests.",
-        "closure_requires_executable_acceptance": true,
-        "feature_id": "RCF-WEB-LIFECYCLE-GAPS",
-        "responsible_party": "specification_authority"
-      },
       "first_applicable_respect_version": "source revision cfa763b72793",
       "implementation_sources": [
         {
@@ -2200,7 +2075,6 @@
       "requirement_status": "upstream_gap",
       "respect_ification_guidance": "Do not depend on RESPECT-specific suspension or resumption callbacks that are absent from the pinned hosted runtime.",
       "respect_revision": "cfa763b7279331cec84673a3423ca713203e7cb6",
-      "respect_upgrade_guidance": "Resolve the normative behavior and preserve a feature-addressed acceptance contract before any platform implementation can close.",
       "row_ids": [],
       "scope_rationale": "The binding discovery manifest requires an explicit disposition, but the pinned RESPECT source exposes no stable CanApp-facing contract for this behavior.",
       "semantic_contract_ids": [
@@ -2223,7 +2097,6 @@
       },
       "documentation_status": "partially_documented",
       "feature_id": "RCF-WEB-RUNTIME",
-      "feature_work_unit": null,
       "first_applicable_respect_version": "source revision cfa763b72793",
       "implementation_sources": [
         {
@@ -2245,7 +2118,6 @@
       "requirement_status": "required",
       "respect_ification_guidance": "A hosted web CanApp may depend on JavaScript, DOM storage, gesture-free media, loopback mixed content, and user back or close navigation exactly as exposed by the pinned runtime.",
       "respect_revision": "cfa763b7279331cec84673a3423ca713203e7cb6",
-      "respect_upgrade_guidance": "Route only independently attributable, signed real-platform evidence through a platform-gap packet and Upgrade Dossier.",
       "row_ids": [
         "WEB-001",
         "WEB-002",
@@ -2277,7 +2149,6 @@
       },
       "documentation_status": "partially_documented",
       "feature_id": "RCF-XAPI",
-      "feature_work_unit": null,
       "first_applicable_respect_version": "source revision cfa763b72793",
       "implementation_sources": [
         {
@@ -2320,7 +2191,6 @@
       "requirement_status": "required",
       "respect_ification_guidance": "Use the atomic rows for this feature to identify observable CanApp changes; do not infer obligations from unimplemented claims or excluded standard surfaces.",
       "respect_revision": "cfa763b7279331cec84673a3423ca713203e7cb6",
-      "respect_upgrade_guidance": "No RESPECT platform work is authorized by this feature; route observations through the typed responsibility classifier.",
       "row_ids": [
         "XAPI-006",
         "XAPI-007",
@@ -2367,7 +2237,6 @@
       },
       "documentation_status": "partially_documented",
       "feature_id": "RCF-XAPI-ASSIGNMENT",
-      "feature_work_unit": null,
       "first_applicable_respect_version": "source revision cfa763b72793",
       "implementation_sources": [
         {
@@ -2405,7 +2274,6 @@
       "requirement_status": "required",
       "respect_ification_guidance": "Use the atomic rows for this feature to identify observable CanApp changes; do not infer obligations from unimplemented claims or excluded standard surfaces.",
       "respect_revision": "cfa763b7279331cec84673a3423ca713203e7cb6",
-      "respect_upgrade_guidance": "Route only independently attributable, signed real-platform evidence through a platform-gap packet and Upgrade Dossier.",
       "row_ids": [
         "XAPI-012"
       ],
@@ -2437,7 +2305,6 @@
       },
       "documentation_status": "partially_documented",
       "feature_id": "RCF-XAPI-AUTH",
-      "feature_work_unit": null,
       "first_applicable_respect_version": "source revision cfa763b72793",
       "implementation_sources": [
         {
@@ -2465,7 +2332,6 @@
       "requirement_status": "required",
       "respect_ification_guidance": "Use the session-scoped Basic credential and actor supplied at launch. Do not treat the implemented mechanism as OAuth.",
       "respect_revision": "cfa763b7279331cec84673a3423ca713203e7cb6",
-      "respect_upgrade_guidance": "No RESPECT platform work is authorized by this feature; route observations through the typed responsibility classifier.",
       "row_ids": [
         "AUTH-001",
         "AUTH-003"
@@ -2498,7 +2364,6 @@
       },
       "documentation_status": "partially_documented",
       "feature_id": "RCF-XAPI-AUTH-ENFORCEMENT",
-      "feature_work_unit": null,
       "first_applicable_respect_version": "source revision cfa763b72793",
       "implementation_sources": [
         {
@@ -2526,7 +2391,6 @@
       "requirement_status": "required",
       "respect_ification_guidance": "A CanApp must treat status 403 as a rejected credential result; RESPECT owns correct enforcement.",
       "respect_revision": "cfa763b7279331cec84673a3423ca713203e7cb6",
-      "respect_upgrade_guidance": "Route only independently attributable, signed real-platform evidence through a platform-gap packet and Upgrade Dossier.",
       "row_ids": [
         "AUTH-002"
       ],
@@ -2558,12 +2422,6 @@
       },
       "documentation_status": "undocumented",
       "feature_id": "RCF-XAPI-BINDING-OUTCOME-GAPS",
-      "feature_work_unit": {
-        "acceptance_contract": "Add a unique normative oracle, atomic Matrix rows, and production-path positive and isolated-negative tests.",
-        "closure_requires_executable_acceptance": true,
-        "feature_id": "RCF-XAPI-BINDING-OUTCOME-GAPS",
-        "responsible_party": "specification_authority"
-      },
       "first_applicable_respect_version": "source revision cfa763b72793",
       "implementation_sources": [
         {
@@ -2592,7 +2450,6 @@
       "requirement_status": "upstream_gap",
       "respect_ification_guidance": "A CanApp must handle binding-specific operational failure without assuming semantic equivalence for timeout or unavailable-binding results until RESPECT defines the contract.",
       "respect_revision": "cfa763b7279331cec84673a3423ca713203e7cb6",
-      "respect_upgrade_guidance": "Resolve the normative behavior and preserve a feature-addressed acceptance contract before any platform implementation can close.",
       "row_ids": [],
       "scope_rationale": "The binding discovery manifest requires an explicit disposition, but the pinned RESPECT source exposes no stable CanApp-facing contract for this behavior.",
       "semantic_contract_ids": [
@@ -2618,7 +2475,6 @@
       },
       "documentation_status": "partially_documented",
       "feature_id": "RCF-XAPI-HTTP",
-      "feature_work_unit": null,
       "first_applicable_respect_version": "source revision cfa763b72793",
       "implementation_sources": [
         {
@@ -2650,7 +2506,6 @@
       "requirement_status": "required",
       "respect_ification_guidance": "Use the atomic rows for this feature to identify observable CanApp changes; do not infer obligations from unimplemented claims or excluded standard surfaces.",
       "respect_revision": "cfa763b7279331cec84673a3423ca713203e7cb6",
-      "respect_upgrade_guidance": "No RESPECT platform work is authorized by this feature; route observations through the typed responsibility classifier.",
       "row_ids": [
         "XAPI-001"
       ],
@@ -2682,7 +2537,6 @@
       },
       "documentation_status": "partially_documented",
       "feature_id": "RCF-XAPI-HTTP-PROXY",
-      "feature_work_unit": null,
       "first_applicable_respect_version": "source revision cfa763b72793",
       "implementation_sources": [
         {
@@ -2714,7 +2568,6 @@
       "requirement_status": "required",
       "respect_ification_guidance": "The CanApp must use the supplied endpoint, but it does not implement or repair RESPECT proxy CORS and method dispatch.",
       "respect_revision": "cfa763b7279331cec84673a3423ca713203e7cb6",
-      "respect_upgrade_guidance": "Route only independently attributable, signed real-platform evidence through a platform-gap packet and Upgrade Dossier.",
       "row_ids": [
         "XAPI-002"
       ],
@@ -2750,7 +2603,6 @@
       },
       "documentation_status": "partially_documented",
       "feature_id": "RCF-XAPI-IPC",
-      "feature_work_unit": null,
       "first_applicable_respect_version": "source revision cfa763b72793",
       "implementation_sources": [
         {
@@ -2782,7 +2634,6 @@
       "requirement_status": "required",
       "respect_ification_guidance": "Use the atomic rows for this feature to identify observable CanApp changes; do not infer obligations from unimplemented claims or excluded standard surfaces.",
       "respect_revision": "cfa763b7279331cec84673a3423ca713203e7cb6",
-      "respect_upgrade_guidance": "No RESPECT platform work is authorized by this feature; route observations through the typed responsibility classifier.",
       "row_ids": [
         "XAPI-003",
         "XAPI-004",
@@ -2817,7 +2668,6 @@
       },
       "documentation_status": "implemented_undocumented",
       "feature_id": "RCF-XAPI-IPC-UNSUPPORTED",
-      "feature_work_unit": null,
       "first_applicable_respect_version": "source revision cfa763b72793",
       "implementation_sources": [
         {
@@ -2845,7 +2695,6 @@
       "requirement_status": "out_of_profile",
       "respect_ification_guidance": "Do not implement or test assignment-summary APIs as a native CanApp obligation until RESPECT exposes them.",
       "respect_revision": "cfa763b7279331cec84673a3423ca713203e7cb6",
-      "respect_upgrade_guidance": "No RESPECT platform work is authorized by this feature; route observations through the typed responsibility classifier.",
       "row_ids": [],
       "scope_rationale": "The native client explicitly throws for assignment progress and assignment-list operations while supporting statement POST, GET, and flow.",
       "semantic_contract_ids": [
@@ -2872,7 +2721,6 @@
       },
       "documentation_status": "partially_documented",
       "feature_id": "RCF-XAPI-RESULT-METADATA",
-      "feature_work_unit": null,
       "first_applicable_respect_version": "source revision cfa763b72793",
       "implementation_sources": [
         {
@@ -2895,7 +2743,6 @@
       "requirement_status": "required",
       "respect_ification_guidance": "A CanApp may consume the returned xAPI metadata headers; RESPECT owns their correctness.",
       "respect_revision": "cfa763b7279331cec84673a3423ca713203e7cb6",
-      "respect_upgrade_guidance": "Route only independently attributable, signed real-platform evidence through a platform-gap packet and Upgrade Dossier.",
       "row_ids": [
         "XAPI-020"
       ],
@@ -2927,7 +2774,6 @@
       },
       "documentation_status": "partially_documented",
       "feature_id": "RCF-XAPI-SCOPE",
-      "feature_work_unit": null,
       "first_applicable_respect_version": "source revision cfa763b72793",
       "implementation_sources": [
         {
@@ -2976,7 +2822,6 @@
       "requirement_status": "out_of_profile",
       "respect_ification_guidance": "Use the atomic rows for this feature to identify observable CanApp changes; do not infer obligations from unimplemented claims or excluded standard surfaces.",
       "respect_revision": "cfa763b7279331cec84673a3423ca713203e7cb6",
-      "respect_upgrade_guidance": "No RESPECT platform work is authorized by this feature; route observations through the typed responsibility classifier.",
       "row_ids": [],
       "scope_rationale": "Retained because the pinned implementation, an active consumer, or a claims source exposes this interface or explicit profile boundary.",
       "semantic_contract_ids": [
@@ -3381,7 +3226,7 @@
     }
   ],
   "matrix_id": "respect-compatibility-matrix-v0.1",
-  "matrix_version": "1.1.0",
+  "matrix_version": "1.2.0",
   "product_boundary": {
     "excluded": [
       "Implementation of the RESPECT Compatible Test Suite runtime",
@@ -3491,7 +3336,6 @@
       "canapp_behavior": "No Candidate App or publisher-supplied key can establish the Spix Foundation's certification authority.",
       "control_owner": "spix_foundation",
       "current_suite_status": "implemented",
-      "dossier_acceptance_test": null,
       "evidence_attribution": "Record the key provenance, key identifier, SHA-256 fingerprint, Matrix hash, Test Suite package identity, target digest, and scenario nonce without recording any private key bytes.",
       "expected_evidence": [
         "Source-locked Spix public-key resource and fingerprint, or the stable fingerprint and testing-only provenance of the locally generated fallback key."
@@ -3571,7 +3415,6 @@
           "failure_domain": "not_applicable"
         }
       },
-      "platform_gap_eligible": false,
       "positive_case": "The installed Test Suite contains a source-locked Spix public key whose identifier and fingerprint match Foundation policy.",
       "primary_failure_domain": "source_authority",
       "profile_ids": [
@@ -3626,7 +3469,6 @@
       "canapp_behavior": "No Candidate App code change can supply legal publisher authority; the exact tested artifact and stable app identifier must remain unchanged.",
       "control_owner": "publisher",
       "current_suite_status": "implemented",
-      "dossier_acceptance_test": null,
       "evidence_attribution": "Bind the verified Spix token, agreement reference, app identifier, artifact SHA-256, immutable URL, Matrix hash, and scenario nonce to the submitted target.",
       "expected_evidence": [
         "Ed25519 signature verification, Spix issuer, publisher identifier, stable app identifier, agreement version, DocuSign envelope reference, artifact SHA-256, immutable URL, publication scope, token identifier, and issue time."
@@ -3707,7 +3549,6 @@
           "failure_domain": "not_applicable"
         }
       },
-      "platform_gap_eligible": false,
       "positive_case": "A Spix-signed token under a completed Publisher Agreement exactly authorizes this app identifier, artifact digest, immutable URL, and publication scope.",
       "primary_failure_domain": "legal",
       "profile_ids": [
@@ -3760,7 +3601,6 @@
       "canapp_behavior": "The submitted Candidate App artifact must be the same artifact made available for registry acquisition; no test-only substitute or rebuilt binary is permitted.",
       "control_owner": "publisher",
       "current_suite_status": "implemented",
-      "dossier_acceptance_test": null,
       "evidence_attribution": "Bind the requested and final URLs, HTTP status, cache policy, served SHA-256, submitted artifact SHA-256, Matrix hash, target digest, and scenario nonce.",
       "expected_evidence": [
         "Content-addressed HTTPS URL, successful response, immutable cache directive, submitted artifact SHA-256, and served-byte SHA-256."
@@ -3841,7 +3681,6 @@
           "failure_domain": "not_applicable"
         }
       },
-      "platform_gap_eligible": false,
       "positive_case": "The URL path contains the submitted artifact SHA-256 and returns those exact bytes with HTTP 200 and Cache-Control immutable.",
       "primary_failure_domain": "security",
       "profile_ids": [
@@ -3896,7 +3735,6 @@
       "canapp_behavior": "Declare an exported activity with VIEW, DEFAULT, and BROWSABLE intent-filter entries for the HTTPS learning-unit host.",
       "control_owner": "canapp_artifact",
       "current_suite_status": "fixture_only",
-      "dossier_acceptance_test": null,
       "evidence_attribution": "Bind evidence to the selected CanApp target, profile, Matrix hash, row identifier, actor instance, and scenario nonce.",
       "expected_evidence": [
         "APK fingerprint, intent filters, assetlinks response, package resolution, and launch observation."
@@ -3974,7 +3812,6 @@
           "failure_domain": "not_applicable"
         }
       },
-      "platform_gap_eligible": false,
       "positive_case": "The supplied APK exposes an exported browsable HTTPS activity matching the selected learning-unit URL.",
       "primary_failure_domain": "canapp",
       "profile_ids": [
@@ -4031,7 +3868,6 @@
       "canapp_behavior": "Serve a valid Digital Asset Links statement associating the learning-unit HTTPS host with the submitted Android package and signing certificate.",
       "control_owner": "canapp_artifact",
       "current_suite_status": "partial",
-      "dossier_acceptance_test": null,
       "evidence_attribution": "Bind evidence to the selected CanApp target, profile, Matrix hash, row identifier, actor instance, and scenario nonce.",
       "expected_evidence": [
         "APK package and signer digest, fetched assetlinks.json digest, matching relation, and Android verification result."
@@ -4109,7 +3945,6 @@
           "failure_domain": "not_applicable"
         }
       },
-      "platform_gap_eligible": false,
       "positive_case": "The host association matches the submitted package and signer, allowing verified App Link routing.",
       "primary_failure_domain": "canapp",
       "profile_ids": [
@@ -4166,7 +4001,6 @@
       "canapp_behavior": "Send the supplied auth value unchanged for the corresponding session.",
       "control_owner": "canapp_artifact",
       "current_suite_status": "not_implemented",
-      "dossier_acceptance_test": null,
       "evidence_attribution": "Record the Matrix hash, test-case identifier, CanApp target digest, scenario nonce, actor identity, request, response, and timestamp.",
       "expected_evidence": [
         "Session identifier, credential digest, request Authorization state, response status, and selected actor digest."
@@ -4246,7 +4080,6 @@
           "failure_domain": "not_applicable"
         }
       },
-      "platform_gap_eligible": false,
       "positive_case": "The supplied credential authenticates the request.",
       "primary_failure_domain": "canapp",
       "profile_ids": [
@@ -4301,7 +4134,6 @@
       "canapp_behavior": "Treat status 403 as a terminal credential error for that request and do not claim delivery.",
       "control_owner": "respect_platform",
       "current_suite_status": "not_implemented",
-      "dossier_acceptance_test": "matrix-row:AUTH-002",
       "evidence_attribution": "Record the Matrix hash, test-case identifier, CanApp target digest, scenario nonce, actor identity, request, response, and timestamp.",
       "expected_evidence": [
         "Request digest, credential state classification, status 403, response body, and absence of persisted effect."
@@ -4381,7 +4213,6 @@
           "failure_domain": "not_applicable"
         }
       },
-      "platform_gap_eligible": true,
       "positive_case": "A valid control succeeds.",
       "primary_failure_domain": "respect_service",
       "profile_ids": [
@@ -4432,7 +4263,6 @@
       "canapp_behavior": "Preserve the launch actor identity in each submitted statement.",
       "control_owner": "canapp_artifact",
       "current_suite_status": "not_implemented",
-      "dossier_acceptance_test": null,
       "evidence_attribution": "Record the Matrix hash, test-case identifier, CanApp target digest, scenario nonce, actor identity, request, response, and timestamp.",
       "expected_evidence": [
         "Authenticated actor digest, statement actor digest, status, validation error, and statement identifier."
@@ -4512,7 +4342,6 @@
           "failure_domain": "not_applicable"
         }
       },
-      "platform_gap_eligible": false,
       "positive_case": "The launch actor statement is stored.",
       "primary_failure_domain": "canapp",
       "profile_ids": [
@@ -4566,7 +4395,6 @@
       "canapp_behavior": "Serve the current OPDS Publication descriptor rather than relying on the deprecated legacy manifest.",
       "control_owner": "canapp_artifact",
       "current_suite_status": "not_implemented",
-      "dossier_acceptance_test": null,
       "evidence_attribution": "Record the Matrix hash, test-case identifier, CanApp target digest, scenario nonce, actor identity, request, response, and timestamp.",
       "expected_evidence": [
         "Request, response status, media type, response digest, decode result, and selected descriptor fields."
@@ -4646,7 +4474,6 @@
           "failure_domain": "not_applicable"
         }
       },
-      "platform_gap_eligible": false,
       "positive_case": "A minimal current OPDS Publication descriptor decodes.",
       "primary_failure_domain": "canapp",
       "profile_ids": [
@@ -4722,7 +4549,6 @@
       "canapp_behavior": "Provide an identifier, localized title, and an acquisition link whose relation and media type are accepted by RESPECT.",
       "control_owner": "canapp_artifact",
       "current_suite_status": "not_implemented",
-      "dossier_acceptance_test": null,
       "evidence_attribution": "Record the Matrix hash, test-case identifier, CanApp target digest, scenario nonce, actor identity, request, response, and timestamp.",
       "expected_evidence": [
         "Parsed identifier, localized title, acquisition relation, media type, and resolved URL."
@@ -4802,7 +4628,6 @@
           "failure_domain": "not_applicable"
         }
       },
-      "platform_gap_eligible": false,
       "positive_case": "A descriptor supplies all three semantic values.",
       "primary_failure_domain": "canapp",
       "profile_ids": [
@@ -4877,7 +4702,6 @@
       "canapp_behavior": "Use the relation recognized by the pinned RESPECT source and serve the linked OPDS feed.",
       "control_owner": "canapp_artifact",
       "current_suite_status": "not_implemented",
-      "dossier_acceptance_test": null,
       "evidence_attribution": "Record the Matrix hash, test-case identifier, CanApp target digest, scenario nonce, actor identity, request, response, and timestamp.",
       "expected_evidence": [
         "Descriptor link, relation, resolved URL, response, and parsed feed result."
@@ -4957,7 +4781,6 @@
           "failure_domain": "not_applicable"
         }
       },
-      "platform_gap_eligible": false,
       "positive_case": "The recognized relation points to a valid OPDS feed.",
       "primary_failure_domain": "canapp",
       "profile_ids": [
@@ -5033,7 +4856,6 @@
       "canapp_behavior": "Treat unknown properties as extensions that RESPECT may ignore; never depend on an unknown property for required launch or discovery semantics.",
       "control_owner": "canapp_artifact",
       "current_suite_status": "not_implemented",
-      "dossier_acceptance_test": null,
       "evidence_attribution": "Record the Matrix hash, test-case identifier, CanApp target digest, scenario nonce, actor identity, request, response, and timestamp.",
       "expected_evidence": [
         "Response digest, unknown property name, decoded known fields, and decode result."
@@ -5113,7 +4935,6 @@
           "failure_domain": "not_applicable"
         }
       },
-      "platform_gap_eligible": false,
       "positive_case": "A valid descriptor with an extension property decodes.",
       "primary_failure_domain": "canapp",
       "profile_ids": [
@@ -5189,7 +5010,6 @@
       "canapp_behavior": "Provide metadata and links. Supply optional top-level collections only when the CanApp needs the behavior RESPECT actually consumes.",
       "control_owner": "canapp_artifact",
       "current_suite_status": "not_implemented",
-      "dossier_acceptance_test": null,
       "evidence_attribution": "Record the Matrix hash, test-case identifier, CanApp target digest, scenario nonce, actor identity, request, response, and timestamp.",
       "expected_evidence": [
         "Field-presence vector, response digest, decode result, and defaulted values."
@@ -5269,7 +5089,6 @@
           "failure_domain": "not_applicable"
         }
       },
-      "platform_gap_eligible": false,
       "positive_case": "A minimal descriptor with metadata and links decodes.",
       "primary_failure_domain": "canapp",
       "profile_ids": [
@@ -5345,7 +5164,6 @@
       "canapp_behavior": "Serve each selected manifest, catalog, publication, icon, and learning resource with HTTP 200.",
       "control_owner": "canapp_artifact",
       "current_suite_status": "fixture_only",
-      "dossier_acceptance_test": null,
       "evidence_attribution": "Bind evidence to the selected CanApp target, profile, Matrix hash, row identifier, actor instance, and scenario nonce.",
       "expected_evidence": [
         "Request URL, redirect chain, response status, and timing."
@@ -5423,7 +5241,6 @@
           "failure_domain": "not_applicable"
         }
       },
-      "platform_gap_eligible": false,
       "positive_case": "A conforming target produces the evidence required by HTTP-001.",
       "primary_failure_domain": "canapp",
       "profile_ids": [
@@ -5502,7 +5319,6 @@
       "canapp_behavior": "Return a content type accepted for the selected resource role.",
       "control_owner": "canapp_artifact",
       "current_suite_status": "fixture_only",
-      "dossier_acceptance_test": null,
       "evidence_attribution": "Bind evidence to the selected CanApp target, profile, Matrix hash, row identifier, actor instance, and scenario nonce.",
       "expected_evidence": [
         "Raw and normalized Content-Type plus the applicable allowlist."
@@ -5580,7 +5396,6 @@
           "failure_domain": "not_applicable"
         }
       },
-      "platform_gap_eligible": false,
       "positive_case": "A conforming target produces the evidence required by HTTP-002.",
       "primary_failure_domain": "canapp",
       "profile_ids": [
@@ -5659,7 +5474,6 @@
       "canapp_behavior": "Return Content-Length on the active validator's initial response.",
       "control_owner": "canapp_artifact",
       "current_suite_status": "fixture_only",
-      "dossier_acceptance_test": null,
       "evidence_attribution": "Bind evidence to the selected CanApp target, profile, Matrix hash, row identifier, actor instance, and scenario nonce.",
       "expected_evidence": [
         "Raw Content-Length and observed body byte count."
@@ -5737,7 +5551,6 @@
           "failure_domain": "not_applicable"
         }
       },
-      "platform_gap_eligible": false,
       "positive_case": "A conforming target produces the evidence required by HTTP-003.",
       "primary_failure_domain": "canapp",
       "profile_ids": [
@@ -5816,7 +5629,6 @@
       "canapp_behavior": "Expose at least one active cache validator header.",
       "control_owner": "canapp_artifact",
       "current_suite_status": "fixture_only",
-      "dossier_acceptance_test": null,
       "evidence_attribution": "Bind evidence to the selected CanApp target, profile, Matrix hash, row identifier, actor instance, and scenario nonce.",
       "expected_evidence": [
         "Raw validator headers and selected conditional request header."
@@ -5894,7 +5706,6 @@
           "failure_domain": "not_applicable"
         }
       },
-      "platform_gap_eligible": false,
       "positive_case": "A conforming target produces the evidence required by HTTP-004.",
       "primary_failure_domain": "canapp",
       "profile_ids": [
@@ -5973,7 +5784,6 @@
       "canapp_behavior": "Honor If-None-Match or If-Modified-Since with 304 when the resource is unchanged.",
       "control_owner": "canapp_artifact",
       "current_suite_status": "fixture_only",
-      "dossier_acceptance_test": null,
       "evidence_attribution": "Bind evidence to the selected CanApp target, profile, Matrix hash, row identifier, actor instance, and scenario nonce.",
       "expected_evidence": [
         "Both request-response pairs and the chosen validator."
@@ -6051,7 +5861,6 @@
           "failure_domain": "not_applicable"
         }
       },
-      "platform_gap_eligible": false,
       "positive_case": "A conforming target produces the evidence required by HTTP-005.",
       "primary_failure_domain": "canapp",
       "profile_ids": [
@@ -6130,7 +5939,6 @@
       "canapp_behavior": null,
       "control_owner": "respect_platform",
       "current_suite_status": "fixture_only",
-      "dossier_acceptance_test": "matrix-row:LAUNCH-001",
       "evidence_attribution": "Bind evidence to the selected CanApp target, profile, Matrix hash, row identifier, actor instance, and scenario nonce.",
       "expected_evidence": [
         "Resolved packages, selected route, launch URL, and activity observation."
@@ -6208,7 +6016,6 @@
           "failure_domain": "not_applicable"
         }
       },
-      "platform_gap_eligible": true,
       "positive_case": "A conforming target produces the evidence required by LAUNCH-001.",
       "primary_failure_domain": "actor",
       "profile_ids": [
@@ -6259,7 +6066,6 @@
       "canapp_behavior": null,
       "control_owner": "respect_platform",
       "current_suite_status": "fixture_only",
-      "dossier_acceptance_test": "matrix-row:LAUNCH-002",
       "evidence_attribution": "Bind evidence to the selected CanApp target, profile, Matrix hash, row identifier, actor instance, and scenario nonce.",
       "expected_evidence": [
         "Native failure classification, WebView URL, and page-load observation."
@@ -6337,7 +6143,6 @@
           "failure_domain": "not_applicable"
         }
       },
-      "platform_gap_eligible": true,
       "positive_case": "A conforming target produces the evidence required by LAUNCH-002.",
       "primary_failure_domain": "actor",
       "profile_ids": [
@@ -6389,7 +6194,6 @@
       "canapp_behavior": "Parse the endpoint parameter and direct xAPI traffic to that exact session endpoint.",
       "control_owner": "canapp_artifact",
       "current_suite_status": "fixture_only",
-      "dossier_acceptance_test": null,
       "evidence_attribution": "Bind evidence to the selected CanApp target, profile, Matrix hash, row identifier, actor instance, and scenario nonce.",
       "expected_evidence": [
         "Launch URL, decoded endpoint, connection log, and statement request correlation."
@@ -6467,7 +6271,6 @@
           "failure_domain": "not_applicable"
         }
       },
-      "platform_gap_eligible": false,
       "positive_case": "A conforming target produces the evidence required by LAUNCH-003.",
       "primary_failure_domain": "canapp",
       "profile_ids": [
@@ -6525,7 +6328,6 @@
       "canapp_behavior": "Parse activity_id and use it as the learning activity identifier in applicable xAPI statements.",
       "control_owner": "canapp_artifact",
       "current_suite_status": "fixture_only",
-      "dossier_acceptance_test": null,
       "evidence_attribution": "Bind evidence to the selected CanApp target, profile, Matrix hash, row identifier, actor instance, and scenario nonce.",
       "expected_evidence": [
         "Decoded activity_id and correlated xAPI statement fields."
@@ -6603,7 +6405,6 @@
           "failure_domain": "not_applicable"
         }
       },
-      "platform_gap_eligible": false,
       "positive_case": "A conforming target produces the evidence required by LAUNCH-004.",
       "primary_failure_domain": "canapp",
       "profile_ids": [
@@ -6660,7 +6461,6 @@
       "canapp_behavior": "Parse the auth value and present it unchanged to the supplied xAPI transport.",
       "control_owner": "canapp_artifact",
       "current_suite_status": "fixture_only",
-      "dossier_acceptance_test": null,
       "evidence_attribution": "Bind evidence to the selected CanApp target, profile, Matrix hash, row identifier, actor instance, and scenario nonce.",
       "expected_evidence": [
         "Redacted launch auth fingerprint, request Authorization fingerprint, and endpoint decision."
@@ -6738,7 +6538,6 @@
           "failure_domain": "not_applicable"
         }
       },
-      "platform_gap_eligible": false,
       "positive_case": "A conforming target produces the evidence required by LAUNCH-005.",
       "primary_failure_domain": "canapp",
       "profile_ids": [
@@ -6795,7 +6594,6 @@
       "canapp_behavior": "Parse the serialized xAPI Agent and use it as the actor for statements owned by the active session.",
       "control_owner": "canapp_artifact",
       "current_suite_status": "fixture_only",
-      "dossier_acceptance_test": null,
       "evidence_attribution": "Bind evidence to the selected CanApp target, profile, Matrix hash, row identifier, actor instance, and scenario nonce.",
       "expected_evidence": [
         "Decoded launch actor, statement actor, and endpoint authorization result."
@@ -6873,7 +6671,6 @@
           "failure_domain": "not_applicable"
         }
       },
-      "platform_gap_eligible": false,
       "positive_case": "A conforming target produces the evidence required by LAUNCH-006.",
       "primary_failure_domain": "canapp",
       "profile_ids": [
@@ -6930,7 +6727,6 @@
       "canapp_behavior": "Parse xapiIpcPackage and use it to bind explicitly to the RESPECT xAPI IPC service.",
       "control_owner": "canapp_artifact",
       "current_suite_status": "fixture_only",
-      "dossier_acceptance_test": null,
       "evidence_attribution": "Bind evidence to the selected CanApp target, profile, Matrix hash, row identifier, actor instance, and scenario nonce.",
       "expected_evidence": [
         "Decoded package, bind Intent package and action, binder connection, and service log."
@@ -7008,7 +6804,6 @@
           "failure_domain": "not_applicable"
         }
       },
-      "platform_gap_eligible": false,
       "positive_case": "A conforming target produces the evidence required by LAUNCH-007.",
       "primary_failure_domain": "canapp",
       "profile_ids": [
@@ -7065,7 +6860,6 @@
       "canapp_behavior": null,
       "control_owner": "respect_platform",
       "current_suite_status": "fixture_only",
-      "dossier_acceptance_test": "matrix-row:LAUNCH-009",
       "evidence_attribution": "Bind evidence to the selected CanApp target, profile, Matrix hash, row identifier, actor instance, and scenario nonce.",
       "expected_evidence": [
         "Resolved packages, selected route, launch URL, and activity observation."
@@ -7143,7 +6937,6 @@
           "failure_domain": "not_applicable"
         }
       },
-      "platform_gap_eligible": true,
       "positive_case": "A matching installed non-browser CanApp receives the native launch URL.",
       "primary_failure_domain": "actor",
       "profile_ids": [
@@ -7193,7 +6986,6 @@
       "canapp_behavior": "Tie client closure to the learning UI disposal lifecycle.",
       "control_owner": "canapp_artifact",
       "current_suite_status": "not_implemented",
-      "dossier_acceptance_test": null,
       "evidence_attribution": "Record the Matrix hash, test-case identifier, CanApp target digest, scenario nonce, actor identity, request, response, and timestamp.",
       "expected_evidence": [
         "CanApp process identity, IPC connection state, lifecycle event, close invocation, and post-disposal connection state."
@@ -7273,7 +7065,6 @@
           "failure_domain": "not_applicable"
         }
       },
-      "platform_gap_eligible": false,
       "positive_case": "The demo-consistent disposal path closes the client.",
       "primary_failure_domain": "canapp",
       "profile_ids": [
@@ -7327,7 +7118,6 @@
       "canapp_behavior": "Expose a JSON manifest containing name, license, learningUnits, and defaultLaunchUri in the active model shape.",
       "control_owner": "canapp_artifact",
       "current_suite_status": "fixture_only",
-      "dossier_acceptance_test": null,
       "evidence_attribution": "Bind evidence to the selected CanApp target, profile, Matrix hash, row identifier, actor instance, and scenario nonce.",
       "expected_evidence": [
         "Raw manifest hash, parse result, and field-level diagnostics."
@@ -7405,7 +7195,6 @@
           "failure_domain": "not_applicable"
         }
       },
-      "platform_gap_eligible": false,
       "positive_case": "A conforming target produces the evidence required by MANIFEST-001.",
       "primary_failure_domain": "canapp",
       "profile_ids": [
@@ -7462,7 +7251,6 @@
       "canapp_behavior": "Provide a nonblank localized name no longer than 80 characters.",
       "control_owner": "canapp_artifact",
       "current_suite_status": "fixture_only",
-      "dossier_acceptance_test": null,
       "evidence_attribution": "Bind evidence to the selected CanApp target, profile, Matrix hash, row identifier, actor instance, and scenario nonce.",
       "expected_evidence": [
         "Locale key, observed length, and validator result."
@@ -7540,7 +7328,6 @@
           "failure_domain": "not_applicable"
         }
       },
-      "platform_gap_eligible": false,
       "positive_case": "A conforming target produces the evidence required by MANIFEST-002.",
       "primary_failure_domain": "canapp",
       "profile_ids": [
@@ -7596,7 +7383,6 @@
       "canapp_behavior": "When description is supplied, provide nonblank localized text no longer than 4000 characters.",
       "control_owner": "canapp_artifact",
       "current_suite_status": "fixture_only",
-      "dossier_acceptance_test": null,
       "evidence_attribution": "Bind evidence to the selected CanApp target, profile, Matrix hash, row identifier, actor instance, and scenario nonce.",
       "expected_evidence": [
         "Locale key, observed length, and validator result."
@@ -7674,7 +7460,6 @@
           "failure_domain": "not_applicable"
         }
       },
-      "platform_gap_eligible": false,
       "positive_case": "A conforming target produces the evidence required by MANIFEST-003.",
       "primary_failure_domain": "canapp",
       "profile_ids": [
@@ -7730,7 +7515,6 @@
       "canapp_behavior": "Declare a license identifier recognized by RESPECT or the literal proprietary.",
       "control_owner": "canapp_artifact",
       "current_suite_status": "fixture_only",
-      "dossier_acceptance_test": null,
       "evidence_attribution": "Bind evidence to the selected CanApp target, profile, Matrix hash, row identifier, actor instance, and scenario nonce.",
       "expected_evidence": [
         "License value, license-list source hash, and match result."
@@ -7808,7 +7592,6 @@
           "failure_domain": "not_applicable"
         }
       },
-      "platform_gap_eligible": false,
       "positive_case": "A conforming target produces the evidence required by MANIFEST-004.",
       "primary_failure_domain": "canapp",
       "profile_ids": [
@@ -7864,7 +7647,6 @@
       "canapp_behavior": "Declare a website URL that returns an acceptable successful response.",
       "control_owner": "canapp_artifact",
       "current_suite_status": "fixture_only",
-      "dossier_acceptance_test": null,
       "evidence_attribution": "Bind evidence to the selected CanApp target, profile, Matrix hash, row identifier, actor instance, and scenario nonce.",
       "expected_evidence": [
         "Request timeline, final URL, status, headers, and body hash or bounded sample."
@@ -7942,7 +7724,6 @@
           "failure_domain": "not_applicable"
         }
       },
-      "platform_gap_eligible": false,
       "positive_case": "A conforming target produces the evidence required by MANIFEST-005.",
       "primary_failure_domain": "canapp",
       "profile_ids": [
@@ -7999,7 +7780,6 @@
       "canapp_behavior": "Provide an explicit icon URL, or allow RESPECT to discover a same-origin PNG or WebP favicon of at least 512 pixels when no icon is supplied.",
       "control_owner": "canapp_artifact",
       "current_suite_status": "fixture_only",
-      "dossier_acceptance_test": null,
       "evidence_attribution": "Bind evidence to the selected CanApp target, profile, Matrix hash, row identifier, actor instance, and scenario nonce.",
       "expected_evidence": [
         "Resolved icon URL, media type, dimensions, content hash, and fallback path."
@@ -8077,7 +7857,6 @@
           "failure_domain": "not_applicable"
         }
       },
-      "platform_gap_eligible": false,
       "positive_case": "The descriptor supplies an icon URL, or the descriptor origin supplies a qualifying fallback favicon.",
       "primary_failure_domain": "canapp",
       "profile_ids": [
@@ -8134,7 +7913,6 @@
       "canapp_behavior": "Expose the learningUnits URI and serve JSON or OPDS JSON accepted by RESPECT.",
       "control_owner": "canapp_artifact",
       "current_suite_status": "fixture_only",
-      "dossier_acceptance_test": null,
       "evidence_attribution": "Bind evidence to the selected CanApp target, profile, Matrix hash, row identifier, actor instance, and scenario nonce.",
       "expected_evidence": [
         "Request, response status, media type, validators, and body hash."
@@ -8212,7 +7990,6 @@
           "failure_domain": "not_applicable"
         }
       },
-      "platform_gap_eligible": false,
       "positive_case": "A conforming target produces the evidence required by MANIFEST-007.",
       "primary_failure_domain": "canapp",
       "profile_ids": [
@@ -8269,7 +8046,6 @@
       "canapp_behavior": "Provide a defaultLaunchUri value that parses as a URI; active runtime use is not independently established.",
       "control_owner": "canapp_artifact",
       "current_suite_status": "fixture_only",
-      "dossier_acceptance_test": null,
       "evidence_attribution": "Bind evidence to the selected CanApp target, profile, Matrix hash, row identifier, actor instance, and scenario nonce.",
       "expected_evidence": [
         "Declared URI, resolved URI, and route-selection result."
@@ -8347,7 +8123,6 @@
           "failure_domain": "not_applicable"
         }
       },
-      "platform_gap_eligible": false,
       "positive_case": "A conforming target produces the evidence required by MANIFEST-008.",
       "primary_failure_domain": "canapp",
       "profile_ids": [
@@ -8403,7 +8178,6 @@
       "canapp_behavior": "Declare an Android packageId containing only letters, digits, period, underscore, or dollar sign.",
       "control_owner": "canapp_artifact",
       "current_suite_status": "fixture_only",
-      "dossier_acceptance_test": null,
       "evidence_attribution": "Bind evidence to the selected CanApp target, profile, Matrix hash, row identifier, actor instance, and scenario nonce.",
       "expected_evidence": [
         "Package identifier and any rejected character position."
@@ -8481,7 +8255,6 @@
           "failure_domain": "not_applicable"
         }
       },
-      "platform_gap_eligible": false,
       "positive_case": "A conforming target produces the evidence required by MANIFEST-009.",
       "primary_failure_domain": "canapp",
       "profile_ids": [
@@ -8537,7 +8310,6 @@
       "canapp_behavior": "Declare every resource required for offline execution in the publication dependency graph.",
       "control_owner": "respect_platform",
       "current_suite_status": "not_implemented",
-      "dossier_acceptance_test": "matrix-row:OFFLINE-001",
       "evidence_attribution": "Record the Matrix hash, test-case identifier, CanApp target digest, scenario nonce, actor identity, request, response, and timestamp.",
       "expected_evidence": [
         "Publication digest, declared dependencies, GET and HEAD request log, queue result, and pin state."
@@ -8617,7 +8389,6 @@
           "failure_domain": "not_applicable"
         }
       },
-      "platform_gap_eligible": true,
       "positive_case": "All declared resources and the acquisition target are selected.",
       "primary_failure_domain": "respect_service",
       "profile_ids": [
@@ -8669,7 +8440,6 @@
       "canapp_behavior": "Serve a stable publication identity so RESPECT can associate remote and local state.",
       "control_owner": "respect_platform",
       "current_suite_status": "not_implemented",
-      "dossier_acceptance_test": "matrix-row:OFFLINE-002",
       "evidence_attribution": "Record the Matrix hash, test-case identifier, CanApp target digest, scenario nonce, actor identity, request, response, and timestamp.",
       "expected_evidence": [
         "Online response digest, stored identity, network transition, offline result, and field comparison."
@@ -8749,7 +8519,6 @@
           "failure_domain": "not_applicable"
         }
       },
-      "platform_gap_eligible": true,
       "positive_case": "A prior successful publication remains readable offline.",
       "primary_failure_domain": "respect_service",
       "profile_ids": [
@@ -8800,7 +8569,6 @@
       "canapp_behavior": "Provide valid cache metadata when offline reuse is required.",
       "control_owner": "respect_platform",
       "current_suite_status": "not_implemented",
-      "dossier_acceptance_test": "matrix-row:OFFLINE-003",
       "evidence_attribution": "Record the Matrix hash, test-case identifier, CanApp target digest, scenario nonce, actor identity, request, response, and timestamp.",
       "expected_evidence": [
         "URL, ETag or Last-Modified, response digest, request log, connectivity state, and hosted result."
@@ -8880,7 +8648,6 @@
           "failure_domain": "not_applicable"
         }
       },
-      "platform_gap_eligible": true,
       "positive_case": "A cacheable resource remains usable during a controlled outage.",
       "primary_failure_domain": "respect_service",
       "profile_ids": [
@@ -8931,7 +8698,6 @@
       "canapp_behavior": "Serve parseable OPDS 2.0 feed or publication JSON.",
       "control_owner": "canapp_artifact",
       "current_suite_status": "fixture_only",
-      "dossier_acceptance_test": null,
       "evidence_attribution": "Bind evidence to the selected CanApp target, profile, Matrix hash, row identifier, actor instance, and scenario nonce.",
       "expected_evidence": [
         "Body hash, selected document type, parse diagnostics, and source URL."
@@ -9009,7 +8775,6 @@
           "failure_domain": "not_applicable"
         }
       },
-      "platform_gap_eligible": false,
       "positive_case": "A conforming target produces the evidence required by OPDS-001.",
       "primary_failure_domain": "canapp",
       "profile_ids": [
@@ -9087,7 +8852,6 @@
       "canapp_behavior": "Conform to the feed or publication schema configured by active RESPECT.",
       "control_owner": "canapp_artifact",
       "current_suite_status": "fixture_only",
-      "dossier_acceptance_test": null,
       "evidence_attribution": "Bind evidence to the selected CanApp target, profile, Matrix hash, row identifier, actor instance, and scenario nonce.",
       "expected_evidence": [
         "Schema identity, instance hash, and all validation errors."
@@ -9165,7 +8929,6 @@
           "failure_domain": "not_applicable"
         }
       },
-      "platform_gap_eligible": false,
       "positive_case": "A conforming target produces the evidence required by OPDS-002.",
       "primary_failure_domain": "canapp",
       "profile_ids": [
@@ -9242,7 +9005,6 @@
       "canapp_behavior": "Provide publication metadata required by the active OPDS validators and RESPECT selection flow.",
       "control_owner": "canapp_artifact",
       "current_suite_status": "fixture_only",
-      "dossier_acceptance_test": null,
       "evidence_attribution": "Bind evidence to the selected CanApp target, profile, Matrix hash, row identifier, actor instance, and scenario nonce.",
       "expected_evidence": [
         "Publication identifier, metadata fields, and validator diagnostics."
@@ -9320,7 +9082,6 @@
           "failure_domain": "not_applicable"
         }
       },
-      "platform_gap_eligible": false,
       "positive_case": "A conforming target produces the evidence required by OPDS-003.",
       "primary_failure_domain": "canapp",
       "profile_ids": [
@@ -9397,7 +9158,6 @@
       "canapp_behavior": "Provide at least one acquisition relation whose media type is text/html, application/xml, or application/html+xml.",
       "control_owner": "canapp_artifact",
       "current_suite_status": "fixture_only",
-      "dossier_acceptance_test": null,
       "evidence_attribution": "Bind evidence to the selected CanApp target, profile, Matrix hash, row identifier, actor instance, and scenario nonce.",
       "expected_evidence": [
         "Link relation, media type, resolved URL, response evidence, and diagnostics."
@@ -9475,7 +9235,6 @@
           "failure_domain": "not_applicable"
         }
       },
-      "platform_gap_eligible": false,
       "positive_case": "A conforming target produces the evidence required by OPDS-004.",
       "primary_failure_domain": "canapp",
       "profile_ids": [
@@ -9552,7 +9311,6 @@
       "canapp_behavior": "Do not place fragments or RESPECT-reserved launch query parameters in acquisition URLs.",
       "control_owner": "canapp_artifact",
       "current_suite_status": "fixture_only",
-      "dossier_acceptance_test": null,
       "evidence_attribution": "Bind evidence to the selected CanApp target, profile, Matrix hash, row identifier, actor instance, and scenario nonce.",
       "expected_evidence": [
         "Original URL and any prohibited component."
@@ -9630,7 +9388,6 @@
           "failure_domain": "not_applicable"
         }
       },
-      "platform_gap_eligible": false,
       "positive_case": "A conforming target produces the evidence required by OPDS-005.",
       "primary_failure_domain": "canapp",
       "profile_ids": [
@@ -9707,7 +9464,6 @@
       "canapp_behavior": "Expose a publication manifest through the response link header or HTML discovery path recognized by RESPECT.",
       "control_owner": "canapp_artifact",
       "current_suite_status": "fixture_only",
-      "dossier_acceptance_test": null,
       "evidence_attribution": "Bind evidence to the selected CanApp target, profile, Matrix hash, row identifier, actor instance, and scenario nonce.",
       "expected_evidence": [
         "Acquisition response, discovery mechanism, resolved manifest URL, and body hash."
@@ -9785,7 +9541,6 @@
           "failure_domain": "not_applicable"
         }
       },
-      "platform_gap_eligible": false,
       "positive_case": "A conforming target produces the evidence required by OPDS-006.",
       "primary_failure_domain": "canapp",
       "profile_ids": [
@@ -9863,7 +9618,6 @@
       "canapp_behavior": "Declare nonempty publication resources and serve each resource selected by the active validator.",
       "control_owner": "canapp_artifact",
       "current_suite_status": "fixture_only",
-      "dossier_acceptance_test": null,
       "evidence_attribution": "Bind evidence to the selected CanApp target, profile, Matrix hash, row identifier, actor instance, and scenario nonce.",
       "expected_evidence": [
         "Resource list, resolved URLs, response hashes, statuses, and media types."
@@ -9941,7 +9695,6 @@
           "failure_domain": "not_applicable"
         }
       },
-      "platform_gap_eligible": false,
       "positive_case": "A conforming target produces the evidence required by OPDS-007.",
       "primary_failure_domain": "canapp",
       "profile_ids": [
@@ -10020,7 +9773,6 @@
       "canapp_behavior": "Include at least one publication image link whose resolved resource passes the active HTTP checks.",
       "control_owner": "canapp_artifact",
       "current_suite_status": "fixture_only",
-      "dossier_acceptance_test": null,
       "evidence_attribution": "Bind evidence to the selected CanApp target, profile, Matrix hash, row identifier, actor instance, and scenario nonce.",
       "expected_evidence": [
         "Link relation, media type, resolved URL, response evidence, and diagnostics."
@@ -10098,7 +9850,6 @@
           "failure_domain": "not_applicable"
         }
       },
-      "platform_gap_eligible": false,
       "positive_case": "At least one image exists and all listed image resources pass active HTTP validation.",
       "primary_failure_domain": "canapp",
       "profile_ids": [
@@ -10175,7 +9926,6 @@
       "canapp_behavior": "Do not depend on repeated traversal of the same resolved URL for required catalog semantics.",
       "control_owner": "canapp_artifact",
       "current_suite_status": "not_implemented",
-      "dossier_acceptance_test": null,
       "evidence_attribution": "Record the Matrix hash, test-case identifier, CanApp target digest, scenario nonce, actor identity, request, response, and timestamp.",
       "expected_evidence": [
         "Resolved URL graph, request counts, visited set, and diagnostic message."
@@ -10255,7 +10005,6 @@
           "failure_domain": "not_applicable"
         }
       },
-      "platform_gap_eligible": false,
       "positive_case": "A cycle terminates after each URL is visited once.",
       "primary_failure_domain": "canapp",
       "profile_ids": [
@@ -10330,7 +10079,6 @@
       "canapp_behavior": "Declare the correct media type whenever the target is not an OPDS feed.",
       "control_owner": "canapp_artifact",
       "current_suite_status": "not_implemented",
-      "dossier_acceptance_test": null,
       "evidence_attribution": "Record the Matrix hash, test-case identifier, CanApp target digest, scenario nonce, actor identity, request, response, and timestamp.",
       "expected_evidence": [
         "Link href, declared type, resolved URL, HTTP result, and selected validator."
@@ -10410,7 +10158,6 @@
           "failure_domain": "not_applicable"
         }
       },
-      "platform_gap_eligible": false,
       "positive_case": "Each supported type selects its validator.",
       "primary_failure_domain": "canapp",
       "profile_ids": [
@@ -10485,7 +10232,6 @@
       "canapp_behavior": "Construct relative links according to URI reference resolution and do not assume another base.",
       "control_owner": "canapp_artifact",
       "current_suite_status": "not_implemented",
-      "dossier_acceptance_test": null,
       "evidence_attribution": "Record the Matrix hash, test-case identifier, CanApp target digest, scenario nonce, actor identity, request, response, and timestamp.",
       "expected_evidence": [
         "Referrer URL, href, expected resolution, and observed request URL."
@@ -10565,7 +10311,6 @@
           "failure_domain": "not_applicable"
         }
       },
-      "platform_gap_eligible": false,
       "positive_case": "A valid relative href reaches its fixture.",
       "primary_failure_domain": "canapp",
       "profile_ids": [
@@ -10641,7 +10386,6 @@
       "canapp_behavior": "Keep the descriptor URL resolvable during registration.",
       "control_owner": "respect_platform",
       "current_suite_status": "not_implemented",
-      "dossier_acceptance_test": "matrix-row:REG-001",
       "evidence_attribution": "Record the Matrix hash, test-case identifier, CanApp target digest, scenario nonce, actor identity, request, response, and timestamp.",
       "expected_evidence": [
         "Administrator action, descriptor URL, actor, statement identifier, category, and resulting app-list entry."
@@ -10721,7 +10465,6 @@
           "failure_domain": "not_applicable"
         }
       },
-      "platform_gap_eligible": true,
       "positive_case": "A valid descriptor is added and appears in the app list.",
       "primary_failure_domain": "respect_service",
       "profile_ids": [
@@ -10772,7 +10515,6 @@
       "canapp_behavior": "Serve the descriptor at the URL stored in the listing statement.",
       "control_owner": "respect_platform",
       "current_suite_status": "not_implemented",
-      "dossier_acceptance_test": "matrix-row:REG-002",
       "evidence_attribution": "Record the Matrix hash, test-case identifier, CanApp target digest, scenario nonce, actor identity, request, response, and timestamp.",
       "expected_evidence": [
         "Statement identifiers, voided state, object URL, displayed entry, and opened target."
@@ -10852,7 +10594,6 @@
           "failure_domain": "not_applicable"
         }
       },
-      "platform_gap_eligible": true,
       "positive_case": "One active listing appears and opens.",
       "primary_failure_domain": "respect_service",
       "profile_ids": [
@@ -10903,7 +10644,6 @@
       "canapp_behavior": "No CanApp action is required for RESPECT-owned removal.",
       "control_owner": "respect_platform",
       "current_suite_status": "not_implemented",
-      "dossier_acceptance_test": "matrix-row:REG-003",
       "evidence_attribution": "Record the Matrix hash, test-case identifier, CanApp target digest, scenario nonce, actor identity, request, response, and timestamp.",
       "expected_evidence": [
         "Removed app URL, referenced listing identifier, voiding identifier, actor, and post-removal list."
@@ -10983,7 +10723,6 @@
           "failure_domain": "not_applicable"
         }
       },
-      "platform_gap_eligible": true,
       "positive_case": "The selected CanApp disappears after a valid voiding statement.",
       "primary_failure_domain": "respect_service",
       "profile_ids": [
@@ -11034,7 +10773,6 @@
       "canapp_behavior": "Keep one stable descriptor URL; the CanApp cannot require repeated registration to behave as an update.",
       "control_owner": "respect_platform",
       "current_suite_status": "not_implemented",
-      "dossier_acceptance_test": "matrix-row:REG-004",
       "evidence_attribution": "Record the Matrix hash, test-case identifier, CanApp target digest, scenario nonce, actor identity, request, response, and timestamp.",
       "expected_evidence": [
         "Descriptor URL, action timestamps, statement identifiers, and active statement count."
@@ -11114,7 +10852,6 @@
           "failure_domain": "not_applicable"
         }
       },
-      "platform_gap_eligible": true,
       "positive_case": "Each Add produces a distinct statement.",
       "primary_failure_domain": "respect_service",
       "profile_ids": [
@@ -11165,7 +10902,6 @@
       "canapp_behavior": "No CanApp correction is required for a missing RESPECT actor.",
       "control_owner": "respect_platform",
       "current_suite_status": "not_implemented",
-      "dossier_acceptance_test": "matrix-row:REG-005",
       "evidence_attribution": "Record the Matrix hash, test-case identifier, CanApp target digest, scenario nonce, actor identity, request, response, and timestamp.",
       "expected_evidence": [
         "Actor state, requested action, warning event, and unchanged statement set."
@@ -11245,7 +10981,6 @@
           "failure_domain": "not_applicable"
         }
       },
-      "platform_gap_eligible": true,
       "positive_case": "An active actor control creates the expected statement.",
       "primary_failure_domain": "respect_service",
       "profile_ids": [
@@ -11296,7 +11031,6 @@
       "canapp_behavior": null,
       "control_owner": "testkit",
       "current_suite_status": "fixture_only",
-      "dossier_acceptance_test": null,
       "evidence_attribution": "Bind evidence to the selected CanApp target, profile, Matrix hash, row identifier, actor instance, and scenario nonce.",
       "expected_evidence": [
         "Target fingerprint, adapter identity, launch or fetch timeline, and row-level observations."
@@ -11374,7 +11108,6 @@
           "failure_domain": "not_applicable"
         }
       },
-      "platform_gap_eligible": false,
       "positive_case": "A conforming target produces the evidence required by SUITE-001.",
       "primary_failure_domain": "suite",
       "profile_ids": [
@@ -11424,7 +11157,6 @@
       "canapp_behavior": null,
       "control_owner": "testkit",
       "current_suite_status": "partial",
-      "dossier_acceptance_test": null,
       "evidence_attribution": "Bind evidence to the selected CanApp target, profile, Matrix hash, row identifier, actor instance, and scenario nonce.",
       "expected_evidence": [
         "Run ID, target fingerprint, matrix hash, source locks, evidence hashes, tool versions, timeline, coverage, failure domain, and replay inputs."
@@ -11502,7 +11234,6 @@
           "failure_domain": "not_applicable"
         }
       },
-      "platform_gap_eligible": false,
       "positive_case": "A conforming target produces the evidence required by SUITE-002.",
       "primary_failure_domain": "suite",
       "profile_ids": [
@@ -11552,7 +11283,6 @@
       "canapp_behavior": null,
       "control_owner": "testkit",
       "current_suite_status": "not_implemented",
-      "dossier_acceptance_test": null,
       "evidence_attribution": "Bind evidence to the selected CanApp target, profile, Matrix hash, row identifier, actor instance, and scenario nonce.",
       "expected_evidence": [
         "Coverage denominator, exact row-result set, unexecuted rows, extra results, and row-to-code and code-to-row maps."
@@ -11630,7 +11360,6 @@
           "failure_domain": "not_applicable"
         }
       },
-      "platform_gap_eligible": false,
       "positive_case": "A conforming target produces the evidence required by SUITE-003.",
       "primary_failure_domain": "suite",
       "profile_ids": [
@@ -11680,7 +11409,6 @@
       "canapp_behavior": null,
       "control_owner": "testkit",
       "current_suite_status": "not_implemented",
-      "dossier_acceptance_test": null,
       "evidence_attribution": "Bind evidence to the selected CanApp target, profile, Matrix hash, row identifier, actor instance, and scenario nonce.",
       "expected_evidence": [
         "Input result set, selected profile, reducer decision, exit code, and certification status."
@@ -11758,7 +11486,6 @@
           "failure_domain": "not_applicable"
         }
       },
-      "platform_gap_eligible": false,
       "positive_case": "A conforming target produces the evidence required by SUITE-004.",
       "primary_failure_domain": "suite",
       "profile_ids": [
@@ -11808,7 +11535,6 @@
       "canapp_behavior": null,
       "control_owner": "testkit",
       "current_suite_status": "not_implemented",
-      "dossier_acceptance_test": null,
       "evidence_attribution": "Bind evidence to the selected CanApp target, profile, Matrix hash, row identifier, actor instance, and scenario nonce.",
       "expected_evidence": [
         "Report hashes, parser results, cross-format comparison, and intentional corruption controls."
@@ -11886,7 +11612,6 @@
           "failure_domain": "not_applicable"
         }
       },
-      "platform_gap_eligible": false,
       "positive_case": "A conforming target produces the evidence required by SUITE-005.",
       "primary_failure_domain": "suite",
       "profile_ids": [
@@ -11936,7 +11661,6 @@
       "canapp_behavior": null,
       "control_owner": "testkit",
       "current_suite_status": "not_implemented",
-      "dossier_acceptance_test": null,
       "evidence_attribution": "Bind evidence to the selected CanApp target, profile, Matrix hash, row identifier, actor instance, and scenario nonce.",
       "expected_evidence": [
         "Actor health check, request logs, injected fault, expected and observed result, reset receipt, and replay inputs."
@@ -12014,7 +11738,6 @@
           "failure_domain": "not_applicable"
         }
       },
-      "platform_gap_eligible": false,
       "positive_case": "A conforming target produces the evidence required by SUITE-006.",
       "primary_failure_domain": "suite",
       "profile_ids": [
@@ -12066,7 +11789,6 @@
       "canapp_behavior": null,
       "control_owner": "testkit",
       "current_suite_status": "not_implemented",
-      "dossier_acceptance_test": null,
       "evidence_attribution": "Bind evidence to the selected CanApp target, profile, Matrix hash, row identifier, actor instance, and scenario nonce.",
       "expected_evidence": [
         "Matrix and row identifiers, immutable failure evidence, sanitized diagnostics, privacy decision, and one-way public-private linkage."
@@ -12144,7 +11866,6 @@
           "failure_domain": "not_applicable"
         }
       },
-      "platform_gap_eligible": false,
       "positive_case": "A conforming target produces the evidence required by SUITE-007.",
       "primary_failure_domain": "suite",
       "profile_ids": [
@@ -12193,7 +11914,6 @@
       "canapp_behavior": "Use only the capability named by this row and report the nonce-bearing result to the test actor.",
       "control_owner": "respect_platform",
       "current_suite_status": "not_implemented",
-      "dossier_acceptance_test": "matrix-row:WEB-001",
       "evidence_attribution": "Record the Matrix hash, test-case identifier, CanApp target digest, scenario nonce, actor identity, request, response, and timestamp.",
       "expected_evidence": [
         "Fixture digest, launch URL, scenario nonce, browser event trace, and externally observed result."
@@ -12273,7 +11993,6 @@
           "failure_domain": "not_applicable"
         }
       },
-      "platform_gap_eligible": true,
       "positive_case": "A single-capability fixture succeeds.",
       "primary_failure_domain": "respect_launcher",
       "profile_ids": [
@@ -12323,7 +12042,6 @@
       "canapp_behavior": "Use only the capability named by this row and report the nonce-bearing result to the test actor.",
       "control_owner": "respect_platform",
       "current_suite_status": "not_implemented",
-      "dossier_acceptance_test": "matrix-row:WEB-002",
       "evidence_attribution": "Record the Matrix hash, test-case identifier, CanApp target digest, scenario nonce, actor identity, request, response, and timestamp.",
       "expected_evidence": [
         "Fixture digest, launch URL, scenario nonce, browser event trace, and externally observed result."
@@ -12403,7 +12121,6 @@
           "failure_domain": "not_applicable"
         }
       },
-      "platform_gap_eligible": true,
       "positive_case": "A single-capability fixture succeeds.",
       "primary_failure_domain": "respect_launcher",
       "profile_ids": [
@@ -12453,7 +12170,6 @@
       "canapp_behavior": "Use only the capability named by this row and report the nonce-bearing result to the test actor.",
       "control_owner": "respect_platform",
       "current_suite_status": "not_implemented",
-      "dossier_acceptance_test": "matrix-row:WEB-003",
       "evidence_attribution": "Record the Matrix hash, test-case identifier, CanApp target digest, scenario nonce, actor identity, request, response, and timestamp.",
       "expected_evidence": [
         "Fixture digest, launch URL, scenario nonce, browser event trace, and externally observed result."
@@ -12533,7 +12249,6 @@
           "failure_domain": "not_applicable"
         }
       },
-      "platform_gap_eligible": true,
       "positive_case": "A single-capability fixture succeeds.",
       "primary_failure_domain": "respect_launcher",
       "profile_ids": [
@@ -12583,7 +12298,6 @@
       "canapp_behavior": "Use only the capability named by this row and report the nonce-bearing result to the test actor.",
       "control_owner": "respect_platform",
       "current_suite_status": "not_implemented",
-      "dossier_acceptance_test": "matrix-row:WEB-004",
       "evidence_attribution": "Record the Matrix hash, test-case identifier, CanApp target digest, scenario nonce, actor identity, request, response, and timestamp.",
       "expected_evidence": [
         "Fixture digest, launch URL, scenario nonce, browser event trace, and externally observed result."
@@ -12663,7 +12377,6 @@
           "failure_domain": "not_applicable"
         }
       },
-      "platform_gap_eligible": true,
       "positive_case": "A single-capability fixture succeeds.",
       "primary_failure_domain": "respect_launcher",
       "profile_ids": [
@@ -12713,7 +12426,6 @@
       "canapp_behavior": "Use only the capability named by this row and report the nonce-bearing result to the test actor.",
       "control_owner": "respect_platform",
       "current_suite_status": "not_implemented",
-      "dossier_acceptance_test": "matrix-row:WEB-005",
       "evidence_attribution": "Record the Matrix hash, test-case identifier, CanApp target digest, scenario nonce, actor identity, request, response, and timestamp.",
       "expected_evidence": [
         "Fixture digest, launch URL, scenario nonce, browser event trace, and externally observed result."
@@ -12793,7 +12505,6 @@
           "failure_domain": "not_applicable"
         }
       },
-      "platform_gap_eligible": true,
       "positive_case": "A single-capability fixture succeeds.",
       "primary_failure_domain": "respect_launcher",
       "profile_ids": [
@@ -12843,7 +12554,6 @@
       "canapp_behavior": "Use HTTP xAPI operations against the launch endpoint with Authorization and X-Experience-API-Version.",
       "control_owner": "canapp_artifact",
       "current_suite_status": "not_implemented",
-      "dossier_acceptance_test": null,
       "evidence_attribution": "Bind evidence to the selected CanApp target, profile, Matrix hash, row identifier, actor instance, and scenario nonce.",
       "expected_evidence": [
         "Method, URL, redacted headers, body hash, response, and launch correlation."
@@ -12921,7 +12631,6 @@
           "failure_domain": "not_applicable"
         }
       },
-      "platform_gap_eligible": false,
       "positive_case": "A conforming target produces the evidence required by XAPI-001.",
       "primary_failure_domain": "canapp",
       "profile_ids": [
@@ -12977,7 +12686,6 @@
       "canapp_behavior": null,
       "control_owner": "respect_platform",
       "current_suite_status": "not_implemented",
-      "dossier_acceptance_test": "matrix-row:XAPI-002",
       "evidence_attribution": "Bind OPTIONS and method responses to the pinned RESPECT proxy instance; this row cannot fail the CanApp.",
       "expected_evidence": [
         "Preflight and request-response timelines including CORS headers."
@@ -13055,7 +12763,6 @@
           "failure_domain": "not_applicable"
         }
       },
-      "platform_gap_eligible": true,
       "positive_case": "A conforming target produces the evidence required by XAPI-002.",
       "primary_failure_domain": "suite",
       "profile_ids": [
@@ -13107,7 +12814,6 @@
       "canapp_behavior": "Create an explicit service bind using org.openeel.action.xapioveripc and the supplied package.",
       "control_owner": "canapp_artifact",
       "current_suite_status": "not_implemented",
-      "dossier_acceptance_test": null,
       "evidence_attribution": "Bind evidence to the selected CanApp target, profile, Matrix hash, row identifier, actor instance, and scenario nonce.",
       "expected_evidence": [
         "Intent action, package, connection callback, and binder identity."
@@ -13185,7 +12891,6 @@
           "failure_domain": "not_applicable"
         }
       },
-      "platform_gap_eligible": false,
       "positive_case": "A conforming target produces the evidence required by XAPI-003.",
       "primary_failure_domain": "canapp",
       "profile_ids": [
@@ -13240,7 +12945,6 @@
       "canapp_behavior": "Send POST_STATEMENTS requests with endpoint, auth, body, request identifier, and reply Messenger.",
       "control_owner": "canapp_artifact",
       "current_suite_status": "not_implemented",
-      "dossier_acceptance_test": null,
       "evidence_attribution": "Bind evidence to the selected CanApp target, profile, Matrix hash, row identifier, actor instance, and scenario nonce.",
       "expected_evidence": [
         "Message flags, request ID, endpoint, redacted auth, body hash, and returned statement IDs."
@@ -13318,7 +13022,6 @@
           "failure_domain": "not_applicable"
         }
       },
-      "platform_gap_eligible": false,
       "positive_case": "A conforming target produces the evidence required by XAPI-004.",
       "primary_failure_domain": "canapp",
       "profile_ids": [
@@ -13372,7 +13075,6 @@
       "canapp_behavior": "Use GET_STATEMENTS or GET_STATEMENTS_FLOW with correlated replies and flow completion when those operations are part of the CanApp.",
       "control_owner": "canapp_artifact",
       "current_suite_status": "not_implemented",
-      "dossier_acceptance_test": null,
       "evidence_attribution": "Bind evidence to the selected CanApp target, profile, Matrix hash, row identifier, actor instance, and scenario nonce.",
       "expected_evidence": [
         "Request parameters, response payloads, emissions, completion message, and correlation IDs."
@@ -13450,7 +13152,6 @@
           "failure_domain": "not_applicable"
         }
       },
-      "platform_gap_eligible": false,
       "positive_case": "A conforming target produces the evidence required by XAPI-005.",
       "primary_failure_domain": "canapp",
       "profile_ids": [
@@ -13504,7 +13205,6 @@
       "canapp_behavior": "Emit statements that deserialize into the active xAPI model with actor, verb, and object.",
       "control_owner": "canapp_artifact",
       "current_suite_status": "fixture_only",
-      "dossier_acceptance_test": null,
       "evidence_attribution": "Bind evidence to the selected CanApp target, profile, Matrix hash, row identifier, actor instance, and scenario nonce.",
       "expected_evidence": [
         "Statement hash, parse result, and field-level diagnostics."
@@ -13582,7 +13282,6 @@
           "failure_domain": "not_applicable"
         }
       },
-      "platform_gap_eligible": false,
       "positive_case": "A conforming target produces the evidence required by XAPI-006.",
       "primary_failure_domain": "canapp",
       "profile_ids": [
@@ -13639,7 +13338,6 @@
       "canapp_behavior": "Use valid Internationalized Resource Identifiers in xAPI fields where the active model requires them.",
       "control_owner": "canapp_artifact",
       "current_suite_status": "fixture_only",
-      "dossier_acceptance_test": null,
       "evidence_attribution": "Bind evidence to the selected CanApp target, profile, Matrix hash, row identifier, actor instance, and scenario nonce.",
       "expected_evidence": [
         "Field path, value hash or safe value, and validation result."
@@ -13717,7 +13415,6 @@
           "failure_domain": "not_applicable"
         }
       },
-      "platform_gap_eligible": false,
       "positive_case": "A conforming target produces the evidence required by XAPI-007.",
       "primary_failure_domain": "canapp",
       "profile_ids": [
@@ -13773,7 +13470,6 @@
       "canapp_behavior": "Keep result.score.scaled within the active xAPI range.",
       "control_owner": "canapp_artifact",
       "current_suite_status": "fixture_only",
-      "dossier_acceptance_test": null,
       "evidence_attribution": "Bind evidence to the selected CanApp target, profile, Matrix hash, row identifier, actor instance, and scenario nonce.",
       "expected_evidence": [
         "Statement ID, observed scaled value, and validation result."
@@ -13851,7 +13547,6 @@
           "failure_domain": "not_applicable"
         }
       },
-      "platform_gap_eligible": false,
       "positive_case": "A conforming target produces the evidence required by XAPI-008.",
       "primary_failure_domain": "canapp",
       "profile_ids": [
@@ -13907,7 +13602,6 @@
       "canapp_behavior": "Emit statements only for the actor authorized by the launch session.",
       "control_owner": "canapp_artifact",
       "current_suite_status": "not_implemented",
-      "dossier_acceptance_test": null,
       "evidence_attribution": "Bind evidence to the selected CanApp target, profile, Matrix hash, row identifier, actor instance, and scenario nonce.",
       "expected_evidence": [
         "Actor fingerprints, credential fingerprint, decision, and statement ID."
@@ -13985,7 +13679,6 @@
           "failure_domain": "not_applicable"
         }
       },
-      "platform_gap_eligible": false,
       "positive_case": "A conforming target produces the evidence required by XAPI-009.",
       "primary_failure_domain": "canapp",
       "profile_ids": [
@@ -14042,7 +13735,6 @@
       "canapp_behavior": "Do not reuse a statement identifier with conflicting statement content.",
       "control_owner": "canapp_artifact",
       "current_suite_status": "fixture_only",
-      "dossier_acceptance_test": null,
       "evidence_attribution": "Bind evidence to the selected CanApp target, profile, Matrix hash, row identifier, actor instance, and scenario nonce.",
       "expected_evidence": [
         "Statement identifier, body hashes, responses, and final stored value."
@@ -14120,7 +13812,6 @@
           "failure_domain": "not_applicable"
         }
       },
-      "platform_gap_eligible": false,
       "positive_case": "A conforming target produces the evidence required by XAPI-010.",
       "primary_failure_domain": "canapp",
       "profile_ids": [
@@ -14176,7 +13867,6 @@
       "canapp_behavior": "Use voiding and retrieval in the subset accepted by active RESPECT storage semantics.",
       "control_owner": "canapp_artifact",
       "current_suite_status": "fixture_only",
-      "dossier_acceptance_test": null,
       "evidence_attribution": "Bind evidence to the selected CanApp target, profile, Matrix hash, row identifier, actor instance, and scenario nonce.",
       "expected_evidence": [
         "Statement IDs, operation timeline, responses, and final query results."
@@ -14254,7 +13944,6 @@
           "failure_domain": "not_applicable"
         }
       },
-      "platform_gap_eligible": false,
       "positive_case": "A conforming target produces the evidence required by XAPI-011.",
       "primary_failure_domain": "canapp",
       "profile_ids": [
@@ -14310,7 +13999,6 @@
       "canapp_behavior": null,
       "control_owner": "respect_platform",
       "current_suite_status": "not_implemented",
-      "dossier_acceptance_test": "matrix-row:XAPI-012",
       "evidence_attribution": "Bind evidence to the selected CanApp target, profile, Matrix hash, row identifier, actor instance, and scenario nonce.",
       "expected_evidence": [
         "Original and transformed statement hashes, assignment ID, and storage result."
@@ -14388,7 +14076,6 @@
           "failure_domain": "not_applicable"
         }
       },
-      "platform_gap_eligible": true,
       "positive_case": "A conforming target produces the evidence required by XAPI-012.",
       "primary_failure_domain": "actor",
       "profile_ids": [
@@ -14443,7 +14130,6 @@
       "canapp_behavior": "Declare a queries intent for org.openeel.action.xapioveripc so the explicit RESPECT service can be discovered and bound.",
       "control_owner": "canapp_artifact",
       "current_suite_status": "not_implemented",
-      "dossier_acceptance_test": null,
       "evidence_attribution": "Bind evidence to the selected CanApp target, profile, Matrix hash, row identifier, actor instance, and scenario nonce.",
       "expected_evidence": [
         "Intent action, package, connection callback, and binder identity."
@@ -14521,7 +14207,6 @@
           "failure_domain": "not_applicable"
         }
       },
-      "platform_gap_eligible": false,
       "positive_case": "The APK manifest contains the required xAPI IPC query action.",
       "primary_failure_domain": "canapp",
       "profile_ids": [
@@ -14576,7 +14261,6 @@
       "canapp_behavior": "Construct the logical retrieval request with only supported parameters and process the returned logical result.",
       "control_owner": "canapp_artifact",
       "current_suite_status": "not_implemented",
-      "dossier_acceptance_test": null,
       "evidence_attribution": "Record the Matrix hash, test-case identifier, CanApp target digest, scenario nonce, actor identity, request, response, and timestamp.",
       "expected_evidence": [
         "Submitted statement digests, query parameters, response status, response headers, result digest, and statement identifiers."
@@ -14656,7 +14340,6 @@
           "failure_domain": "not_applicable"
         }
       },
-      "platform_gap_eligible": false,
       "positive_case": "The named supported retrieval operation returns the controlled match.",
       "primary_failure_domain": "canapp",
       "profile_ids": [
@@ -14710,7 +14393,6 @@
       "canapp_behavior": "Construct the logical retrieval request with only supported parameters and process the returned logical result.",
       "control_owner": "canapp_artifact",
       "current_suite_status": "not_implemented",
-      "dossier_acceptance_test": null,
       "evidence_attribution": "Record the Matrix hash, test-case identifier, CanApp target digest, scenario nonce, actor identity, request, response, and timestamp.",
       "expected_evidence": [
         "Submitted statement digests, query parameters, response status, response headers, result digest, and statement identifiers."
@@ -14790,7 +14472,6 @@
           "failure_domain": "not_applicable"
         }
       },
-      "platform_gap_eligible": false,
       "positive_case": "The named supported retrieval operation returns the controlled match.",
       "primary_failure_domain": "canapp",
       "profile_ids": [
@@ -14844,7 +14525,6 @@
       "canapp_behavior": "Construct the logical retrieval request with only supported parameters and process the returned logical result.",
       "control_owner": "canapp_artifact",
       "current_suite_status": "not_implemented",
-      "dossier_acceptance_test": null,
       "evidence_attribution": "Record the Matrix hash, test-case identifier, CanApp target digest, scenario nonce, actor identity, request, response, and timestamp.",
       "expected_evidence": [
         "Submitted statement digests, query parameters, response status, response headers, result digest, and statement identifiers."
@@ -14924,7 +14604,6 @@
           "failure_domain": "not_applicable"
         }
       },
-      "platform_gap_eligible": false,
       "positive_case": "The named supported retrieval operation returns the controlled match.",
       "primary_failure_domain": "canapp",
       "profile_ids": [
@@ -14978,7 +14657,6 @@
       "canapp_behavior": "Construct the logical retrieval request with only supported parameters and process the returned logical result.",
       "control_owner": "canapp_artifact",
       "current_suite_status": "not_implemented",
-      "dossier_acceptance_test": null,
       "evidence_attribution": "Record the Matrix hash, test-case identifier, CanApp target digest, scenario nonce, actor identity, request, response, and timestamp.",
       "expected_evidence": [
         "Submitted statement digests, query parameters, response status, response headers, result digest, and statement identifiers."
@@ -15058,7 +14736,6 @@
           "failure_domain": "not_applicable"
         }
       },
-      "platform_gap_eligible": false,
       "positive_case": "The named supported retrieval operation returns the controlled match.",
       "primary_failure_domain": "canapp",
       "profile_ids": [
@@ -15112,7 +14789,6 @@
       "canapp_behavior": "Construct the logical retrieval request with only supported parameters and process the returned logical result.",
       "control_owner": "canapp_artifact",
       "current_suite_status": "not_implemented",
-      "dossier_acceptance_test": null,
       "evidence_attribution": "Record the Matrix hash, test-case identifier, CanApp target digest, scenario nonce, actor identity, request, response, and timestamp.",
       "expected_evidence": [
         "Submitted statement digests, query parameters, response status, response headers, result digest, and statement identifiers."
@@ -15192,7 +14868,6 @@
           "failure_domain": "not_applicable"
         }
       },
-      "platform_gap_eligible": false,
       "positive_case": "The named supported retrieval operation returns the controlled match.",
       "primary_failure_domain": "canapp",
       "profile_ids": [
@@ -15246,7 +14921,6 @@
       "canapp_behavior": "Construct the logical retrieval request with only supported parameters and process the returned logical result.",
       "control_owner": "canapp_artifact",
       "current_suite_status": "not_implemented",
-      "dossier_acceptance_test": null,
       "evidence_attribution": "Record the Matrix hash, test-case identifier, CanApp target digest, scenario nonce, actor identity, request, response, and timestamp.",
       "expected_evidence": [
         "Submitted statement digests, query parameters, response status, response headers, result digest, and statement identifiers."
@@ -15326,7 +15000,6 @@
           "failure_domain": "not_applicable"
         }
       },
-      "platform_gap_eligible": false,
       "positive_case": "The named supported retrieval operation returns the controlled match.",
       "primary_failure_domain": "canapp",
       "profile_ids": [
@@ -15380,7 +15053,6 @@
       "canapp_behavior": "Construct the logical retrieval request with only supported parameters and process the returned logical result.",
       "control_owner": "respect_platform",
       "current_suite_status": "not_implemented",
-      "dossier_acceptance_test": "matrix-row:XAPI-020",
       "evidence_attribution": "Record the Matrix hash, test-case identifier, CanApp target digest, scenario nonce, actor identity, request, response, and timestamp.",
       "expected_evidence": [
         "Submitted statement digests, query parameters, response status, response headers, result digest, and statement identifiers."
@@ -15460,7 +15132,6 @@
           "failure_domain": "not_applicable"
         }
       },
-      "platform_gap_eligible": true,
       "positive_case": "The named supported retrieval operation returns the controlled match.",
       "primary_failure_domain": "respect_service",
       "profile_ids": [
@@ -15505,7 +15176,7 @@
       ]
     }
   ],
-  "schema_version": "1.2.0",
+  "schema_version": "1.3.0",
   "semantic_contracts": [
     {
       "scope": "A publisher legally authorizes publication and exposes the exact independently tested build through one stable immutable acquisition reference.",
@@ -15606,7 +15277,7 @@
       "title": "Assignment and grade return"
     }
   ],
-  "semantic_hash": "af083beaf4991d333795fc6a6827421997fe2a32e7cc544d764e9ae2b3358f94",
+  "semantic_hash": "f48aa4931c1b0b7c94a64d19f4ed02e3f87221a73076d465fae6f929de34d57c",
   "source_locks": [
     {
       "local_path": "docs/respect_compat/publication_pipeline.md",

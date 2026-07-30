@@ -4,6 +4,11 @@ SPDX-FileCopyrightText: 2026 Jim Plamondon
 
 SPDX-License-Identifier: Apache-2.0
 
+> **Historical, non-authoritative baseline.** This document records the
+> combined-tree state before the TestKit / Upgrade Dossier separation.
+> References below to Dossier routing, packets, or eligibility are preserved
+> only as historical evidence and do not govern the current TestKit.
+
 ## Scope and provenance
 
 This audit records the read-only Phase 0 baseline for the responsibility-routing

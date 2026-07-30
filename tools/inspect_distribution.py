@@ -24,6 +24,26 @@ def main() -> int:
             errors.append(f"canonical Matrix count is {len(canonical)}")
         if len(historical) != 1:
             errors.append(f"historical profile count is {len(historical)}")
+        if any(name.startswith("respect_upgrade_dossier/") for name in names):
+            errors.append("wheel contains embedded Upgrade Dossier package")
+        if any(name.endswith("/data/matrix/upgrade_matrix.json") for name in names):
+            errors.append("wheel contains an Upgrade Matrix")
+        entry_points = [
+            name for name in names if name.endswith(".dist-info/entry_points.txt")
+        ]
+        if len(entry_points) != 1:
+            errors.append(
+                f"entry-points metadata count is {len(entry_points)}"
+            )
+        else:
+            entry_text = archive.read(entry_points[0]).decode(
+                "utf-8", errors="replace"
+            )
+            if (
+                "respect-upgrade-dossier" in entry_text
+                or "respect_upgrade_dossier" in entry_text
+            ):
+                errors.append("wheel exposes the Upgrade Dossier CLI")
         forbidden_suffixes = (".apk", ".jks", ".keystore", ".env")
         for name in names:
             lowered = name.lower()

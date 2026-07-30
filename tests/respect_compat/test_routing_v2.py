@@ -190,8 +190,8 @@ def test_classifier_covers_every_normative_route_and_rejects_impossible_combinat
                     last_applicable_version="2.0.0",
                 ),
             ),
-            WorkflowDisposition.DOSSIER_ELIGIBLE,
-            {ArtifactKind.PLATFORM_GAP_PACKET},
+            WorkflowDisposition.PLATFORM_OBSERVATION_RECORDED,
+            set(),
         ),
         (
             _input(
@@ -254,7 +254,7 @@ def test_classifier_covers_every_normative_route_and_rejects_impossible_combinat
         )
     with pytest.raises(RoutingClassificationError, match="qualifying real"):
         classify_result(
-            "BAD-DOSSIER",
+            "BAD-PLATFORM-ATTRIBUTION",
             _input(
                 ObservedResult.RESPECT_PLATFORM_GAP,
                 requirement_owner=RequirementOwner.RESPECT_SERVICE,
@@ -357,7 +357,7 @@ def test_frozen_legacy_golden_artifacts_verify_but_cannot_generate_work():
 
 def test_v2_atomic_result_and_suite_schemas_reject_unknown_dimensions():
     atomic_schema = json.loads(
-        resource("data/schemas/atomic_result_v2.schema.json").read_text(
+        resource("data/schemas/atomic_result_v3.schema.json").read_text(
             encoding="utf-8"
         )
     )
@@ -396,14 +396,12 @@ def test_v2_atomic_result_and_suite_schemas_reject_unknown_dimensions():
     Draft202012Validator(suite_schema).validate(suite)
 
 
-def test_matrix_exposes_executable_routing_and_dossier_bindings():
+def test_matrix_exposes_executable_testkit_routing_without_upgrade_authority():
     matrix = load_matrix()
     raw_rows = {item["row_id"]: item for item in matrix.raw["rows"]}
     raw_features = {
         item["feature_id"]: item for item in matrix.raw["features"]
     }
-    respect_owners = {"respect_launcher", "respect_service"}
-
     for row in matrix.rows.values():
         raw = raw_rows[row.row_id]
         assert row.control_owner == raw["control_owner"]
@@ -413,13 +411,8 @@ def test_matrix_exposes_executable_routing_and_dossier_bindings():
         ]
         assert row.routing_contract == "respect_compat.routing.ROUTING_TABLE"
         assert raw["verification_modes"]
-        if row.owner in respect_owners:
-            assert row.platform_gap_eligible is True
-            assert row.dossier_acceptance_test == (
-                f"matrix-row:{row.row_id}"
-            )
-        else:
-            assert row.platform_gap_eligible is False
+        assert "platform_gap_eligible" not in raw
+        assert "dossier_acceptance_test" not in raw
         if (
             row.owner == "canapp"
             and row.row_id.split("-", 1)[0]
@@ -430,20 +423,6 @@ def test_matrix_exposes_executable_routing_and_dossier_bindings():
             assert contract["covered_semantics"]
             assert contract["excluded_semantics"]
 
-    rowless_upstream = [
-        item
-        for item in raw_features.values()
-        if (
-            item["requirement_status"] == "upstream_gap"
-            or item["conformance_disposition"] == "upstream_gap"
-        )
-        and not item["row_ids"]
-    ]
-    assert len(rowless_upstream) == 13
     for feature in raw_features.values():
-        assert feature["respect_upgrade_guidance"]
-    for feature in rowless_upstream:
-        assert feature["feature_work_unit"]["feature_id"] == feature[
-            "feature_id"
-        ]
-        assert feature["feature_work_unit"]["closure_requires_executable_acceptance"]
+        assert "respect_upgrade_guidance" not in feature
+        assert "feature_work_unit" not in feature

@@ -45,8 +45,6 @@ class MatrixFeature:
     profile_ids: List[str]
     row_ids: List[str]
     guidance: str
-    respect_upgrade_guidance: str
-    feature_work_unit: Optional[Dict[str, Any]]
 
 
 @dataclass(frozen=True)
@@ -66,8 +64,6 @@ class MatrixRow:
     responsible_party: str
     applicability_evaluator: str
     routing_contract: str
-    platform_gap_eligible: bool
-    dossier_acceptance_test: Optional[str]
     verification_modes: List[str]
     substitute_fidelity_contract: Optional[Dict[str, Any]]
 
@@ -178,12 +174,6 @@ def load_matrix(path: Path = DEFAULT_MATRIX_PATH) -> CompatibilityMatrix:
                 profile_ids=list(item["profile_ids"]),
                 row_ids=list(item["row_ids"]),
                 guidance=item["respect_ification_guidance"],
-                respect_upgrade_guidance=item[
-                    "respect_upgrade_guidance"
-                ],
-                feature_work_unit=copy.deepcopy(
-                    item["feature_work_unit"]
-                ),
             )
             for item in data["features"]
         }
@@ -206,12 +196,6 @@ def load_matrix(path: Path = DEFAULT_MATRIX_PATH) -> CompatibilityMatrix:
                     "applicability_evaluator"
                 ],
                 routing_contract=item["routing_contract"],
-                platform_gap_eligible=bool(
-                    item["platform_gap_eligible"]
-                ),
-                dossier_acceptance_test=item[
-                    "dossier_acceptance_test"
-                ],
                 verification_modes=list(item["verification_modes"]),
                 substitute_fidelity_contract=copy.deepcopy(
                     item["substitute_fidelity_contract"]

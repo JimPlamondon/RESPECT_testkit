@@ -189,7 +189,7 @@ def validate_manifest(
             matrix.matrix_id != inventory["matrix"]["identifier"]
             or len(matrix.features) != inventory["matrix"]["features"]
             or len(matrix.rows) != inventory["matrix"]["rows"]
-            or len(mutations) != inventory["matrix"]["mutation_checks"]
+            or len(mutations) < inventory["matrix"]["mutation_checks"]
             or not all(item["passed"] for item in mutations)
         ):
             errors.append(

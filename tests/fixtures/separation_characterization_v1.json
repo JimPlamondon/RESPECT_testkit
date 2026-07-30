@@ -1,0 +1,71 @@
+{
+  "canapp_failure": {
+    "artifacts": [
+      "kit_task"
+    ],
+    "control_owner": "canapp_artifact",
+    "final_affirmative": false,
+    "observed_result": "canapp_implementation_fail",
+    "requirement_owner": "canapp",
+    "responsible_party": "canapp_artifact_owner",
+    "workflow_disposition": "kit_repair"
+  },
+  "canapp_pass": {
+    "artifacts": [],
+    "control_owner": "canapp_artifact",
+    "final_affirmative": true,
+    "observed_result": "pass",
+    "requirement_owner": "canapp",
+    "responsible_party": "none",
+    "workflow_disposition": "none"
+  },
+  "harness_error": {
+    "artifacts": [
+      "diagnostic_incident"
+    ],
+    "control_owner": "testkit",
+    "final_affirmative": false,
+    "observed_result": "harness_error",
+    "requirement_owner": "test_suite",
+    "responsible_party": "testkit_operator",
+    "workflow_disposition": "diagnostic_incident"
+  },
+  "missing_observer": {
+    "artifacts": [],
+    "control_owner": "respect_platform",
+    "final_affirmative": false,
+    "observed_result": "unmeasured_external_dependency",
+    "requirement_owner": "respect_service",
+    "responsible_party": "respect_platform_team",
+    "workflow_disposition": "provision_or_capability_work"
+  },
+  "provisional_substitute": {
+    "artifacts": [
+      "promotion_packet"
+    ],
+    "control_owner": "appdev_publication",
+    "final_affirmative": false,
+    "observed_result": "code_compatible_through_substitute",
+    "requirement_owner": "canapp",
+    "responsible_party": "appdev_publication",
+    "workflow_disposition": "provisional_promotion_required"
+  },
+  "respect_gradle_command": [
+    "/checkout/respect/gradlew",
+    ":respect-server:shadowJar",
+    ":app-android:assembleDebug",
+    "-PrespectTestkitCa=/run/tls/ca.pem",
+    "--no-daemon",
+    "--console=plain"
+  ],
+  "retained_console_scripts": [
+    "respect-compat",
+    "respect-ification",
+    "respect-matrix-validate",
+    "respect-platform-adb-provider",
+    "respect-platform-receipt",
+    "respect-runtime-driver-build",
+    "respect-school-harness",
+    "respect-standards-bootstrap"
+  ]
+}

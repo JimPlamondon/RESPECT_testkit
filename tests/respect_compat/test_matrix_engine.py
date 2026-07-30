@@ -58,7 +58,7 @@ def passing_executor(context, row):
 
 def test_canonical_matrix_loads_and_selects_active_profiles():
     matrix = load_matrix()
-    assert matrix.matrix_version == "1.1.0"
+    assert matrix.matrix_version == "1.2.0"
     assert len(matrix.features) == 45
     assert len(matrix.rows) == 87
     assert matrix.selected_rows("PROFILE-WEB")

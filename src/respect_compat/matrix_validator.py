@@ -20,6 +20,9 @@ from .resources import resource
 
 DEFAULT_MATRIX = resource("data/matrix/compatibility_matrix.json")
 DEFAULT_INDEX = resource("data/indexes/source_interaction_index.json")
+DEFAULT_PROVENANCE_AUDIT = resource(
+    "data/matrix/legacy_provenance_audit.json"
+)
 DEFAULT_REPORT = Path.cwd() / "matrix_validation_report.json"
 SCHEMA = resource("data/schemas/compatibility_matrix.schema.json")
 
@@ -113,6 +116,113 @@ def semantic_hash(matrix: dict[str, Any]) -> str:
     payload = copy.deepcopy(matrix)
     payload.pop("semantic_hash", None)
     return hashlib.sha256(canonical_bytes(payload)).hexdigest()
+
+
+def provenance_record_hash(record: dict[str, Any]) -> str:
+    payload = copy.deepcopy(record)
+    payload.pop("requirement_origin", None)
+    return hashlib.sha256(canonical_bytes(payload)).hexdigest()
+
+
+def valid_requirement_origin(value: Any) -> bool:
+    if not isinstance(value, dict):
+        return False
+    if value.get("type") == "respect_code_analysis":
+        return bool(value.get("analysis_revision")) and bool(
+            value.get("evidence_reference")
+        )
+    if value.get("type") == "explicit_testkit_extension":
+        return bool(value.get("approval_reference")) and bool(
+            value.get("extension_reference")
+        )
+    return False
+
+
+def validate_requirement_provenance(
+    validation: "Validation",
+    matrix: dict[str, Any],
+    audit: Any,
+) -> None:
+    require_keys(
+        validation,
+        audit,
+        [
+            "artifact_type",
+            "format_version",
+            "matrix_id",
+            "matrix_version",
+            "source_commit",
+            "source_matrix_semantic_hash",
+            "records",
+            "audit_hash",
+        ],
+        "legacy_provenance_audit",
+    )
+    if not isinstance(audit, dict):
+        return
+    candidate = copy.deepcopy(audit)
+    claimed_hash = candidate.pop("audit_hash", None)
+    validation.require(
+        claimed_hash
+        == hashlib.sha256(canonical_bytes(candidate)).hexdigest(),
+        "legacy provenance audit hash mismatch",
+    )
+    validation.require(
+        audit.get("matrix_id") == matrix.get("matrix_id")
+        and audit.get("matrix_version") == matrix.get("matrix_version"),
+        "legacy provenance audit Matrix identity mismatch",
+    )
+    audit_records = audit.get("records", [])
+    validation.require(
+        isinstance(audit_records, list),
+        "legacy provenance audit records must be an array",
+    )
+    if not isinstance(audit_records, list):
+        return
+    index: dict[tuple[str, str], dict[str, Any]] = {}
+    for record in audit_records:
+        if not isinstance(record, dict):
+            validation.errors.append(
+                "legacy provenance audit record must be an object"
+            )
+            continue
+        key = (str(record.get("kind")), str(record.get("record_id")))
+        validation.require(
+            key not in index,
+            f"duplicate legacy provenance audit record: {key}",
+        )
+        index[key] = record
+        validation.require(
+            record.get("status") == "unresolved_legacy"
+            and record.get("origin") is None,
+            f"legacy provenance record {key} must remain unresolved",
+        )
+    observed: set[tuple[str, str]] = set()
+    for kind, records, id_field in (
+        ("feature", matrix.get("features", []), "feature_id"),
+        ("row", matrix.get("rows", []), "row_id"),
+    ):
+        for record in records:
+            if not isinstance(record, dict):
+                continue
+            key = (kind, str(record.get(id_field)))
+            observed.add(key)
+            frozen = index.get(key)
+            if (
+                frozen is not None
+                and frozen.get("frozen_hash")
+                == provenance_record_hash(record)
+            ):
+                continue
+            validation.require(
+                valid_requirement_origin(record.get("requirement_origin")),
+                f"{kind} {record.get(id_field)} is new or changed and must "
+                "prove exactly one requirement origin",
+            )
+    validation.require(
+        set(index) <= observed,
+        "legacy provenance audit contains missing Matrix records",
+    )
 
 
 def require_keys(
@@ -533,7 +643,9 @@ def validate_index(
     }
 
 
-def validate_matrix(matrix: Any, index: Any) -> Validation:
+def validate_matrix(
+    matrix: Any, index: Any, provenance_audit: Any = None
+) -> Validation:
     validation = Validation()
     require_keys(
         validation,
@@ -565,7 +677,7 @@ def validate_matrix(matrix: Any, index: Any) -> Validation:
     if not isinstance(matrix, dict):
         return validation
 
-    validation.require(matrix.get("schema_version") == "1.2.0", "unsupported schema_version")
+    validation.require(matrix.get("schema_version") == "1.3.0", "unsupported schema_version")
     validation.require(
         matrix.get("status") in {"draft", "incomplete", "ready", "blocked"},
         "matrix.status has an invalid value",
@@ -1178,6 +1290,11 @@ def validate_matrix(matrix: Any, index: Any) -> Validation:
             matrix.get("semantic_hash") == actual_hash,
             f"semantic_hash mismatch: expected {actual_hash}",
         )
+    if provenance_audit is None:
+        provenance_audit = load_json(DEFAULT_PROVENANCE_AUDIT)
+    validate_requirement_provenance(
+        validation, matrix, provenance_audit
+    )
     return validation
 
 
@@ -1471,6 +1588,19 @@ def run_mutation_checks(
         )
     )
 
+    def change_requirement_without_origin(
+        candidate: dict[str, Any], _: dict[str, Any]
+    ) -> None:
+        candidate["rows"][0]["title"] += " changed"
+
+    checks.append(
+        (
+            "changed_requirement_without_origin",
+            change_requirement_without_origin,
+            "must prove exactly one requirement origin",
+        )
+    )
+
     results: list[dict[str, Any]] = []
     for name, mutate, expected_error in checks:
         candidate_matrix, candidate_index = normalized_mutation(matrix, index)
@@ -1561,10 +1691,11 @@ def main() -> int:
         load_json(SCHEMA)
         matrix = load_json(args.matrix)
         index = load_json(args.index)
+        provenance_audit = load_json(DEFAULT_PROVENANCE_AUDIT)
     except (OSError, json.JSONDecodeError) as error:
         print(f"ERROR: {error}", file=sys.stderr)
         return 2
-    validation = validate_matrix(matrix, index)
+    validation = validate_matrix(matrix, index, provenance_audit)
     mutation_checks = run_mutation_checks(matrix, index) if args.self_test else []
     mutation_failures = [
         check["name"] for check in mutation_checks if not check["passed"]

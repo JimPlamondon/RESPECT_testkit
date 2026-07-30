@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://jims.example/schemas/respect_compat/atomic_result_v2.schema.json",
-  "title": "RESPECT TestKit v2 Atomic Result",
+  "$id": "https://jims.example/schemas/respect_compat/atomic_result_v3.schema.json",
+  "title": "RESPECT TestKit v3 Atomic Result",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -94,7 +94,7 @@
         "provision_or_capability_work",
         "testkit_engineering",
         "diagnostic_incident",
-        "dossier_eligible",
+        "platform_observation_recorded",
         "specification_decision"
       ]
     },
@@ -107,7 +107,6 @@
           "promotion_packet",
           "testkit_engineering_item",
           "diagnostic_incident",
-          "platform_gap_packet",
           "specification_item"
         ]
       }

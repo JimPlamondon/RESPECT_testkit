@@ -5,6 +5,7 @@
 
 from __future__ import annotations
 
+import argparse
 import hashlib
 import json
 import os
@@ -287,7 +288,13 @@ def run_provider_scenario(
 
 
 def main(argv: Optional[List[str]] = None) -> int:
-    del argv
+    parser = argparse.ArgumentParser(
+        description=(
+            "Run a RESPECT Platform observation scenario from the provider "
+            "environment and emit a raw observation bundle."
+        )
+    )
+    parser.parse_args(argv)
     environment = os.environ.copy()
     required = (
         "RESPECT_TESTKIT_CHALLENGE",

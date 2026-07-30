@@ -21,11 +21,9 @@ from respect_compat.routing import (
 )
 from respect_compat.routing_artifacts import (
     ArtifactBindings,
-    build_platform_gap_packet,
     build_promotion_packet,
     project_destination_evidence,
     project_kit_tasks,
-    verify_platform_gap_packet,
     verify_promotion_packet,
 )
 
@@ -35,7 +33,7 @@ def _bindings():
         target_id="urn:canapp:example",
         target_digest="a" * 64,
         matrix_id="respect-matrix",
-        matrix_version="1.1.0",
+        matrix_version="1.2.0",
         matrix_semantic_hash="b" * 64,
         challenge="challenge-value-1234567890",
         evidence_ids=("evidence-1",),
@@ -59,7 +57,7 @@ def _fidelity():
     )
 
 
-def test_canapp_defect_projects_exactly_one_kit_task_and_no_dossier():
+def test_canapp_defect_projects_exactly_one_kit_task():
     result = classify_result(
         "DESC-001",
         ClassificationInput(
@@ -80,7 +78,6 @@ def test_canapp_defect_projects_exactly_one_kit_task_and_no_dossier():
             "workflow_disposition": "kit_repair",
         }
     ]
-    assert ArtifactKind.PLATFORM_GAP_PACKET not in result.artifacts
     assert ArtifactKind.PROMOTION_PACKET not in result.artifacts
 
 
@@ -110,7 +107,6 @@ def test_local_https_positive_evidence_yields_provisional_and_promotion_only():
     assert packet["excluded_semantics"] == list(fidelity.excluded_semantics)
     assert verify_promotion_packet(packet, _bindings()) == []
     assert project_kit_tasks([result]) == []
-    assert ArtifactKind.PLATFORM_GAP_PACKET not in result.artifacts
 
 
 def test_promotion_binding_rejects_every_independent_tamper():
@@ -147,7 +143,7 @@ def test_promotion_binding_rejects_every_independent_tamper():
         assert verify_promotion_packet(tampered, _bindings())
 
 
-def test_signed_synthetic_real_build_evidence_creates_platform_packet():
+def test_signed_synthetic_real_build_evidence_is_neutrally_attributed():
     result = classify_result(
         "REG-001",
         ClassificationInput(
@@ -167,21 +163,13 @@ def test_signed_synthetic_real_build_evidence_creates_platform_packet():
             ),
         ),
     )
-    bindings = ArtifactBindings(
-        **_bindings().to_json_dict(),
-        real_build_id="synthetic-build",
-        respect_revision="d" * 40,
-        first_applicable_version="1.0.0",
-        last_applicable_version="2.0.0",
-    )
-    packet = build_platform_gap_packet(result, bindings)
-
-    assert packet["artifact_type"] == "respect_platform_gap_packet"
-    assert verify_platform_gap_packet(packet, bindings) == []
+    assert result.observed_result == ObservedResult.RESPECT_PLATFORM_GAP
+    assert result.workflow_disposition.value == "platform_observation_recorded"
+    assert result.artifacts == ()
     assert project_kit_tasks([result]) == []
 
 
-def test_v2_promotion_and_platform_packets_validate_against_schemas():
+def test_v2_promotion_packet_validates_against_schema():
     promotion_result = classify_result(
         "HTTP-001",
         ClassificationInput(
@@ -198,45 +186,13 @@ def test_v2_promotion_and_platform_packets_validate_against_schemas():
             ),
         ),
     )
-    platform_result = classify_result(
-        "REG-001",
-        ClassificationInput(
-            requirement_owner=RequirementOwner.RESPECT_SERVICE,
-            control_owner=ControlOwner.RESPECT_PLATFORM,
-            verification_mode=VerificationMode.REAL,
-            observed_result=ObservedResult.RESPECT_PLATFORM_GAP,
-            evidence=RoutingEvidence(
-                attributable=True,
-                signed=True,
-                real_platform=True,
-                independently_attributed=True,
-                real_build_id="synthetic-build",
-                respect_revision="d" * 40,
-                first_applicable_version="1.0.0",
-            ),
-        ),
-    )
-    platform_bindings = ArtifactBindings(
-        **_bindings().to_json_dict(),
-        real_build_id="synthetic-build",
-        respect_revision="d" * 40,
-        first_applicable_version="1.0.0",
-    )
     schema_root = files("respect_compat").joinpath("data/schemas")
     promotion_schema = json.loads(
         schema_root.joinpath("promotion_packet_v2.schema.json").read_text()
     )
-    platform_schema = json.loads(
-        schema_root.joinpath("platform_gap_packet_v2.schema.json").read_text()
-    )
-
     Draft202012Validator.check_schema(promotion_schema)
-    Draft202012Validator.check_schema(platform_schema)
     Draft202012Validator(promotion_schema).validate(
         build_promotion_packet(promotion_result, _bindings(), _fidelity())
-    )
-    Draft202012Validator(platform_schema).validate(
-        build_platform_gap_packet(platform_result, platform_bindings)
     )
 
 
@@ -249,7 +205,7 @@ def test_destination_projection_excludes_cross_owned_and_unsafe_evidence():
         },
         "platform": {
             "evidence_id": "platform",
-            "destination": "dossier",
+            "destination": "public",
             "source": "suite",
         },
     }
@@ -259,14 +215,16 @@ def test_destination_projection_excludes_cross_owned_and_unsafe_evidence():
     ] == ["canapp"]
     assert [
         item["evidence_id"]
-        for item in project_destination_evidence(evidence, "dossier")
+        for item in project_destination_evidence(evidence, "public")
     ] == ["platform"]
 
     unsafe = dict(evidence)
     unsafe["bad"] = {
         "evidence_id": "bad",
-        "destination": "dossier",
+        "destination": "public",
         "source": "file:///private/local",
     }
     with pytest.raises(ValueError, match="unsafe"):
-        project_destination_evidence(unsafe, "dossier")
+        project_destination_evidence(unsafe, "public")
+    with pytest.raises(ValueError, match="unknown evidence destination"):
+        project_destination_evidence(evidence, "dossier")

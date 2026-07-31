@@ -91,6 +91,7 @@ public final class GestureInstrumentation extends Instrumentation {
             put(receipt, "kind", "stroke_injected");
             put(receipt, "success", false);
             put(receipt, "error_type", error.getClass().getSimpleName());
+            put(receipt, "error_message", String.valueOf(error.getMessage()));
         }
         appendReceipt(receipt);
         Bundle result = new Bundle();
@@ -270,7 +271,8 @@ public final class GestureInstrumentation extends Instrumentation {
         event.setSource(InputDevice.SOURCE_TOUCHSCREEN);
         try {
             if (!automation.injectInputEvent(event, true)) {
-                throw new IllegalStateException("motion event injection failed");
+                throw new IllegalStateException(
+                        "motion event injection failed for action " + action);
             }
         } finally {
             event.recycle();

@@ -20,6 +20,7 @@ from .android_runtime_driver import (
 )
 from .resources import resource_path
 from .target import CanAppTarget
+from .webview_runtime import tap_visible_webview_element
 
 
 DRIVER_PACKAGE = "org.respect.testkit.runtime"
@@ -29,7 +30,7 @@ GESTURE_INSTRUMENTATION = (
 )
 DRIVER_PROTOCOL_VERSION = "1.0.0"
 RUNTIME_RECEIPT_VERSION = "1.1.0"
-SCENARIO_FORMAT_VERSIONS = {"1.0.0", "1.1.0"}
+SCENARIO_FORMAT_VERSIONS = {"1.0.0", "1.1.0", "1.2.0"}
 ACQUISITION_PREFIX = "http://opds-spec.org/acquisition"
 DEFAULT_CATALOG_REL = (
     "https://respect.ustadmobile.com/ns/default-lesson-catalog"
@@ -150,6 +151,7 @@ def load_runtime_scenario(path: Path) -> Dict[str, Any]:
     wait_total = 0
     stroke_total = 0
     stroke_points = 0
+    webview_wait_total = 0
     normalized = []
     for action in actions:
         if not isinstance(action, dict):
@@ -182,7 +184,7 @@ def load_runtime_scenario(path: Path) -> Dict[str, Any]:
                 raise ValueError("runtime scenario key action is invalid")
             normalized.append({"type": "keyevent", "key": key})
         elif action_type == "stroke":
-            if value.get("format_version") != "1.1.0":
+            if value.get("format_version") not in {"1.1.0", "1.2.0"}:
                 raise ValueError(
                     "runtime stroke actions require scenario format 1.1.0"
                 )
@@ -221,12 +223,35 @@ def load_runtime_scenario(path: Path) -> Dict[str, Any]:
                     "points": normalized_points,
                 }
             )
+        elif action_type == "webview_tap":
+            if value.get("format_version") != "1.2.0":
+                raise ValueError(
+                    "runtime WebView actions require scenario format 1.2.0"
+                )
+            selector = _normalize_webview_selector(action.get("selector"))
+            timeout_ms = action.get("timeout_ms", 5_000)
+            if (
+                type(timeout_ms) is not int
+                or timeout_ms < 0
+                or timeout_ms > 10_000
+            ):
+                raise ValueError("runtime WebView action timeout is invalid")
+            webview_wait_total += timeout_ms
+            normalized.append(
+                {
+                    "type": "webview_tap",
+                    "selector": selector,
+                    "timeout_ms": timeout_ms,
+                }
+            )
         else:
             raise ValueError("runtime scenario action type is unsupported")
     if wait_total > 60_000:
         raise ValueError("runtime scenario waits exceed the bounded total")
     if stroke_total > 60_000 or stroke_points > 2_048:
         raise ValueError("runtime scenario strokes exceed the bounded total")
+    if webview_wait_total > 60_000:
+        raise ValueError("runtime WebView waits exceed the bounded total")
     return {**value, "actions": normalized}
 
 
@@ -254,6 +279,50 @@ def _normalize_stroke_anchor(value: Any) -> Dict[str, Any]:
     ):
         raise ValueError("runtime scenario element anchor is invalid")
     return {"type": anchor_type, "selector": dict(sorted(selector.items()))}
+
+
+def _normalize_webview_selector(value: Any) -> Dict[str, Any]:
+    if (
+        not isinstance(value, dict)
+        or not value
+        or not set(value).issubset({"tag_name", "text", "attribute"})
+    ):
+        raise ValueError("runtime WebView selector is invalid")
+    normalized: Dict[str, Any] = {}
+    tag_name = value.get("tag_name")
+    if tag_name is not None:
+        if (
+            not isinstance(tag_name, str)
+            or not re.fullmatch(r"[A-Za-z][A-Za-z0-9-]{0,63}", tag_name)
+        ):
+            raise ValueError("runtime WebView selector tag name is invalid")
+        normalized["tag_name"] = tag_name.lower()
+    text = value.get("text")
+    if text is not None:
+        if not isinstance(text, str) or not text or len(text) > 256:
+            raise ValueError("runtime WebView selector text is invalid")
+        normalized["text"] = text
+    attribute = value.get("attribute")
+    if attribute is not None:
+        if (
+            not isinstance(attribute, dict)
+            or set(attribute) != {"name", "value"}
+            or not isinstance(attribute.get("name"), str)
+            or not re.fullmatch(
+                r"[A-Za-z_:][A-Za-z0-9_.:-]{0,63}",
+                attribute["name"],
+            )
+            or attribute["name"].lower().startswith("on")
+            or not isinstance(attribute.get("value"), str)
+            or not attribute["value"]
+            or len(attribute["value"]) > 256
+        ):
+            raise ValueError("runtime WebView selector attribute is invalid")
+        normalized["attribute"] = {
+            "name": attribute["name"],
+            "value": attribute["value"],
+        }
+    return normalized
 
 
 def _canonical_sha256(value: Any) -> str:
@@ -549,6 +618,7 @@ def run_native_android_runtime(
     adb: Optional[Path] = None,
     command_runner: Callable[..., subprocess.CompletedProcess] = subprocess.run,
     sleeper: Callable[[float], None] = time.sleep,
+    webview_tapper: Callable[..., Dict[str, Any]] = tap_visible_webview_element,
     execution_event: Optional[
         Callable[[str, str, Dict[str, object]], None]
     ] = None,
@@ -683,6 +753,7 @@ def run_native_android_runtime(
         shlex.quote(launch_url),
     ).stdout
     action_hashes = []
+    webview_receipts: List[Dict[str, Any]] = []
     for action_index, action in enumerate(scenario["actions"]):
         action_hash = _canonical_sha256(action)
         action_hashes.append(action_hash)
@@ -736,6 +807,44 @@ def run_native_android_runtime(
                     GESTURE_INSTRUMENTATION,
                     timeout=30,
                 )
+            elif action["type"] == "webview_tap":
+                process_id = device(
+                    "shell",
+                    "pidof",
+                    "-s",
+                    scenario["canapp_package"],
+                ).stdout.strip()
+                if not process_id.isdigit():
+                    raise RuntimeError(
+                        "foreground CanApp process was unavailable for WebView action"
+                    )
+                forwarded = device(
+                    "forward",
+                    "tcp:0",
+                    f"localabstract:webview_devtools_remote_{process_id}",
+                ).stdout.strip()
+                if not forwarded.isdigit():
+                    raise RuntimeError(
+                        "Android Debug Bridge did not allocate a WebView port"
+                    )
+                try:
+                    receipt = webview_tapper(
+                        int(forwarded),
+                        action["selector"],
+                        timeout_ms=action["timeout_ms"],
+                    )
+                finally:
+                    device("forward", "--remove", f"tcp:{forwarded}")
+                receipt.update(
+                    {
+                        "action_index": action_index,
+                        "action_sha256": action_hash,
+                        "scenario_nonce": scenario_nonce,
+                        "canapp_package": scenario["canapp_package"],
+                    }
+                )
+                webview_receipts.append(receipt)
+                details["receipt"] = receipt
         except Exception as error:
             if execution_event:
                 execution_event(
@@ -816,6 +925,10 @@ def run_native_android_runtime(
             {"kind": "gesture_injected", **receipt, **envelope}
             for receipt in gesture_receipts
         ],
+        *[
+            {"kind": "webview_element_tapped", **receipt, **envelope}
+            for receipt in webview_receipts
+        ],
     ]
     binding = RuntimeBinding(
         target_digest=target.digest,
@@ -847,5 +960,7 @@ def run_native_android_runtime(
         "actions_sha256": _canonical_sha256(action_hashes),
         "gesture_receipt_sha256": _canonical_sha256(gesture_receipts),
         "gesture_count": len(gesture_receipts),
+        "webview_receipt_sha256": _canonical_sha256(webview_receipts),
+        "webview_action_count": len(webview_receipts),
     }
     return observations

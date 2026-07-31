@@ -156,6 +156,63 @@ def test_scenario_v1_rejects_stroke_action(tmp_path):
         load_runtime_scenario(path)
 
 
+def test_scenario_loader_accepts_bounded_webview_value_selector(tmp_path):
+    value = _scenario()
+    value["format_version"] = "1.2.0"
+    value["actions"] = [
+        {
+            "type": "webview_tap",
+            "selector": {
+                "tag_name": "example-card",
+                "attribute": {"name": "value", "value": "3"},
+            },
+            "timeout_ms": 4_000,
+        }
+    ]
+    path = tmp_path / "scenario.json"
+    path.write_text(json.dumps(value))
+
+    scenario = load_runtime_scenario(path)
+
+    assert scenario["actions"] == [
+        {
+            "type": "webview_tap",
+            "selector": {
+                "tag_name": "example-card",
+                "attribute": {"name": "value", "value": "3"},
+            },
+            "timeout_ms": 4_000,
+        }
+    ]
+
+
+@pytest.mark.parametrize(
+    "selector,error",
+    [
+        ({"tag_name": "script["}, "tag name"),
+        ({"attribute": {"name": "onclick", "value": "anything"}}, "attribute"),
+        ({"javascript": "document.body.click()"}, "selector"),
+        ({}, "selector"),
+    ],
+)
+def test_scenario_loader_rejects_unsafe_webview_selectors(
+    tmp_path, selector, error
+):
+    value = _scenario()
+    value["format_version"] = "1.2.0"
+    value["actions"] = [
+        {
+            "type": "webview_tap",
+            "selector": selector,
+        }
+    ]
+    path = tmp_path / "scenario.json"
+    path.write_text(json.dumps(value))
+
+    with pytest.raises(ValueError, match=error):
+        load_runtime_scenario(path)
+
+
 def _catalog_target():
     descriptor_url = "https://canapp.example/descriptor.json"
     catalog_url = "https://canapp.example/catalog.json"

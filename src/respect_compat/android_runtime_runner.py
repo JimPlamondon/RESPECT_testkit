@@ -475,11 +475,39 @@ def derive_catalog_launch_url(
     derived = urllib.parse.urlunparse(
         parsed._replace(query=urllib.parse.urlencode(existing + launch_parameters))
     )
-    if scenario["launch_url"] != derived:
+    supplied = urllib.parse.urlparse(scenario["launch_url"])
+    supplied_query = urllib.parse.parse_qsl(
+        supplied.query,
+        keep_blank_values=True,
+    )
+    derived_query = urllib.parse.parse_qsl(
+        urllib.parse.urlparse(derived).query,
+        keep_blank_values=True,
+    )
+
+    def normalized_query(items):
+        normalized = []
+        for key, value in items:
+            if key == "actor":
+                try:
+                    value = json.dumps(
+                        json.loads(value),
+                        separators=(",", ":"),
+                        sort_keys=True,
+                    )
+                except (json.JSONDecodeError, TypeError, ValueError):
+                    pass
+            normalized.append((key, value))
+        return sorted(normalized)
+
+    if (
+        supplied._replace(query="") != parsed._replace(query="")
+        or normalized_query(supplied_query) != normalized_query(derived_query)
+    ):
         raise ValueError(
             "runtime scenario launch URL is not the catalog-derived launch URL"
         )
-    return derived
+    return scenario["launch_url"]
 
 
 def parse_driver_events(text: str) -> List[Dict[str, Any]]:

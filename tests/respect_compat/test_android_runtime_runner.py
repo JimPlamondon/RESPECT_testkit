@@ -294,6 +294,31 @@ def test_runtime_launch_is_derived_from_selected_catalog_publication():
     ]
 
 
+def test_runtime_launch_accepts_semantically_identical_actor_key_order():
+    scenario = _scenario()
+    scenario["actor"] = {
+        "account": {
+            "homePage": "https://example.invalid",
+            "name": "control",
+        },
+        "objectType": "Agent",
+    }
+    scenario["launch_url"] = (
+        "https://canapp.example/lessons/real/launch"
+        "?endpoint=https%3A%2F%2Flrs.example%2Fxapi%2F"
+        "&auth=Basic+local-control"
+        "&actor=%7B%22objectType%22%3A%22Agent%22%2C%22account%22%3A"
+        "%7B%22homePage%22%3A%22https%3A%2F%2Fexample.invalid%22%2C"
+        "%22name%22%3A%22control%22%7D%7D"
+        "&activity_id=https%3A%2F%2Flesson.example%2Factivity"
+        "&xapiIpcPackage=org.respect.testkit.runtime"
+    )
+
+    assert derive_catalog_launch_url(_catalog_target(), scenario) == scenario[
+        "launch_url"
+    ]
+
+
 def test_runtime_launch_rejects_url_disconnected_from_catalog():
     scenario = _scenario()
 

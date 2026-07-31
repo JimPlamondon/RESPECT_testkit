@@ -2,6 +2,10 @@
 
 The RESPECT Compatible Test Suite applies the canonical RESPECT Compatibility Matrix to one submitted Candidate App, called the `CanApp`. It reports black-box compatibility evidence, does not require CanApp source code, and does not grant trademark, registry, or certification rights.
 
+For AI-operated installation and application, begin with
+[`../AI_OPERATOR.md`](../AI_OPERATOR.md). For the end-to-end operator sequence,
+see [`../CERTIFICATION_WORKFLOW.md`](../CERTIFICATION_WORKFLOW.md).
+
 The canonical Matrix is package data owned by `respect_compat`; the Test Suite verifies its semantic hash before every run. The historical `compatibility_matrix_v0_1.json` profile is independently consumed and is not canonical Matrix authority.
 
 Provision the exact OPDS (Open Publication Distribution System) and Readium Web Publication Manifest revisions with `respect-standards-bootstrap`. Set `RESPECT_STANDARDS_CACHE` to choose a cache root.

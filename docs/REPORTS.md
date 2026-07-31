@@ -1,13 +1,35 @@
-# Public Reports
+# Public reports
 
-Test Suite report formats are public. Generated reports are run output and are not tracked or packaged.
+Test Suite report formats are public. Generated reports are run output and are
+not tracked or packaged. See [artifacts and reports](ARTIFACTS_AND_REPORTS.md)
+for the output tree, exit codes, and interpretation rules.
 
 ## Row outcomes and approval
 
-Each Matrix row reports the behavior actually observed as `pass`, `fail`, `not_applicable`, `incomplete`, `deferred`, `harness_error`, or `blocked`. The approval reducer does not rewrite a passing behavioral result merely because its evidence came from a provisional environment.
+Each Matrix row reports observed behavior as `pass`, `fail`,
+`not_applicable`, `incomplete`, `deferred`, `harness_error`, or `blocked`.
+Typed attribution separately records ownership, verification mode, observed
+result, workflow disposition, and authorized follow-on artifacts.
 
-The overall verdict separately reports `Certified`, `Provisional (...)`, `Not certified`, `Incomplete`, or `Non-certification mode`. A Provisional verdict contains a structured `provisions` array. Every provision has a stable code, short label, explanation, affected Matrix rows, evidence-environment facts, clearance action, rerun scope, and responsible party.
+The overall verdict is `Certified`, `Provisional (...)`, `Not certified`,
+`Incomplete`, or `Non-certification mode`. A provision contains a stable code,
+label, explanation, affected Matrix rows, evidence-environment facts,
+clearance action, rerun scope, and responsible party.
 
-Current automatically detected provisions are `EMULATED_ANDROID_RUNTIME` (the applicable Android behavior passed on an attributable emulator), `LOCAL_HTTPS_PUBLICATION` (publication behavior passed at a local Hypertext Transfer Protocol Secure origin), and `SUITE_FIXTURE_EVIDENCE` (the trusted reference fixture demonstrated suite behavior but did not provide arbitrary Candidate App evidence). Multiple provisions are retained and displayed together. Independent report verification recomputes the provisions from the bound evidence environment and rejects removed, added, or altered provisions.
+Provision families cover:
 
-Clearing a provision requires the stated follow-up evidence, not a change to an already truthful passing row. The report identifies whether the affected rows can be rerun rather than implying that unrelated compatibility behavior failed.
+- unavailable TestKit observation;
+- suite-fixture evidence;
+- attributable emulator evidence requiring physical-device confirmation;
+- local rather than stable owner-controlled HTTPS publication;
+- missing or testing-only Spix certification trust;
+- missing exact-build publication authorization;
+- missing immutable certified-build acquisition.
+
+Multiple provisions remain visible together. Independent report verification
+recomputes them from bound evidence and rejects removed, added, or altered
+provisions.
+
+Clearing a provision requires its stated follow-up evidence, not changing an
+already truthful passing row. A passing substitute result can remain passing
+while final approval waits for promotion.

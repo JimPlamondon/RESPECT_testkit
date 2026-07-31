@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- Add the AI-first Human QuickStart, normative AI operator contract,
+  synchronized prompt/`Human_ToDo.md` workflow, certification and repair
+  runbooks, command reference, artifact guide, role routing, troubleshooting,
+  validated examples, and packaged documentation.
 - Separate all future-platform requirements, acceptance policy, and prompt
   generation into the independent RESPECT Upgrade Dossier repository; remove
   the embedded package and command from the TestKit.
@@ -18,7 +22,7 @@
 - Made conditional HTTP responses observable instead of treating `304 Not Modified` as a transport failure.
 - Made the native runtime companion exercise a real durable identical retry and stopped requiring a conforming Candidate App to emit conflicting statement content.
 
-## Unreleased
+### Earlier unreleased work
 
 - Preserve genuine Matrix-row pass results from attributable emulators and local Hypertext Transfer Protocol Secure publication while issuing a structured, independently verifiable Provisional approval with exact reasons, affected rows, clearance actions, rerun scope, and responsible party.
 - Allow certification-mode Android scenarios to execute on emulators; physical-device confirmation now clears an explicit provision instead of acting as a pre-execution gate.

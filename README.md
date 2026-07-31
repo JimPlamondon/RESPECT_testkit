@@ -1,42 +1,48 @@
-# RESPECT Testkit
+# RESPECT TestKit
 
-`RESPECT-testkit` is the standalone distribution for the RESPECT Compatible Test Suite and the RESPECT-ification Kit. The Test Suite evaluates a Candidate App, called a `CanApp`, from black-box evidence without requiring its source code or the Kit. The Kit consumes immutable Test Suite artifacts to support owner-local repair work and never changes or issues compatibility verdicts.
+`RESPECT-testkit` contains the black-box RESPECT Compatible Test Suite and the
+owner-local RESPECT-ification Kit. The Test Suite is the compatibility oracle.
+The Kit consumes its immutable artifacts to help repair a Candidate App
+(`CanApp`) but cannot change requirements or issue a compatibility verdict.
 
-The canonical RESPECT Compatibility Matrix is bundled once as package data owned by `respect_compat`. The historical v0.1 profile is bundled separately as non-canonical profile data.
+## QuickStart
 
-Install the project or its built wheel, provision the source-locked standards cache with `respect-standards-bootstrap`, and inspect the command interfaces with `respect-compat --help`, `respect-ification --help`, and `respect-matrix-validate --help`.
+Open your Candidate App ("CanApp") project with a code-capable AI and tell that
+AI:
 
-Current routing-family writers emit version `2.0.0` artifacts bound to one
-target identity and digest, Matrix identity/version/hash, canonical run
-challenge, evidence set, and artifact set. The six independent result
-dimensions are requirement owner, control owner, responsible party,
-verification mode, observed result, and workflow disposition. A Kit task is
-emitted only for an attributable CanApp implementation failure. Missing
-observers and unavailable infrastructure do not become CanApp or RESPECT
-defects.
+> “Install the RESPECT TestKit and apply it to [CanApp]. Follow the TestKit's
+> instructions to AIs, perform all code- and harness-level work that you can
+> safely perform, and update the generated `Human_ToDo.md` with only the
+> actions that I — the Human In the Loop — must do.”
 
-Future RESPECT Platform requirements are governed independently by the
-standalone RESPECT Upgrade Dossier repository. This TestKit records neutral,
-signed attribution when a real RESPECT-controlled outcome is observed, but it
-does not generate upgrade work, carry Dossier lifecycle policy, or package the
-Dossier command.
+Replace `[CanApp]` with the project name or path. Give the AI shell and
+filesystem access to the CanApp, this TestKit, and any device or deployment
+environment that it is authorized to use.
 
-After provisioning the standards cache, use
-`respect-standards-bootstrap --check` for a read-only, network-free
-verification of its pinned revisions and required schemas.
+The AI must start with [AI_OPERATOR.md](docs/AI_OPERATOR.md). The expected
+handback is:
 
-For a raw native Android Candidate App that has no RESPECT discovery surface, use `--apk-only --apk <path>`. The Test Suite binds the submitted APK (Android Package Kit) while representing the descriptor as absent, so missing descriptor, publication, Android routing, and runtime behavior become honest Matrix results rather than requiring a fabricated bootstrap manifest.
+- the exact Test Suite verdict and report path;
+- the implementation prompt and current `Human_ToDo.md`, when repair exists;
+- a summary of changes and verification performed;
+- remaining provisions, responsible parties, and required rerun scope.
 
-For repair work with available Candidate App source, use `respect-ification repair-plan` to generate a Kit-time, source-derived repair adapter and implementation prompt. The adapter is format-agnostic Kit scaffolding: it discovers content candidates and implementation seams from the CanApp's own references, then directs durable changes into the CanApp, its build, its tests, and genuinely external services.
+Only a complete applicable Test Suite run can certify a CanApp. A generated
+prompt, narrow verifier, fixture, local publication, or emulator result is not
+by itself certification.
 
-Use `respect-ification truth-audit --output <path>` to emit the complete, content-bound disposition of all 87 canonical Matrix rows. Candidate App repair tasks receive row-specific durable implementation and evidence contracts; requirements owned by the publisher, Spix Foundation, RESPECT services, the RESPECT launcher, or the Test Suite cannot be reassigned to the Candidate App.
+## Documentation
 
-The publication workflow requires a complete, source-digest-bound lesson inventory rather than blanket confirmation of analyzer candidates. Production publication additionally requires the submitted Android Package Kit and live deployed-origin verification; local pack integrity alone is not production verification.
+Start at the [documentation index](docs/README.md). It provides separate
+routes for a Human in the Loop, a code-capable AI, a TestKit operator, and a
+maintainer.
 
-After confirming the real lesson inventory, use `respect-ification publication-manifest` and `publication-pack` to emit a self-contained RESPECT publication with exact lesson resources, descriptor, OPDS catalog, Readium manifests, acquisition pages, covers, Android association, the content-addressed exact submitted build, deployment contract, portable server, container recipe, and validation receipt. `publication-authorization` idempotently ensures the Spix Publisher Agreement and obtains the exact-build publication token without storing DocuSign secrets or repeatedly launching a pending signature request. `publication-serve` provides provisional HTTPS hosting, while `publication-verify` validates the pack locally and can verify every deployed resource and conditional request at an HTTPS origin.
+The canonical Compatibility Matrix is bundled once in `respect_compat`.
+Requirements owned by RESPECT, the publisher, Spix Foundation, or the TestKit
+cannot be reassigned to the CanApp. Future RESPECT Platform upgrade work is
+governed by the separate RESPECT Upgrade Dossier; this repository records
+neutral platform observations but does not generate platform upgrade work.
 
-Spix owns the certification trust anchor. Until a source-locked Spix public key is bundled with the Test Suite, the suite generates and reuses a local testing keypair so the protocol remains testable, while forcing `Provisional (RESPECT certification key is testing-only)`. A key supplied by the Candidate App submission is never accepted as Foundation authority.
-
-For native Android runtime verification, use `respect-runtime-driver-build` to build the Test Suite-owned companion. The documented runtime interface is in `docs/respect_compat/NATIVE_ANDROID_RUNTIME_DRIVER.md`.
-
-This repository is initially private. Publication, package-index upload, tagging, and visibility changes are outside this extraction.
+This repository is initially private. Package-index publication, tagging,
+visibility changes, certification, trademark grants, and registry publication
+remain separate owner or certification-authority actions.

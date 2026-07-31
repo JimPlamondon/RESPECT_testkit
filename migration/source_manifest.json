@@ -1829,7 +1829,7 @@
       "adaptation_reason": "standalone package layout, installed-resource access, or destination documentation",
       "blob_oid": "6a91baadbed1275e3395769237abc4385d9fc8d0",
       "destination_path": "src/respect_ification/cli.py",
-      "destination_sha256": "a7276d6dd1b4637536587760c33039a1fe9da466a4df52274eae053ab1eb7dee",
+      "destination_sha256": "3a35cc58c30acdadf32e2d95fd4d929d43e205e1444611e4fae3854790fa2465",
       "disposition": "adapted",
       "item_class": "runtime",
       "license": "Apache-2.0",
@@ -2283,7 +2283,7 @@
       "source_repository": "https://github.com/JimPlamondon/jims"
     }
   ],
-  "manifest_hash": "9cb302b9940c62e7a2da778a38dbcd742b7c2939da48d5547fb12c5b86b952d4",
+  "manifest_hash": "15b9203745860b9dd93402afe0fc1fb7349fd64b13d2a58745ae9ec110359b0c",
   "native_entries": [
     {
       "destination_path": "src/respect_compat/data/matrix/legacy_provenance_audit.json",

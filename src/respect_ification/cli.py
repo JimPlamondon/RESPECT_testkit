@@ -78,6 +78,23 @@ def _write(path: Path, data: Dict[str, Any]) -> None:
     path.write_text(json.dumps(data, indent=2, sort_keys=True) + "\n")
 
 
+def _lesson_child_outcome(
+    report: Dict[str, Any], exit_code: int
+) -> str:
+    if exit_code == 0:
+        return "passed"
+    states = {
+        result.get("state")
+        for result in report.get("results", [])
+        if isinstance(result, dict)
+    }
+    if "fail" in states:
+        return "failed"
+    if "incomplete" in states:
+        return "incomplete"
+    return "blocked"
+
+
 def _add_target(parser: argparse.ArgumentParser) -> None:
     group = parser.add_mutually_exclusive_group(required=True)
     group.add_argument("--fixture-dir", type=Path)
@@ -772,15 +789,7 @@ def main(argv: Optional[List[str]] = None) -> int:
                             "child TestKit did not write its report"
                         )
                     report = _read(report_path)
-                    summary = report.get("summary", {})
-                    if exit_code == 0:
-                        outcome = "passed"
-                    elif summary.get("fail", 0):
-                        outcome = "failed"
-                    elif summary.get("incomplete", 0):
-                        outcome = "incomplete"
-                    else:
-                        outcome = "blocked"
+                    outcome = _lesson_child_outcome(report, exit_code)
                     child_event(
                         "child_testkit_report",
                         "observed",

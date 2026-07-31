@@ -12,7 +12,7 @@ The RESPECT testkit was extracted without history rewriting from [JiMS pull requ
 ## Source lock
 
 - Inventory: `migration/source_inventory.json`; SHA-256 (Secure Hash Algorithm 256-bit) aggregate `253be61d741605244ffcc30cbb3c4523b091625abb6048dcea2e089dc50a2112`.
-- Manifest: `migration/source_manifest.json`; SHA-256 aggregate `9cb302b9940c62e7a2da778a38dbcd742b7c2939da48d5547fb12c5b86b952d4`.
+- Manifest: `migration/source_manifest.json`; SHA-256 aggregate `15b9203745860b9dd93402afe0fc1fb7349fd64b13d2a58745ae9ec110359b0c`.
 - Canonical Matrix: `respect-compatibility-matrix-v0.1` version `1.0.0`; semantic hash `5a059124de6875ad8fa2e23c7244343f70eab6033ad26fbefeb46407d20421ee`; 45 features; 87 atomic rows; 21 mutation checks.
 - Historical profile: `src/respect_compat/data/profiles/compatibility_matrix_v0_1.json`, preserved byte-for-byte as a distinct non-canonical runtime profile.
 - OPDS revision: `8fda670fc72f110abcf68ad5d26e99ecfeeabf03`.

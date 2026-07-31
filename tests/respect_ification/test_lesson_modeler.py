@@ -9,7 +9,11 @@ import pytest
 from respect_compat.android_runtime_runner import validate_runtime_scenario
 from respect_compat.execution_log import ExecutionLog
 from respect_compat.handoff import canonical_hash
-from respect_ification.cli import build_parser, main
+from respect_ification.cli import (
+    _lesson_child_outcome,
+    build_parser,
+    main,
+)
 from respect_ification.lesson_modeler import (
     build_coverage,
     build_modeling_packet,
@@ -452,3 +456,19 @@ def test_cli_exposes_canapp_lesson_modeler_and_compiles(tmp_path):
     assert (output / "canapp-lesson-capability-gaps.json").is_file()
     log = (output / "respect-execution-log.jsonl").read_text()
     assert '"step": "scenario_compilation"' in log
+
+
+@pytest.mark.parametrize(
+    ("states", "exit_code", "expected"),
+    [
+        (["pass"], 0, "passed"),
+        (["pass", "fail", "blocked"], 1, "failed"),
+        (["pass", "incomplete", "blocked"], 2, "incomplete"),
+        (["pass", "blocked"], 2, "blocked"),
+    ],
+)
+def test_lesson_child_outcome_uses_report_row_states(
+    states, exit_code, expected
+):
+    report = {"results": [{"state": state} for state in states]}
+    assert _lesson_child_outcome(report, exit_code) == expected

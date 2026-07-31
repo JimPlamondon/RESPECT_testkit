@@ -125,10 +125,14 @@ Read:
 - `respect-report.json` for the authoritative structured run;
 - `respect-evidence-manifest.json` for sanitized evidence;
 - `respect-ification-task-packet.json` for CanApp repair work;
+- `respect-execution-log.jsonl` for the chronological, hash-chained execution
+  record, including every selected Matrix row;
 - `junit.xml` for automation.
 
 Interpret exit codes using [ARTIFACTS_AND_REPORTS.md](ARTIFACTS_AND_REPORTS.md).
 An exit code of 2 is a non-final outcome, not a process crash.
+The execution log is mandatory and cannot be disabled. Preserve it with every
+run, including unsuccessful and non-final runs.
 
 ## 4. Route the outcome before changing anything
 

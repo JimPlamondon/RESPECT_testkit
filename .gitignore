@@ -11,3 +11,4 @@ dist/
 matrix_validation_report.json
 .coverage
 htmlcov/
+.respect-testkit/

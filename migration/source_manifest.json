@@ -1338,7 +1338,7 @@
       "adaptation_reason": "standalone package layout, installed-resource access, or destination documentation",
       "blob_oid": "1837891fb1f884686bc1311091676fa07a0c1d97",
       "destination_path": "src/respect_compat/cli.py",
-      "destination_sha256": "58ad53380871c19d9b4fdc1090edd0851de04abab1f7fa99607a2fc8b7431fec",
+      "destination_sha256": "f025e6f75c921b75a98fa6a84f478d8b34dc915b32487b49ef8ae491686a4835",
       "disposition": "adapted",
       "item_class": "runtime",
       "license": "Apache-2.0",
@@ -1356,7 +1356,7 @@
       "adaptation_reason": "standalone package layout, installed-resource access, or destination documentation",
       "blob_oid": "f4d987604996e6ed2fa330205e3628d3521592e6",
       "destination_path": "src/respect_compat/engine.py",
-      "destination_sha256": "8d7bca4d02ca32c0ea6fd1e38563dfdd56c3f3c5ab18cd26119f280e1b028f41",
+      "destination_sha256": "2dddcb2366513c997ee864a437d30f3feca9bb6ead3c07da2915107814b73680",
       "disposition": "adapted",
       "item_class": "runtime",
       "license": "Apache-2.0",
@@ -1829,7 +1829,7 @@
       "adaptation_reason": "standalone package layout, installed-resource access, or destination documentation",
       "blob_oid": "6a91baadbed1275e3395769237abc4385d9fc8d0",
       "destination_path": "src/respect_ification/cli.py",
-      "destination_sha256": "c0d62b672b52a20230077dba316f4a65037ac105b9600c3700fa0423f4184173",
+      "destination_sha256": "31479f2e004fced671b6b7ceaa2e6e06bb0696863c697df97fdbb152ea9f7ec7",
       "disposition": "adapted",
       "item_class": "runtime",
       "license": "Apache-2.0",
@@ -1900,7 +1900,7 @@
       "adaptation_reason": "standalone package layout, installed-resource access, or destination documentation",
       "blob_oid": "be13190040c3f2848d590e844c186a5488dd0e44",
       "destination_path": "tests/respect_ification/test_cli.py",
-      "destination_sha256": "c257a6eea3f765e9a498b6f1e8df2eb2d44fc5049316221f9362a697459bba63",
+      "destination_sha256": "a8e2aa56f9ab8c26c5080c84287c0eb66bbe55b01d321c28dcb4b929bf0d7c10",
       "disposition": "adapted",
       "item_class": "test",
       "license": "Apache-2.0",
@@ -2283,7 +2283,7 @@
       "source_repository": "https://github.com/JimPlamondon/jims"
     }
   ],
-  "manifest_hash": "3c8f48f2d3a4112f02a7570c7109ae71fbc8489fbecf01d1751e361113ebd85f",
+  "manifest_hash": "c983f20163c00a0fb766784c5a8ba6ff47f5d4430bb30553201b1b4b3a3e5eae",
   "native_entries": [
     {
       "destination_path": "src/respect_compat/data/matrix/legacy_provenance_audit.json",

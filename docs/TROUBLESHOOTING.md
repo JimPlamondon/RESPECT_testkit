@@ -118,7 +118,8 @@ even after narrow verification or affected-row diagnostics.
 
 ## Reporting a TestKit problem
 
-Preserve the report, evidence manifest, task packet, JUnit output, exact
-TestKit commit/version, command line with secrets removed, operating
-environment, and actor/build receipts. Do not publish private CanApp source,
-credentials, hidden certification inputs, or exploit material.
+Preserve the report, evidence manifest, task packet, mandatory execution log,
+JUnit output, exact TestKit commit/version, operating environment, and
+actor/build receipts. The execution log already redacts recognized secret
+arguments, but review every artifact before publication. Do not publish private
+CanApp source, credentials, hidden certification inputs, or exploit material.

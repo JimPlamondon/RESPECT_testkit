@@ -4,6 +4,12 @@ The CLI parser is the syntax authority. Run `COMMAND --help` and
 `respect-ification SUBCOMMAND --help` for the installed version. This page
 explains intent, groups, and exit behavior.
 
+Every `respect-compat` run and every `respect-ification` subcommand writes a
+mandatory hash-chained JSON Lines execution log. Full runs write
+`respect-execution-log.jsonl` inside `--output-dir`; other commands place the
+log beside their primary output. See
+[ARTIFACTS_AND_REPORTS.md](ARTIFACTS_AND_REPORTS.md).
+
 ## Test Suite commands
 
 ### `respect-compat`

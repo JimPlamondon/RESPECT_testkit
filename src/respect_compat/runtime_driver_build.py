@@ -11,7 +11,11 @@ import tempfile
 from pathlib import Path
 from typing import Dict, Optional
 
-from .android_runtime_runner import DRIVER_PACKAGE, DRIVER_PROTOCOL_VERSION
+from .android_runtime_runner import (
+    DRIVER_PACKAGE,
+    GESTURE_PACKAGE,
+    RUNTIME_RECEIPT_VERSION,
+)
 from .resources import resource_path
 
 
@@ -37,9 +41,13 @@ def build_runtime_driver(
     gradle_wrapper: Path,
     output_apk: Path,
     *,
+    output_gesture_apk: Optional[Path] = None,
     receipt_path: Optional[Path] = None,
     offline: bool = False,
 ) -> Dict[str, object]:
+    gesture_output = output_gesture_apk or output_apk.with_name(
+        f"{output_apk.stem}-gesture{output_apk.suffix}"
+    )
     wrapper = gradle_wrapper.resolve(strict=True)
     if not wrapper.is_file():
         raise ValueError("Gradle wrapper must be a file")
@@ -67,14 +75,26 @@ def build_runtime_driver(
             built = project / "app/build/outputs/apk/debug/app-debug.apk"
             if not built.is_file():
                 raise RuntimeError("runtime driver build produced no APK")
+            built_gesture = (
+                project / "gesture/build/outputs/apk/debug/gesture-debug.apk"
+            )
+            if not built_gesture.is_file():
+                raise RuntimeError(
+                    "runtime driver build produced no gesture injector APK"
+                )
             output_apk.parent.mkdir(parents=True, exist_ok=True)
             shutil.copy2(built, output_apk)
+            gesture_output.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(built_gesture, gesture_output)
     receipt = {
         "artifact_type": "respect_native_android_runtime_driver_build_receipt",
-        "format_version": DRIVER_PROTOCOL_VERSION,
+        "format_version": RUNTIME_RECEIPT_VERSION,
         "driver_package": DRIVER_PACKAGE,
+        "gesture_package": GESTURE_PACKAGE,
         "source_tree_sha256": source_hash,
         "apk_sha256": _sha256(output_apk),
+        "gesture_apk_sha256": _sha256(gesture_output),
+        "gesture_apk_filename": gesture_output.name,
     }
     destination = receipt_path or output_apk.with_suffix(".receipt.json")
     destination.parent.mkdir(parents=True, exist_ok=True)
@@ -91,6 +111,7 @@ def main() -> int:
     )
     parser.add_argument("--gradle-wrapper", type=Path, required=True)
     parser.add_argument("--output-apk", type=Path, required=True)
+    parser.add_argument("--output-gesture-apk", type=Path)
     parser.add_argument("--receipt", type=Path)
     parser.add_argument("--offline", action="store_true")
     args = parser.parse_args()
@@ -98,6 +119,7 @@ def main() -> int:
         receipt = build_runtime_driver(
             args.gradle_wrapper,
             args.output_apk,
+            output_gesture_apk=args.output_gesture_apk,
             receipt_path=args.receipt,
             offline=args.offline,
         )

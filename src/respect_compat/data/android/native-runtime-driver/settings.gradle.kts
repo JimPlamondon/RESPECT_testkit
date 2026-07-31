@@ -19,3 +19,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "respect-native-android-runtime-driver"
 include(":app")
+include(":gesture")

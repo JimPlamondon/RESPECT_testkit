@@ -111,6 +111,7 @@ def main(
     )
     parser.add_argument("--device-id")
     parser.add_argument("--runtime-driver-apk", type=Path)
+    parser.add_argument("--runtime-gesture-apk", type=Path)
     parser.add_argument("--runtime-driver-receipt", type=Path)
     parser.add_argument("--runtime-scenario", type=Path)
     parser.add_argument("--respect-platform-apk", type=Path)
@@ -175,6 +176,10 @@ def main(
         args.runtime_driver_receipt,
         args.runtime_scenario,
     )
+    if args.runtime_gesture_apk and not all(runtime_values):
+        argument_error(
+            "--runtime-gesture-apk requires the complete native runtime group"
+        )
     if any(runtime_values) and not all(runtime_values):
         argument_error(
             "--runtime-driver-apk, --runtime-driver-receipt, and "
@@ -275,9 +280,11 @@ def main(
                 device_id=args.device_id,
                 driver_apk=args.runtime_driver_apk,
                 driver_receipt=args.runtime_driver_receipt,
+                gesture_apk=args.runtime_gesture_apk,
                 scenario_path=args.runtime_scenario,
                 scenario_nonce=challenge,
                 certification_mode=args.mode == "certification",
+                execution_event=event_log.emit,
             )
             target.capabilities.add("controlled_android_runtime")
         except (FileNotFoundError, json.JSONDecodeError, OSError, RuntimeError, ValueError) as error:

@@ -27,6 +27,8 @@ Important groups:
 
 - Native runtime: `--runtime-driver-apk`, `--runtime-driver-receipt`, and
   `--runtime-scenario` must appear together with `--apk` and `--device-id`.
+  A format `1.1.0` scenario containing `stroke` also requires the
+  receipt-bound `--runtime-gesture-apk`.
 - RESPECT Platform: `--respect-platform-apk`,
   `--respect-platform-build-receipt`, and
   `--respect-platform-scenario` must appear together with `--device-id`.
@@ -49,7 +51,7 @@ cache.
 
 - `respect-matrix-validate`: validate the canonical Matrix.
 - `respect-runtime-driver-build`: build and receipt-bind the suite-owned
-  Android companion.
+  Android xAPI companion and bounded-gesture injector.
 - `respect-platform-receipt`: bind a RESPECT APK to a clean source revision.
 - `respect-platform-adb-provider`: execute bounded platform observation
   workflows.

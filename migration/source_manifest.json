@@ -1216,7 +1216,7 @@
       "adaptation_reason": "standalone package layout, installed-resource access, or destination documentation",
       "blob_oid": "2d48507dc18d24c2d998ed64d7c8b8e6a4d70eeb",
       "destination_path": "docs/HARNESS.md",
-      "destination_sha256": "cc9cf46746c68ba5eb1b1e1832f6eda91beb35543522aa6d8a67b39da92fbf76",
+      "destination_sha256": "47d5ffacd510bbdb8ac1f100b4eb79a3b48d536f32345f018033801dab2750b3",
       "disposition": "adapted",
       "item_class": "documentation",
       "license": "Apache-2.0",
@@ -1286,7 +1286,7 @@
       "adaptation_reason": "standalone package layout, installed-resource access, or destination documentation",
       "blob_oid": "35e843a361f635a8930ead07c6a3a7c7b478d222",
       "destination_path": "src/respect_compat/android_apk.py",
-      "destination_sha256": "ad7244baee6217ef41100fbc4dbcc157ae124fd9039e104e1a71c72ece6a46bf",
+      "destination_sha256": "d3a54064afc1dee7e283cbdfe1f5ff0696c2ab76ae9cb69eff5c6c32960edc4c",
       "disposition": "adapted",
       "item_class": "runtime",
       "license": "Apache-2.0",
@@ -1338,7 +1338,7 @@
       "adaptation_reason": "standalone package layout, installed-resource access, or destination documentation",
       "blob_oid": "1837891fb1f884686bc1311091676fa07a0c1d97",
       "destination_path": "src/respect_compat/cli.py",
-      "destination_sha256": "f025e6f75c921b75a98fa6a84f478d8b34dc915b32487b49ef8ae491686a4835",
+      "destination_sha256": "2f9b7d9934bae640996467da11f00dcd6fe1fdbbdde59d9b302da68621e1102d",
       "disposition": "adapted",
       "item_class": "runtime",
       "license": "Apache-2.0",
@@ -1670,7 +1670,7 @@
       "adaptation_reason": "standalone package layout, installed-resource access, or destination documentation",
       "blob_oid": "45782253284639c16aa567dd7c369b4183a30670",
       "destination_path": "tests/respect_compat/test_android_apk.py",
-      "destination_sha256": "63c5e44a8c35056075dbb5d175c5eeefff60d6d0b8265a34ab3f09a3c739c814",
+      "destination_sha256": "94d90938721bb09441b180904a6c92387af54742fd7a00ba0b5191028dfdb28c",
       "disposition": "adapted",
       "item_class": "test",
       "license": "Apache-2.0",
@@ -1829,7 +1829,7 @@
       "adaptation_reason": "standalone package layout, installed-resource access, or destination documentation",
       "blob_oid": "6a91baadbed1275e3395769237abc4385d9fc8d0",
       "destination_path": "src/respect_ification/cli.py",
-      "destination_sha256": "31479f2e004fced671b6b7ceaa2e6e06bb0696863c697df97fdbb152ea9f7ec7",
+      "destination_sha256": "790dd025d9f26304452e78859c0dcee9540702bee5638c293d74bfe793de7dcf",
       "disposition": "adapted",
       "item_class": "runtime",
       "license": "Apache-2.0",
@@ -2283,7 +2283,7 @@
       "source_repository": "https://github.com/JimPlamondon/jims"
     }
   ],
-  "manifest_hash": "c983f20163c00a0fb766784c5a8ba6ff47f5d4430bb30553201b1b4b3a3e5eae",
+  "manifest_hash": "e292b4dfed465c321a59aad1c4b91281cef4b6bfc897cbcb2690315a0980c09b",
   "native_entries": [
     {
       "destination_path": "src/respect_compat/data/matrix/legacy_provenance_audit.json",

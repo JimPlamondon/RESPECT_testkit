@@ -79,6 +79,7 @@ def _add_target(parser: argparse.ArgumentParser) -> None:
     )
     parser.add_argument("--device-id")
     parser.add_argument("--runtime-driver-apk", type=Path)
+    parser.add_argument("--runtime-gesture-apk", type=Path)
     parser.add_argument("--runtime-driver-receipt", type=Path)
     parser.add_argument("--runtime-scenario", type=Path)
     parser.add_argument("--respect-platform-apk", type=Path)
@@ -98,7 +99,10 @@ def _add_target(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--certification-key-state-dir", type=Path)
 
 
-def _load_target(args: argparse.Namespace) -> CanAppTarget:
+def _load_target(
+    args: argparse.Namespace,
+    execution_event=None,
+) -> CanAppTarget:
     if args.apk_only:
         if not args.apk:
             raise ValueError("--apk-only requires --apk")
@@ -140,6 +144,10 @@ def _load_target(args: argparse.Namespace) -> CanAppTarget:
             "--runtime-driver-apk, --runtime-driver-receipt, and "
             "--runtime-scenario must be supplied together"
         )
+    if args.runtime_gesture_apk and not all(runtime_values):
+        raise ValueError(
+            "--runtime-gesture-apk requires the complete native runtime group"
+        )
     if args.runtime_driver_apk:
         if not args.apk or not args.device_id:
             raise ValueError(
@@ -150,8 +158,10 @@ def _load_target(args: argparse.Namespace) -> CanAppTarget:
             device_id=args.device_id,
             driver_apk=args.runtime_driver_apk,
             driver_receipt=args.runtime_driver_receipt,
+            gesture_apk=args.runtime_gesture_apk,
             scenario_path=args.runtime_scenario,
             scenario_nonce=secrets.token_hex(12),
+            execution_event=execution_event,
         )
         target.capabilities.add("controlled_android_runtime")
     platform_values = (
@@ -185,6 +195,8 @@ def _suite_target_args(args: argparse.Namespace) -> List[str]:
         values.extend(["--device-id", args.device_id])
     if args.runtime_driver_apk:
         values.extend(["--runtime-driver-apk", str(args.runtime_driver_apk)])
+    if args.runtime_gesture_apk:
+        values.extend(["--runtime-gesture-apk", str(args.runtime_gesture_apk)])
     if args.runtime_driver_receipt:
         values.extend(
             ["--runtime-driver-receipt", str(args.runtime_driver_receipt)]
@@ -725,7 +737,10 @@ def main(argv: Optional[List[str]] = None) -> int:
             if task is None:
                 raise ValueError(f"unknown work-plan task: {args.task_id}")
             with event_log.step("load_target"):
-                target = _load_target(args)
+                target = _load_target(
+                    args,
+                    execution_event=event_log.emit,
+                )
             with event_log.step(
                 f"matrix_row:{task['row_id']}",
                 {"row_id": task["row_id"]},

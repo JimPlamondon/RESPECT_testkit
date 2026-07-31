@@ -1,8 +1,8 @@
 # SPDX-FileCopyrightText: 2026 Jim Plamondon
 # SPDX-License-Identifier: Apache-2.0
 
-import hashlib
 import json
+import hashlib
 
 from respect_compat.handoff import canonical_hash
 from respect_compat.matrix_runtime import load_matrix
@@ -119,7 +119,7 @@ def test_full_test_cli_forwards_apk_only_assessment(tmp_path):
     assert report["target_adapter"] == "apk_only"
 
 
-def test_repair_plan_cli_writes_adapter_and_prompt(tmp_path):
+def test_repair_plan_cli_writes_adapter_prompt_and_human_todo(tmp_path):
     matrix = load_matrix()
     source = tmp_path / "source"
     loader = source / "app" / "loader.py"
@@ -180,9 +180,19 @@ def test_repair_plan_cli_writes_adapter_and_prompt(tmp_path):
     )
     adapter = json.loads(adapter_output.read_text())
     prompt = prompt_output.read_text()
+    human_todo = (tmp_path / "Human_ToDo.md").read_text()
     assert adapter["adapter_scope"] == "kit_time_only"
     assert "lessons/real.unit" in prompt
     assert "Truthful publication metadata" in prompt
+    assert "Human ToDo handback contract" in prompt
+    assert str((tmp_path / "Human_ToDo.md").resolve()) in prompt
+    assert "awaiting delegated repair" in human_todo
+    assert str(prompt_output.resolve()) in human_todo
+    assert (
+        hashlib.sha256(prompt.encode("utf-8")).hexdigest()
+        in human_todo
+    )
+    assert "the prompt executor is required to update this ToDo in place" in human_todo
 
 
 def test_truth_audit_cli_accounts_for_every_matrix_row(tmp_path):

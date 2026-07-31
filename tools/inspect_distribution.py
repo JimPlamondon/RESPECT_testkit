@@ -28,6 +28,28 @@ def main() -> int:
             errors.append("wheel contains embedded Upgrade Dossier package")
         if any(name.endswith("/data/matrix/upgrade_matrix.json") for name in names):
             errors.append("wheel contains an Upgrade Matrix")
+        required_documentation = {
+            "share/doc/RESPECT-testkit/README.md",
+            "share/doc/RESPECT-testkit/QUICKSTART.md",
+            "share/doc/RESPECT-testkit/AI_OPERATOR.md",
+            "share/doc/RESPECT-testkit/ARTIFACTS_AND_REPORTS.md",
+            "share/doc/RESPECT-testkit/CERTIFICATION_WORKFLOW.md",
+            "share/doc/RESPECT-testkit/RESPECTIFICATION_WORKFLOW.md",
+            "share/doc/RESPECT-testkit/TROUBLESHOOTING.md",
+        }
+        wheel_documentation = {
+            name.split(".data/data/", 1)[1]
+            for name in names
+            if ".data/data/share/doc/RESPECT-testkit/" in name
+        }
+        missing_documentation = sorted(
+            required_documentation - wheel_documentation
+        )
+        if missing_documentation:
+            errors.append(
+                "wheel is missing public documentation: "
+                f"{missing_documentation}"
+            )
         entry_points = [
             name for name in names if name.endswith(".dist-info/entry_points.txt")
         ]

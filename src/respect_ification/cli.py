@@ -261,6 +261,14 @@ def build_parser() -> KitArgumentParser:
     repair_plan.add_argument("--testkit-commit", required=True)
     repair_plan.add_argument("--adapter-output", type=Path, required=True)
     repair_plan.add_argument("--prompt-output", type=Path, required=True)
+    repair_plan.add_argument(
+        "--human-todo-output",
+        type=Path,
+        help=(
+            "Write the human delegation checklist here "
+            "(default: Human_ToDo.md beside --prompt-output)."
+        ),
+    )
 
     truth_audit = subparsers.add_parser("truth-audit")
     truth_audit.add_argument("--output", type=Path, required=True)
@@ -446,10 +454,11 @@ def main(argv: Optional[List[str]] = None) -> int:
                 args.prompt_output,
                 testkit_commit=args.testkit_commit,
                 canapp_root=args.canapp_root,
+                human_todo_output=args.human_todo_output,
             )
             print(
                 "Wrote the Kit-time repair adapter and source-derived "
-                "implementation prompt."
+                "implementation prompt, plus its synchronized Human_ToDo.md."
             )
             return 0
         if args.command == "truth-audit":

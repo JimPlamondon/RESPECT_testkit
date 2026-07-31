@@ -592,7 +592,12 @@ def _paths(values: List[str]) -> str:
     return ", ".join(f"`{value}`" for value in values) if values else "(none discovered)"
 
 
-def render_repair_prompt(adapter: Dict[str, Any]) -> str:
+def render_repair_prompt(
+    adapter: Dict[str, Any],
+    *,
+    prompt_path: Optional[Path] = None,
+    human_todo_path: Optional[Path] = None,
+) -> str:
     if adapter.get("artifact_type") != "respect_ification_generated_repair_adapter":
         raise ValueError("repair prompt requires a generated repair adapter")
     if adapter.get("semantic_hash") != canonical_hash(
@@ -616,9 +621,34 @@ def render_repair_prompt(adapter: Dict[str, Any]) -> str:
         f"- source-tree digest: `{analysis.get('source_tree_digest')}`",
         f"- Testkit commit: `{adapter.get('testkit_commit')}`",
         "",
-        "## Discovered implementation seams",
-        "",
     ]
+    if human_todo_path is not None:
+        rendered_prompt_path = (
+            str(prompt_path.resolve()) if prompt_path is not None else "(this prompt)"
+        )
+        lines.extend(
+            [
+                "## Human ToDo handback contract",
+                "",
+                f"This prompt was delegated by `{human_todo_path.resolve()}` and is being read from `{rendered_prompt_path}`.",
+                "",
+                "Before changing the CanApp or its harness, read the current Human ToDo. When this prompt finishes—successfully or because it is blocked—update that same `Human_ToDo.md` file in place:",
+                "",
+                "- mark the prompt-delegation item complete, or blocked with the exact reason;",
+                "- summarize the production-code, build, test, publication, or harness changes actually made;",
+                "- record the verification that was run and its result;",
+                "- replace delegated work with only the remaining human-owned actions, inputs, approvals, deployments, device work, or reruns;",
+                "- if no manual repair remains, say so explicitly and identify the full selected-profile Test Suite rerun still required;",
+                "- never claim certification: only the complete RESPECT Compatible Test Suite may do that.",
+                "",
+            ]
+        )
+    lines.extend(
+        [
+            "## Discovered implementation seams",
+            "",
+        ]
+    )
     for label in (
         "build",
         "manifest",
@@ -704,6 +734,51 @@ def render_repair_prompt(adapter: Dict[str, Any]) -> str:
     return "\n".join(lines)
 
 
+def render_human_todo(
+    adapter: Dict[str, Any],
+    *,
+    prompt_path: Path,
+    prompt_sha256: str,
+) -> str:
+    if adapter.get("artifact_type") != "respect_ification_generated_repair_adapter":
+        raise ValueError("Human ToDo requires a generated repair adapter")
+    if adapter.get("semantic_hash") != canonical_hash(
+        adapter, ("semantic_hash",)
+    ):
+        raise ValueError("repair adapter semantic hash mismatch")
+    row_ids = [
+        str(item.get("row_id"))
+        for item in adapter.get("tasks", [])
+    ]
+    return "\n".join(
+        [
+            "# Human certification recovery ToDo",
+            "",
+            "Status: awaiting delegated repair",
+            "",
+            "This file intentionally contains only the work that still requires human attention. The accompanying implementation prompt owns the source-derived CanApp and harness repair described by the Matrix tasks below.",
+            "",
+            "## Human ToDo",
+            "",
+            f"- [ ] Run the implementation prompt at `{prompt_path.resolve()}`. When it finishes, reopen this file; the prompt executor is required to update this ToDo in place with its result and only the remaining human-owned actions.",
+            "",
+            "## Delegated scope",
+            "",
+            f"- Prompt SHA-256: `{prompt_sha256}`",
+            f"- Repair-adapter semantic hash: `{adapter.get('semantic_hash')}`",
+            f"- Work-plan semantic hash: `{adapter.get('work_plan_semantic_hash')}`",
+            f"- Target digest: `{adapter.get('target_digest')}`",
+            f"- Profile: `{adapter.get('profile_id')}`",
+            f"- Matrix rows: {', '.join(f'`{row_id}`' for row_id in row_ids) or '(none)'}",
+            "",
+            "If the prompt is missing or its SHA-256 differs, do not run it; regenerate the repair plan so this file and the prompt are synchronized.",
+            "",
+            "Completion of this ToDo is not certification. A complete selected-profile RESPECT Compatible Test Suite run remains the certification oracle.",
+            "",
+        ]
+    )
+
+
 def write_repair_adapter(
     work_plan: Dict[str, Any],
     source_root: Path,
@@ -712,6 +787,7 @@ def write_repair_adapter(
     *,
     testkit_commit: str,
     canapp_root: Optional[Path] = None,
+    human_todo_output: Optional[Path] = None,
 ) -> None:
     adapter = build_repair_adapter(
         work_plan,
@@ -719,10 +795,26 @@ def write_repair_adapter(
         testkit_commit=testkit_commit,
         canapp_root=canapp_root,
     )
+    todo_output = human_todo_output or prompt_output.parent / "Human_ToDo.md"
+    prompt_text = render_repair_prompt(
+        adapter,
+        prompt_path=prompt_output,
+        human_todo_path=todo_output,
+    )
+    prompt_sha256 = hashlib.sha256(prompt_text.encode("utf-8")).hexdigest()
     adapter_output.parent.mkdir(parents=True, exist_ok=True)
     prompt_output.parent.mkdir(parents=True, exist_ok=True)
+    todo_output.parent.mkdir(parents=True, exist_ok=True)
     adapter_output.write_text(
         json.dumps(adapter, indent=2, sort_keys=True) + "\n",
         encoding="utf-8",
     )
-    prompt_output.write_text(render_repair_prompt(adapter), encoding="utf-8")
+    prompt_output.write_text(prompt_text, encoding="utf-8")
+    todo_output.write_text(
+        render_human_todo(
+            adapter,
+            prompt_path=prompt_output,
+            prompt_sha256=prompt_sha256,
+        ),
+        encoding="utf-8",
+    )

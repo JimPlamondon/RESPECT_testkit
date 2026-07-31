@@ -2,6 +2,10 @@
 
 The RESPECT-ification Kit turns immutable, Matrix-addressed Test Suite failures into owner-local repair work. The Test Suite does not require CanApp source code or the Kit.
 
+For AI-operated application of the Kit, begin with
+[`../AI_OPERATOR.md`](../AI_OPERATOR.md). The Human-facing entry point is the
+[`../QUICKSTART.md`](../QUICKSTART.md).
+
 The Kit does not determine compatibility. A narrow verifier result is always marked `narrow_non_certifying`; a complete selected-profile Test Suite run is the only compatibility oracle.
 
 The Kit's `truth-audit` command emits a content-bound audit of every canonical Matrix row. The current Matrix contains 87 rows: 57 owned by the Candidate App and therefore eligible for durable product repair, and 30 owned by the publisher, Spix Foundation, RESPECT services, the RESPECT launcher, or the Test Suite and therefore protected from being misassigned to the Candidate App. Every Candidate App repair task inherits its exact positive case, negative case, test action, implementation target, source seams, required evidence class, and forbidden substitutes from that audit. Generation fails if any Matrix row lacks an explicit disposition.
@@ -18,7 +22,7 @@ The `full-test` handback invokes the complete Test Suite and preserves its exit 
 
 For the first repair cycle of a raw native Android Candidate App, `full-test --apk-only --apk <path>` produces the complete Matrix report and repair packet without assuming the app already has the discovery interface that the Kit is meant to add.
 
-When owner-local Candidate App source is available, `repair-plan` creates two owner-local artifacts: a structured Kit-time repair adapter and a source-derived implementation prompt. The general analyzer follows the CanApp's own file references and common build, loading, selection, completion, launch, lifecycle, and Experience API seams. It does not encode any Candidate App's proprietary lesson format.
+When owner-local Candidate App source is available, `repair-plan` creates three owner-local artifacts: a structured Kit-time repair adapter, a source-derived implementation prompt, and `Human_ToDo.md` beside that prompt (or at `--human-todo-output`). The ToDo binds the exact prompt by path and SHA-256 and delegates prompt-covered CanApp and harness work to it instead of duplicating a stale manual checklist. The prompt carries a handback contract requiring its executor to update `Human_ToDo.md` on success or blockage, leaving only genuinely human-owned inputs, approvals, deployments, device work, and reruns. The general analyzer follows the CanApp's own file references and common build, loading, selection, completion, launch, lifecycle, and Experience API seams. It does not encode any Candidate App's proprietary lesson format.
 
 Use `--source-root` for the repository or source collection and, when the CanApp is one project inside it, use `--canapp-root` for that project's relative path. The analyzer scopes product-code signals to the CanApp while following its explicit references to content stored elsewhere in the source collection.
 

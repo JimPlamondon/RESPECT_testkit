@@ -49,6 +49,14 @@ respect_compat = [
 ]
 respect_ification = ["data/publication/*.json", "data/schemas/*.json"]
 
+[tool.setuptools.data-files]
+"share/doc/RESPECT-testkit" = [
+  "docs/*.md",
+]
+"share/doc/RESPECT-testkit/examples" = ["docs/examples/*.md"]
+"share/doc/RESPECT-testkit/respect_compat" = ["docs/respect_compat/*.md"]
+"share/doc/RESPECT-testkit/respect_ification" = ["docs/respect_ification/*.md"]
+
 [tool.pytest.ini_options]
 addopts = "-ra"
 pythonpath = ["src"]

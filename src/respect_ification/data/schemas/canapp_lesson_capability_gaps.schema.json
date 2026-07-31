@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://jims.example/schemas/respect_ification/canapp_lesson_capability_gaps.schema.json",
+  "title": "CanApp Lesson Capability Gaps",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["artifact_type", "format_version", "run_plan_semantic_hash", "gaps", "authority_notice", "semantic_hash"],
+  "properties": {
+    "artifact_type": {"const": "respect_canapp_lesson_capability_gaps"},
+    "format_version": {"const": "1.0.0"},
+    "run_plan_semantic_hash": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "gaps": {"type": "array", "items": {"type": "object"}},
+    "authority_notice": {"type": "string", "minLength": 1},
+    "semantic_hash": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+  }
+}

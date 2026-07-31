@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Add the CanApp Lesson Modeler for evidence-backed interaction families,
+  partial-to-complete lesson selection, ordinary runtime scenario compilation,
+  exact-hash resume, privacy-safe logging, and non-authoritative coverage.
 - Add the AI-first Human QuickStart, normative AI operator contract,
   synchronized prompt/`Human_ToDo.md` workflow, certification and repair
   runbooks, command reference, artifact guide, role routing, troubleshooting,

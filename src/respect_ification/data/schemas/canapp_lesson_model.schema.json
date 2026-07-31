@@ -1,0 +1,78 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://jims.example/schemas/respect_ification/canapp_lesson_model.schema.json",
+  "title": "CanApp Lesson Interaction Model",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["artifact_type", "format_version", "inventory_semantic_hash", "families", "classifications", "lesson_bindings", "semantic_hash"],
+  "properties": {
+    "artifact_type": {"const": "respect_canapp_lesson_model"},
+    "format_version": {"const": "1.0.0"},
+    "inventory_semantic_hash": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "families": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["family_id", "required_capabilities", "parameters", "scenario_template"],
+        "properties": {
+          "family_id": {"type": "string", "minLength": 1, "maxLength": 2048},
+          "required_capabilities": {
+            "type": "array",
+            "uniqueItems": true,
+            "items": {"type": "string", "minLength": 1, "maxLength": 128}
+          },
+          "parameters": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["type"],
+              "properties": {
+                "type": {"enum": ["string", "integer", "boolean", "object", "array", "number"]},
+                "sensitive": {"type": "boolean"}
+              }
+            }
+          },
+          "scenario_template": {"type": "object"}
+        }
+      }
+    },
+    "classifications": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["lesson_id", "status"],
+        "properties": {
+          "lesson_id": {"type": "string", "minLength": 1, "maxLength": 2048},
+          "status": {"enum": ["classified", "unclassified", "excluded"]},
+          "family_id": {"type": "string", "minLength": 1, "maxLength": 2048},
+          "reason": {"type": "string", "minLength": 1, "maxLength": 4096},
+          "evidence": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": true,
+              "required": ["kind"],
+              "properties": {"kind": {"type": "string", "minLength": 1}}
+            }
+          }
+        }
+      }
+    },
+    "lesson_bindings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["lesson_id", "values"],
+        "properties": {
+          "lesson_id": {"type": "string", "minLength": 1, "maxLength": 2048},
+          "values": {"type": "object"}
+        }
+      }
+    },
+    "semantic_hash": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+  }
+}

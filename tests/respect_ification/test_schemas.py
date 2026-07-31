@@ -11,6 +11,13 @@ def test_runtime_schemas_compile():
     root = resource("data/schemas")
     schemas = sorted(root.iterdir(), key=lambda item: item.name)
     assert {item.name for item in schemas} == {
+        "canapp_lesson_capability_gaps.schema.json",
+        "canapp_lesson_coverage.schema.json",
+        "canapp_lesson_inventory.schema.json",
+        "canapp_lesson_model.schema.json",
+        "canapp_lesson_modeling_packet.schema.json",
+        "canapp_lesson_run_plan.schema.json",
+        "canapp_lesson_selection.schema.json",
         "evidence_manifest.schema.json",
         "ledger_event.schema.json",
         "private_prep.schema.json",

@@ -126,6 +126,24 @@ Runs the complete Test Suite in certification mode and preserves its exit code
 and verdict. It supports the same target and runtime evidence options as
 `respect-compat`.
 
+### `lesson-model`
+
+Runs the CanApp Lesson Modeler:
+
+- `analyze`: bind an owner-local inventory to private source hashes and write
+  a modeling prompt plus `Human_ToDo.md`;
+- `validate`: validate schemas, semantic hashes, and artifact consistency;
+- `compile`: resolve a lesson/course/family/all selection and compile ordinary
+  TestKit runtime scenarios;
+- `execute`: run the existing complete selected profile once per compiled
+  lesson and preserve every child report;
+- `status`: write exact modeling, compilation, and execution coverage.
+
+Every action writes the mandatory execution log. The parent batch index is
+non-authoritative, resume is exact-hash-bound, and any non-passing selected
+lesson makes the batch exit nonzero. See
+[CANAPP_LESSON_MODELER.md](respect_ification/CANAPP_LESSON_MODELER.md).
+
 ## Exit codes
 
 See [ARTIFACTS_AND_REPORTS.md](ARTIFACTS_AND_REPORTS.md). In particular, 2

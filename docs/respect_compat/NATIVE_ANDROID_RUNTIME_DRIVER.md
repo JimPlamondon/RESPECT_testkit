@@ -93,3 +93,11 @@ Experience API evidence must result from the catalog-selected lesson's real runt
 The action fails closed if the submitted CanApp has no package-bound debuggable WebView, if the package exposes zero or multiple visible pages, or if the selector resolves to zero or multiple visible elements. The per-action timeout is at most 10 seconds and the scenario total is at most 60 seconds. The execution log records a receipt that binds the page origin, hashed page path and title, viewport, element geometry, selector hash, action hash, scenario nonce, and submitted package. Query strings, fragments, visible text, and matched attribute values are not written to the receipt. The selector and expected value remain CanApp-owned facts in the owner-local scenario.
 
 Certification mode still requires the complete selected-profile run. Static APK checks, source inspection, generated prompts, companion builds, and narrow verification remain non-certifying. An attributable emulator run may satisfy the functional Matrix rows it actually exercises, but the overall approval is `Provisional (emulated Android runtime)` until the affected device scenarios are repeated on an approved attributable physical Android device. The report preserves the passing row outcomes and records the emulation provision, affected rows, evidence environment, clearance action, rerun scope, and responsible party separately.
+
+## CanApp Lesson Modeler
+
+The owner-local CanApp Lesson Modeler may compile typed interaction-family
+templates into this exact scenario format. It does not add actions, bypass this
+validator, or interpret what an interaction means. Each selected compiled
+lesson is still an ordinary independent TestKit run. See
+`docs/respect_ification/CANAPP_LESSON_MODELER.md`.

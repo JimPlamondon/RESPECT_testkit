@@ -122,3 +122,15 @@ Repair is complete only when:
 
 The full run's exact verdict supersedes no prior evidence; it establishes the
 current target's status.
+
+## CanApp Lesson Modeler
+
+Use `respect-ification lesson-model` when the CanApp's lesson inventory needs
+repeatable partial, course, family, or complete-inventory runtime coverage. The
+Modeler keeps lesson facts owner-local, compiles through the existing scenario
+validator, and invokes one ordinary complete selected-profile run per
+compilable selected lesson.
+
+Per-lesson reports remain authoritative. Coverage and the batch index are
+non-authoritative. Sampling a family does not equal executing every lesson.
+See [CANAPP_LESSON_MODELER.md](respect_ification/CANAPP_LESSON_MODELER.md).

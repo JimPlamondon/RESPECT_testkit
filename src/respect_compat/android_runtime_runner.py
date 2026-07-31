@@ -31,6 +31,9 @@ GESTURE_INSTRUMENTATION = (
 DRIVER_PROTOCOL_VERSION = "1.0.0"
 RUNTIME_RECEIPT_VERSION = "1.1.0"
 SCENARIO_FORMAT_VERSIONS = {"1.0.0", "1.1.0", "1.2.0"}
+SCENARIO_ACTION_TYPES = frozenset(
+    {"wait", "tap", "keyevent", "stroke", "webview_tap"}
+)
 ACQUISITION_PREFIX = "http://opds-spec.org/acquisition"
 DEFAULT_CATALOG_REL = (
     "https://respect.ustadmobile.com/ns/default-lesson-catalog"
@@ -125,6 +128,11 @@ def domain_is_verified(association: str, host: str) -> bool:
 
 def load_runtime_scenario(path: Path) -> Dict[str, Any]:
     value = json.loads(path.read_text(encoding="utf-8"))
+    return validate_runtime_scenario(value)
+
+
+def validate_runtime_scenario(value: Any) -> Dict[str, Any]:
+    """Validate and normalize one in-memory native runtime scenario."""
     if not isinstance(value, dict):
         raise ValueError("runtime scenario must be a JSON object")
     if value.get("artifact_type") != "respect_native_android_runtime_scenario":

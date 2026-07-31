@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://jims.example/schemas/respect_ification/canapp_lesson_inventory.schema.json",
+  "title": "CanApp Lesson Inventory",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["artifact_type", "format_version", "source_digest", "lessons", "semantic_hash"],
+  "properties": {
+    "artifact_type": {"const": "respect_canapp_lesson_inventory"},
+    "format_version": {"const": "1.0.0"},
+    "source_digest": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "lessons": {
+      "type": "array",
+      "maxItems": 1000000,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["lesson_id"],
+        "properties": {
+          "lesson_id": {"type": "string", "minLength": 1, "maxLength": 2048},
+          "course_id": {"type": "string", "minLength": 1, "maxLength": 2048},
+          "unit_id": {"type": "string", "minLength": 1, "maxLength": 2048},
+          "locale": {"type": "string", "minLength": 1, "maxLength": 128},
+          "version": {"type": "string", "minLength": 1, "maxLength": 256},
+          "source": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["path", "sha256"],
+            "properties": {
+              "path": {"type": "string", "minLength": 1, "maxLength": 4096},
+              "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+            }
+          },
+          "acquisition": {"type": "object"},
+          "owner_metadata": {
+            "type": "object",
+            "propertyNames": {"pattern": "^[^:]+:.+$"}
+          }
+        }
+      }
+    },
+    "semantic_hash": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+  }
+}

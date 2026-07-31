@@ -11,7 +11,10 @@ from typing import Any, Dict, List, Optional
 
 from respect_compat.cli import main as suite_main
 from respect_compat.android_apk import inspect_apk, probe_android_device
-from respect_compat.android_runtime_runner import run_native_android_runtime
+from respect_compat.android_runtime_runner import (
+    SCENARIO_ACTION_TYPES,
+    run_native_android_runtime,
+)
 from respect_compat.handoff import canonical_hash
 from respect_compat.execution_log import (
     ExecutionLog,
@@ -28,6 +31,16 @@ from respect_compat.target import (
 )
 
 from .ledger import append_event, read_ledger
+from .lesson_modeler import (
+    build_coverage,
+    build_modeling_packet,
+    compile_run_plan,
+    read_artifact as read_lesson_artifact,
+    run_lesson_batch,
+    validate_artifact as validate_lesson_artifact,
+    write_artifact as write_lesson_artifact,
+    write_modeling_handback,
+)
 from .planner import build_work_plan, validate_work_plan
 from .prep import generate_prep, write_prep
 from .publication_pack import (
@@ -97,6 +110,12 @@ def _add_target(parser: argparse.ArgumentParser) -> None:
         ),
     )
     parser.add_argument("--certification-key-state-dir", type=Path)
+
+
+def _add_lesson_model_inputs(parser: argparse.ArgumentParser) -> None:
+    parser.add_argument("--inventory", type=Path, required=True)
+    parser.add_argument("--model", type=Path, required=True)
+    parser.add_argument("--selection", type=Path, required=True)
 
 
 def _load_target(
@@ -289,6 +308,53 @@ def build_parser() -> KitArgumentParser:
 
     truth_audit = subparsers.add_parser("truth-audit")
     truth_audit.add_argument("--output", type=Path, required=True)
+
+    lesson_model = subparsers.add_parser(
+        "lesson-model",
+        help=(
+            "Run the CanApp Lesson Modeler without adding CanApp facts "
+            "to the TestKit."
+        ),
+    )
+    lesson_actions = lesson_model.add_subparsers(
+        dest="lesson_model_action", required=True
+    )
+
+    lesson_analyze = lesson_actions.add_parser("analyze")
+    lesson_analyze.add_argument("--source-root", type=Path, required=True)
+    lesson_analyze.add_argument("--inventory", type=Path, required=True)
+    lesson_analyze.add_argument("--output-dir", type=Path, required=True)
+
+    lesson_validate = lesson_actions.add_parser("validate")
+    lesson_validate.add_argument(
+        "--artifact", type=Path, action="append", required=True
+    )
+    lesson_validate.add_argument("--output-dir", type=Path, required=True)
+
+    lesson_compile = lesson_actions.add_parser("compile")
+    _add_lesson_model_inputs(lesson_compile)
+    lesson_compile.add_argument("--testkit-commit", required=True)
+    lesson_compile.add_argument("--target-id", required=True)
+    lesson_compile.add_argument("--target-digest", required=True)
+    lesson_compile.add_argument("--profile", required=True)
+    lesson_compile.add_argument(
+        "--available-capability",
+        action="append",
+        choices=sorted(SCENARIO_ACTION_TYPES),
+    )
+    lesson_compile.add_argument("--output-dir", type=Path, required=True)
+
+    lesson_execute = lesson_actions.add_parser("execute")
+    lesson_execute.add_argument("--run-plan", type=Path, required=True)
+    lesson_execute.add_argument("--resume", action="store_true")
+    lesson_execute.add_argument("--output-dir", type=Path, required=True)
+    _add_target(lesson_execute)
+
+    lesson_status = lesson_actions.add_parser("status")
+    _add_lesson_model_inputs(lesson_status)
+    lesson_status.add_argument("--run-plan", type=Path, required=True)
+    lesson_status.add_argument("--batch-index", type=Path)
+    lesson_status.add_argument("--output-dir", type=Path, required=True)
 
     publication_pack = subparsers.add_parser("publication-pack")
     publication_pack.add_argument("--manifest", type=Path, required=True)
@@ -534,6 +600,257 @@ def main(argv: Optional[List[str]] = None) -> int:
                 "retain their non-CanApp owner."
             )
             return finish(0)
+        if args.command == "lesson-model":
+            if args.lesson_model_action == "analyze":
+                with event_log.step("read_lesson_inventory"):
+                    inventory = read_lesson_artifact(
+                        args.inventory, "inventory"
+                    )
+                with event_log.step("build_lesson_modeling_packet"):
+                    packet = build_modeling_packet(
+                        args.source_root, inventory
+                    )
+                with event_log.step("write_lesson_modeling_handback"):
+                    write_lesson_artifact(
+                        args.output_dir
+                        / "canapp-lesson-modeling-packet.json",
+                        packet,
+                    )
+                    write_modeling_handback(
+                        packet,
+                        args.output_dir
+                        / "canapp-lesson-modeling-prompt.md",
+                        args.output_dir / "Human_ToDo.md",
+                    )
+                print(
+                    "Wrote the private, source-bound CanApp Lesson "
+                    "Modeler packet and handback."
+                )
+                return finish(0)
+            if args.lesson_model_action == "validate":
+                with event_log.step("validate_lesson_model_artifacts"):
+                    artifacts = [
+                        read_lesson_artifact(path)
+                        for path in args.artifact
+                    ]
+                receipt = {
+                    "artifact_type": (
+                        "respect_canapp_lesson_model_validation_receipt"
+                    ),
+                    "format_version": "1.0.0",
+                    "artifacts": [
+                        {
+                            "artifact_type": item["artifact_type"],
+                            "semantic_hash": item["semantic_hash"],
+                        }
+                        for item in artifacts
+                    ],
+                    "valid": True,
+                }
+                with event_log.step("write_lesson_validation_receipt"):
+                    _write(
+                        args.output_dir
+                        / "canapp-lesson-model-validation.json",
+                        receipt,
+                    )
+                print(f"Validated {len(artifacts)} lesson-model artifacts.")
+                return finish(0)
+            if args.lesson_model_action == "compile":
+                with event_log.step("read_lesson_model_inputs"):
+                    inventory = read_lesson_artifact(
+                        args.inventory, "inventory"
+                    )
+                    model = read_lesson_artifact(args.model, "model")
+                    selection = read_lesson_artifact(
+                        args.selection, "selection"
+                    )
+                with event_log.step("compile_lesson_run_plan"):
+                    run_plan = compile_run_plan(
+                        inventory,
+                        model,
+                        selection,
+                        testkit_commit=args.testkit_commit,
+                        target_id=args.target_id,
+                        target_digest=args.target_digest,
+                        profile_id=args.profile,
+                        available_capabilities=set(
+                            args.available_capability
+                            or SCENARIO_ACTION_TYPES
+                        ),
+                        event=event_log.emit,
+                    )
+                with event_log.step("write_lesson_run_plan"):
+                    write_lesson_artifact(
+                        args.output_dir / "canapp-lesson-run-plan.json",
+                        run_plan,
+                    )
+                    gap_artifact = {
+                        "artifact_type": (
+                            "respect_canapp_lesson_capability_gaps"
+                        ),
+                        "format_version": "1.0.0",
+                        "run_plan_semantic_hash": (
+                            run_plan["semantic_hash"]
+                        ),
+                        "gaps": run_plan["capability_gaps"],
+                        "authority_notice": (
+                            "Generic capability gaps require separate "
+                            "TestKit review and do not modify the TestKit."
+                        ),
+                    }
+                    gap_artifact["semantic_hash"] = canonical_hash(
+                        gap_artifact
+                    )
+                    write_lesson_artifact(
+                        args.output_dir
+                        / "canapp-lesson-capability-gaps.json",
+                        gap_artifact,
+                    )
+                    for index, entry in enumerate(run_plan["entries"]):
+                        if entry["status"] != "compiled":
+                            continue
+                        digest = hashlib.sha256(
+                            entry["lesson_id"].encode("utf-8")
+                        ).hexdigest()[:16]
+                        _write(
+                            args.output_dir
+                            / "compiled-scenarios"
+                            / f"{index:06d}-{digest}.json",
+                            entry["scenario"],
+                        )
+                blocked = sum(
+                    entry["status"] != "compiled"
+                    for entry in run_plan["entries"]
+                )
+                print(
+                    f"Compiled {len(run_plan['entries']) - blocked} "
+                    f"of {len(run_plan['entries'])} selected lessons."
+                )
+                return finish(0 if blocked == 0 else 2)
+            if args.lesson_model_action == "execute":
+                with event_log.step("read_lesson_run_plan"):
+                    run_plan = read_lesson_artifact(
+                        args.run_plan, "run_plan"
+                    )
+                if (
+                    not args.apk
+                    or not args.device_id
+                    or not args.runtime_driver_apk
+                    or not args.runtime_driver_receipt
+                ):
+                    raise ValueError(
+                        "lesson execution requires --apk, --device-id, "
+                        "--runtime-driver-apk, and "
+                        "--runtime-driver-receipt"
+                    )
+                if args.runtime_scenario:
+                    raise ValueError(
+                        "--runtime-scenario is generated by the lesson "
+                        "run plan and must not be supplied"
+                    )
+
+                def child_runner(entry, child_dir, child_event):
+                    scenario_path = child_dir / "runtime-scenario.json"
+                    _write(scenario_path, entry["scenario"])
+                    suite_args = _suite_target_args(args)
+                    suite_args.extend(
+                        [
+                            "--runtime-scenario",
+                            str(scenario_path),
+                            "--profile",
+                            run_plan["profile_id"],
+                            "--mode",
+                            "certification",
+                            "--output-dir",
+                            str(child_dir),
+                        ]
+                    )
+                    exit_code = suite_main(suite_args)
+                    report_path = child_dir / "respect-report.json"
+                    if not report_path.is_file():
+                        raise ValueError(
+                            "child TestKit did not write its report"
+                        )
+                    report = _read(report_path)
+                    summary = report.get("summary", {})
+                    if exit_code == 0:
+                        outcome = "passed"
+                    elif summary.get("fail", 0):
+                        outcome = "failed"
+                    elif summary.get("incomplete", 0):
+                        outcome = "incomplete"
+                    else:
+                        outcome = "blocked"
+                    child_event(
+                        "child_testkit_report",
+                        "observed",
+                        {
+                            "report_core_hash": report.get("core_hash"),
+                            "exit_code": exit_code,
+                            "outcome": outcome,
+                        },
+                    )
+                    return {
+                        "lesson_id": entry["lesson_id"],
+                        "scenario_sha256": entry["scenario_sha256"],
+                        "exit_code": exit_code,
+                        "outcome": outcome,
+                    }
+
+                with event_log.step("execute_lesson_batch"):
+                    batch = run_lesson_batch(
+                        run_plan,
+                        args.output_dir,
+                        child_runner,
+                        resume=args.resume,
+                        event=event_log.emit,
+                    )
+                print(
+                    f"Indexed {len(batch['children'])} per-lesson TestKit "
+                    "runs; the batch index is non-authoritative."
+                )
+                return finish(batch["exit_code"])
+            if args.lesson_model_action == "status":
+                with event_log.step("read_lesson_status_inputs"):
+                    inventory = read_lesson_artifact(
+                        args.inventory, "inventory"
+                    )
+                    model = read_lesson_artifact(args.model, "model")
+                    selection = read_lesson_artifact(
+                        args.selection, "selection"
+                    )
+                    run_plan = read_lesson_artifact(
+                        args.run_plan, "run_plan"
+                    )
+                outcomes = {}
+                if args.batch_index:
+                    batch = _read(args.batch_index)
+                    if (
+                        batch.get("run_plan_semantic_hash")
+                        != run_plan["semantic_hash"]
+                    ):
+                        raise ValueError(
+                            "batch index does not match the lesson run plan"
+                        )
+                    outcomes = {
+                        child["lesson_id"]: child["outcome"]
+                        for child in batch["children"]
+                    }
+                with event_log.step("build_lesson_coverage"):
+                    coverage = build_coverage(
+                        inventory,
+                        model,
+                        selection,
+                        run_plan,
+                        outcomes,
+                    )
+                with event_log.step("write_lesson_coverage"):
+                    write_lesson_artifact(
+                        args.output_dir / "canapp-lesson-coverage.json",
+                        coverage,
+                    )
+                print(json.dumps(coverage["counts"], sort_keys=True))
+                return finish(0)
         if args.command == "publication-pack":
             with event_log.step("read_publication_manifest"):
                 manifest = _read(args.manifest)

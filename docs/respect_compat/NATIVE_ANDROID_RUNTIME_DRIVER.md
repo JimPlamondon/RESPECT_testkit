@@ -33,7 +33,7 @@ For a Kit-emitted provisional HTTPS origin signed by a local certification autho
 
 The scenario is owner-local JSON (JavaScript Object Notation) with artifact type `respect_native_android_runtime_scenario`, the CanApp and driver packages, controlled endpoint, authorization, actor, activity identifier, expected production HTTPS launch URL, and a bounded action list. The controller resolves the submitted descriptor and default lesson catalog, selects exactly one publication whose identifier equals the scenario activity identifier, derives the launch base from that publication's single acquisition link, and appends only the standard RESPECT launch parameters. The expected launch URL must exactly match that derived URL. An owner-selected alternate path, hidden diagnostic parameter, invented activity identifier, fragment, or prepopulated reserved parameter is rejected before device mutation.
 
-Scenario format `1.0.0` permits wait, coordinate tap, and the `BACK`, `ENTER`, or `HOME` key events. Format `1.1.0` adds `stroke`. Arbitrary shell commands are rejected.
+Scenario format `1.0.0` permits wait, coordinate tap, and the `BACK`, `ENTER`, or `HOME` key events. Format `1.1.0` adds `stroke`. Format `1.2.0` adds `webview_tap`. Arbitrary shell commands and arbitrary JavaScript are rejected.
 
 ## Generic stroke vocabulary
 
@@ -74,5 +74,22 @@ Each stroke has 2–256 points, starts at `at_ms: 0`, uses strictly increasing t
 The instrumentation component is fixed by TestKit; scenario data cannot select another component or provide a shell command. The build receipt must bind the gesture APK to the running TestKit source. Every action emits started/completed or started/failed records into the mandatory TestKit execution log.
 
 Experience API evidence must result from the catalog-selected lesson's real runtime lifecycle. A successfully injected stroke proves only that the declared touch path was delivered. It does not by itself prove that the lesson recognized the trace or completed. Debug-only triggers, manufactured lesson snapshots, and canned completion sequences are diagnostic evidence and cannot satisfy CanApp conformance rows.
+
+## Generic visible WebView selection
+
+`webview_tap` selects exactly one currently visible Document Object Model element and delivers a real touch at its center through the WebView debugging protocol. The owner-local scenario may combine an exact element tag name, normalized visible text, and one exact attribute name/value pair. TestKit accepts only bounded declarative selector fields; the scenario cannot supply JavaScript, a Cascading Style Sheets selector, a debugging endpoint, or a browser command.
+
+```json
+{
+  "type": "webview_tap",
+  "selector": {
+    "tag_name": "example-answer",
+    "attribute": {"name": "value", "value": "3"}
+  },
+  "timeout_ms": 5000
+}
+```
+
+The action fails closed if the submitted CanApp has no package-bound debuggable WebView, if the package exposes zero or multiple visible pages, or if the selector resolves to zero or multiple visible elements. The per-action timeout is at most 10 seconds and the scenario total is at most 60 seconds. The execution log records a receipt that binds the page origin, hashed page path and title, viewport, element geometry, selector hash, action hash, scenario nonce, and submitted package. Query strings, fragments, visible text, and matched attribute values are not written to the receipt. The selector and expected value remain CanApp-owned facts in the owner-local scenario.
 
 Certification mode still requires the complete selected-profile run. Static APK checks, source inspection, generated prompts, companion builds, and narrow verification remain non-certifying. An attributable emulator run may satisfy the functional Matrix rows it actually exercises, but the overall approval is `Provisional (emulated Android runtime)` until the affected device scenarios are repeated on an approved attributable physical Android device. The report preserves the passing row outcomes and records the emulation provision, affected rows, evidence environment, clearance action, rerun scope, and responsible party separately.

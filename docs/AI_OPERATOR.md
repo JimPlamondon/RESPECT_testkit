@@ -119,16 +119,29 @@ respect-ification full-test \
 Use `--ca-cert` only for an explicitly provisioned local certification
 authority. Hostname and certificate validation remain required.
 
+For native Android lessons that require tracing, drawing, dragging, or
+handwriting, use a format `1.1.0` owner-local runtime scenario with bounded
+`stroke` actions. Keep lesson identifiers, accessibility selectors, and path
+geometry in the CanApp workspace; do not add them to TestKit. Build the
+suite-owned xAPI and gesture APKs together, pass the gesture APK with
+`--runtime-gesture-apk`, and retain the build receipt. A gesture receipt proves
+injection of the declared path, not lesson recognition or completion. See
+`docs/respect_compat/NATIVE_ANDROID_RUNTIME_DRIVER.md`.
+
 Read:
 
 - `respect-report.txt` for the human summary;
 - `respect-report.json` for the authoritative structured run;
 - `respect-evidence-manifest.json` for sanitized evidence;
 - `respect-ification-task-packet.json` for CanApp repair work;
+- `respect-execution-log.jsonl` for the chronological, hash-chained execution
+  record, including every selected Matrix row;
 - `junit.xml` for automation.
 
 Interpret exit codes using [ARTIFACTS_AND_REPORTS.md](ARTIFACTS_AND_REPORTS.md).
 An exit code of 2 is a non-final outcome, not a process crash.
+The execution log is mandatory and cannot be disabled. Preserve it with every
+run, including unsuccessful and non-final runs.
 
 ## 4. Route the outcome before changing anything
 

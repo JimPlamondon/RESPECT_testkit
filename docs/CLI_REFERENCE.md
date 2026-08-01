@@ -4,6 +4,12 @@ The CLI parser is the syntax authority. Run `COMMAND --help` and
 `respect-ification SUBCOMMAND --help` for the installed version. This page
 explains intent, groups, and exit behavior.
 
+Every `respect-compat` run and every `respect-ification` subcommand writes a
+mandatory hash-chained JSON Lines execution log. Full runs write
+`respect-execution-log.jsonl` inside `--output-dir`; other commands place the
+log beside their primary output. See
+[ARTIFACTS_AND_REPORTS.md](ARTIFACTS_AND_REPORTS.md).
+
 ## Test Suite commands
 
 ### `respect-compat`
@@ -21,6 +27,8 @@ Important groups:
 
 - Native runtime: `--runtime-driver-apk`, `--runtime-driver-receipt`, and
   `--runtime-scenario` must appear together with `--apk` and `--device-id`.
+  A format `1.1.0` scenario containing `stroke` also requires the
+  receipt-bound `--runtime-gesture-apk`.
 - RESPECT Platform: `--respect-platform-apk`,
   `--respect-platform-build-receipt`, and
   `--respect-platform-scenario` must appear together with `--device-id`.
@@ -43,7 +51,7 @@ cache.
 
 - `respect-matrix-validate`: validate the canonical Matrix.
 - `respect-runtime-driver-build`: build and receipt-bind the suite-owned
-  Android companion.
+  Android xAPI companion and bounded-gesture injector.
 - `respect-platform-receipt`: bind a RESPECT APK to a clean source revision.
 - `respect-platform-adb-provider`: execute bounded platform observation
   workflows.

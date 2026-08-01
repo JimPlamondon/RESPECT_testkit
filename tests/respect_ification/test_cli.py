@@ -4,11 +4,31 @@
 import json
 import hashlib
 
+import pytest
+
 from respect_compat.handoff import canonical_hash
 from respect_compat.matrix_runtime import load_matrix
 from respect_ification.cli import main
 from respect_ification.publication_pack import build_publication_pack
 from respect_compat.resources import resource
+
+
+def test_rejected_invocation_is_always_logged(tmp_path, monkeypatch):
+    monkeypatch.setenv("RESPECT_TESTKIT_LOG_DIR", str(tmp_path))
+
+    with pytest.raises(SystemExit) as error:
+        main(["not-a-command"])
+
+    assert error.value.code == 64
+    logs = list(tmp_path.glob("*.jsonl"))
+    assert len(logs) == 1
+    events = [
+        json.loads(line)
+        for line in logs[0].read_text(encoding="utf-8").splitlines()
+    ]
+    assert events[-2]["step"] == "argument_parsing"
+    assert events[-2]["status"] == "failed"
+    assert events[-1]["details"]["exit_code"] == 64
 
 
 def test_prepare_cli_writes_public_and_private_packets(tmp_path):
@@ -61,6 +81,26 @@ def test_full_test_cli_preserves_test_suite_verdict(tmp_path):
     assert report["verdict"]["display"] == "Not certified"
     assert (output / "respect-evidence-manifest.json").is_file()
     assert (output / "respect-ification-task-packet.json").is_file()
+    execution_log = output / "respect-execution-log.jsonl"
+    assert execution_log.is_file()
+    events = [
+        json.loads(line)
+        for line in execution_log.read_text(encoding="utf-8").splitlines()
+    ]
+    selected = report["coverage"]["selected"]
+    for row_id in selected:
+        row_events = [
+            event
+            for event in events
+            if event["step"] == f"matrix_row:{row_id}"
+        ]
+        assert [event["status"] for event in row_events] == [
+            "started",
+            "completed",
+        ]
+    assert events[-1]["step"] == "invocation"
+    assert events[-1]["status"] == "completed"
+    assert events[-1]["details"]["exit_code"] == 2
 
 
 def test_full_test_reuses_one_testing_certification_key(tmp_path):

@@ -5,6 +5,7 @@ import argparse
 import hashlib
 import json
 import secrets
+import sys
 from pathlib import Path
 from typing import List, Optional
 
@@ -17,6 +18,7 @@ from .certification_keys import ensure_testing_certification_key
 from .fake_launcher import build_launch_session
 from .fake_lrs import FakeLrs
 from .engine import execute
+from .execution_log import ExecutionLog, execution_log_path_from_argv
 from .executors import build_registry
 from .fixture_loader import FixtureCase, load_fixture, read_json
 from .manifest_validator import load_manifest, validate_manifest
@@ -76,7 +78,22 @@ def run_fixture(case: FixtureCase, profile_name: str, mode: str, output_dir: Opt
     return results
 
 
-def main(argv: Optional[list[str]] = None) -> int:
+def main(
+    argv: Optional[list[str]] = None,
+    execution_log: Optional[ExecutionLog] = None,
+) -> int:
+    raw_argv = list(argv if argv is not None else sys.argv[1:])
+    owns_log = execution_log is None
+    event_log = execution_log or ExecutionLog(
+        execution_log_path_from_argv(
+            raw_argv, command="suite", suite=True
+        ),
+        program="respect-compat",
+        command="suite",
+        argv=raw_argv,
+    )
+    if owns_log:
+        print(f"Execution log: {event_log.path}", file=sys.stderr)
     parser = SuiteArgumentParser(
         description="Run the Matrix-driven RESPECT Compatible Test Suite against one CanApp."
     )
@@ -94,6 +111,7 @@ def main(argv: Optional[list[str]] = None) -> int:
     )
     parser.add_argument("--device-id")
     parser.add_argument("--runtime-driver-apk", type=Path)
+    parser.add_argument("--runtime-gesture-apk", type=Path)
     parser.add_argument("--runtime-driver-receipt", type=Path)
     parser.add_argument("--runtime-scenario", type=Path)
     parser.add_argument("--respect-platform-apk", type=Path)
@@ -121,9 +139,29 @@ def main(argv: Optional[list[str]] = None) -> int:
     )
     parser.add_argument("--mode", choices=sorted(["certification", "test", "replay"]), required=True)
     parser.add_argument("--output-dir", type=Path, required=True)
-    args = parser.parse_args(argv)
+    try:
+        args = parser.parse_args(raw_argv)
+    except SystemExit as error:
+        event_log.emit(
+            "argument_parsing",
+            "failed" if error.code else "completed",
+            {"exit_code": error.code},
+        )
+        event_log.finish(int(error.code or 0))
+        raise
+    event_log.emit(
+        "arguments",
+        "validated",
+        {"profile": args.profile, "mode": args.mode},
+    )
+
+    def argument_error(message: str) -> None:
+        event_log.emit("arguments", "failed", {"error": message})
+        event_log.finish(64)
+        parser.error(message)
+
     if args.mode == "certification" and args.run_seed:
-        parser.error("--run-seed is forbidden in certification mode")
+        argument_error("--run-seed is forbidden in certification mode")
     challenge = args.challenge or (
         hashlib.sha256(
             f"{args.run_seed}:challenge".encode("utf-8")
@@ -132,19 +170,23 @@ def main(argv: Optional[list[str]] = None) -> int:
         else secrets.token_hex(24)
     )
     if len(challenge) < 16:
-        parser.error("--challenge must contain at least 16 characters")
+        argument_error("--challenge must contain at least 16 characters")
     runtime_values = (
         args.runtime_driver_apk,
         args.runtime_driver_receipt,
         args.runtime_scenario,
     )
+    if args.runtime_gesture_apk and not all(runtime_values):
+        argument_error(
+            "--runtime-gesture-apk requires the complete native runtime group"
+        )
     if any(runtime_values) and not all(runtime_values):
-        parser.error(
+        argument_error(
             "--runtime-driver-apk, --runtime-driver-receipt, and "
             "--runtime-scenario must be supplied together"
         )
     if args.runtime_driver_apk and (not args.apk or not args.device_id):
-        parser.error(
+        argument_error(
             "native runtime execution requires --apk and --device-id"
         )
     platform_values = (
@@ -153,36 +195,38 @@ def main(argv: Optional[list[str]] = None) -> int:
         args.respect_platform_scenario,
     )
     if any(platform_values) and not all(platform_values):
-        parser.error(
+        argument_error(
             "--respect-platform-apk, "
             "--respect-platform-build-receipt, and "
             "--respect-platform-scenario must be supplied together"
         )
     if args.respect_platform_apk and not args.device_id:
-        parser.error(
+        argument_error(
             "RESPECT Platform runtime execution requires --device-id"
         )
     try:
-        matrix = load_matrix()
-        matrix.resolve_profile(args.profile)
-        if args.apk_only:
-            if not args.apk:
-                parser.error("--apk-only requires --apk")
-            target = load_apk_target(args.apk)
-        elif args.fixture_dir:
-            target = load_fixture_target(Path(args.fixture_dir), apk=args.apk)
-        elif args.manifest_url:
-            target = load_url_target(
-                args.manifest_url,
-                apk=args.apk,
-                ca_cert=args.ca_cert,
-            )
-        else:
-            target = load_server_target(
-                args.server_base_url,
-                apk=args.apk,
-                ca_cert=args.ca_cert,
-            )
+        with event_log.step("load_matrix", {"profile": args.profile}):
+            matrix = load_matrix()
+            matrix.resolve_profile(args.profile)
+        with event_log.step("load_target"):
+            if args.apk_only:
+                if not args.apk:
+                    argument_error("--apk-only requires --apk")
+                target = load_apk_target(args.apk)
+            elif args.fixture_dir:
+                target = load_fixture_target(Path(args.fixture_dir), apk=args.apk)
+            elif args.manifest_url:
+                target = load_url_target(
+                    args.manifest_url,
+                    apk=args.apk,
+                    ca_cert=args.ca_cert,
+                )
+            else:
+                target = load_server_target(
+                    args.server_base_url,
+                    apk=args.apk,
+                    ca_cert=args.ca_cert,
+                )
         key_path = args.spix_public_key
         if key_path is None:
             key_state_dir = (
@@ -217,7 +261,12 @@ def main(argv: Optional[list[str]] = None) -> int:
             spix_public_key=key_path,
         )
     except (FileNotFoundError, json.JSONDecodeError, ValueError, OSError) as error:
-        parser.error(str(error))
+        event_log.emit(
+            "input_preparation",
+            "failed",
+            {"error_type": type(error).__name__, "error": str(error)},
+        )
+        argument_error(str(error))
     if args.device_id:
         device_probe = probe_android_device(args.device_id)
         target.metadata["device_id"] = args.device_id
@@ -231,9 +280,11 @@ def main(argv: Optional[list[str]] = None) -> int:
                 device_id=args.device_id,
                 driver_apk=args.runtime_driver_apk,
                 driver_receipt=args.runtime_driver_receipt,
+                gesture_apk=args.runtime_gesture_apk,
                 scenario_path=args.runtime_scenario,
                 scenario_nonce=challenge,
                 certification_mode=args.mode == "certification",
+                execution_event=event_log.emit,
             )
             target.capabilities.add("controlled_android_runtime")
         except (FileNotFoundError, json.JSONDecodeError, OSError, RuntimeError, ValueError) as error:
@@ -257,24 +308,31 @@ def main(argv: Optional[list[str]] = None) -> int:
             ValueError,
         ) as error:
             parser.error(str(error))
-    run = execute(
-        matrix,
-        target,
-        args.profile,
-        args.mode,
-        build_registry(matrix),
-        run_seed=args.run_seed,
-        challenge=challenge,
-    )
-    write_suite_reports(run, args.output_dir)
-    verification_errors = verify_suite_payload(suite_json_payload(run))
+    with event_log.step("matrix_execution"):
+        run = execute(
+            matrix,
+            target,
+            args.profile,
+            args.mode,
+            build_registry(matrix),
+            run_seed=args.run_seed,
+            challenge=challenge,
+            execution_event=event_log.emit,
+        )
+    with event_log.step("write_reports", {"output_dir": str(args.output_dir)}):
+        write_suite_reports(run, args.output_dir)
+    with event_log.step("independent_verification"):
+        verification_errors = verify_suite_payload(suite_json_payload(run))
     print(
         f"RESPECT {run.profile_id}: {run.verdict.display}; "
         f"pass={len(run.coverage.passed)} fail={len(run.coverage.failed)} "
         f"blocked={len(run.coverage.blocked)} incomplete={len(run.coverage.incomplete)}"
     )
     if verification_errors or run.coverage.harness_error:
-        return 3
+        exit_code = 3
+        if owns_log:
+            event_log.finish(exit_code)
+        return exit_code
     canapp_failures = [
         result
         for result in run.results
@@ -282,11 +340,22 @@ def main(argv: Optional[list[str]] = None) -> int:
         and result.state == ResultState.FAIL
     ]
     if canapp_failures:
-        return 1
+        exit_code = 1
+        if owns_log:
+            event_log.finish(exit_code)
+        return exit_code
     if args.mode == "certification":
-        return 0 if run.verdict.certified else 2
+        exit_code = 0 if run.verdict.certified else 2
+        if owns_log:
+            event_log.finish(exit_code)
+        return exit_code
     if run.coverage.blocked or run.coverage.incomplete or run.coverage.deferred:
-        return 2
+        exit_code = 2
+        if owns_log:
+            event_log.finish(exit_code)
+        return exit_code
+    if owns_log:
+        event_log.finish(0)
     return 0
 
 

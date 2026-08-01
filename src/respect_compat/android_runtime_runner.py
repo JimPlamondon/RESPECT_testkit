@@ -1,6 +1,7 @@
 # SPDX-FileCopyrightText: 2026 Jim Plamondon
 # SPDX-License-Identifier: Apache-2.0
 
+import base64
 import hashlib
 import json
 import re
@@ -22,7 +23,13 @@ from .target import CanAppTarget
 
 
 DRIVER_PACKAGE = "org.respect.testkit.runtime"
+GESTURE_PACKAGE = "org.respect.testkit.gesture"
+GESTURE_INSTRUMENTATION = (
+    "org.respect.testkit.gesture/.GestureInstrumentation"
+)
 DRIVER_PROTOCOL_VERSION = "1.0.0"
+RUNTIME_RECEIPT_VERSION = "1.1.0"
+SCENARIO_FORMAT_VERSIONS = {"1.0.0", "1.1.0"}
 ACQUISITION_PREFIX = "http://opds-spec.org/acquisition"
 DEFAULT_CATALOG_REL = (
     "https://respect.ustadmobile.com/ns/default-lesson-catalog"
@@ -69,19 +76,33 @@ def runtime_driver_source_hash() -> str:
 def verify_runtime_driver_receipt(
     driver_apk: Path,
     receipt_path: Path,
+    gesture_apk: Optional[Path] = None,
 ) -> Dict[str, Any]:
     receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
     if not isinstance(receipt, dict):
         raise ValueError("runtime driver receipt must be a JSON object")
     expected = {
         "artifact_type": "respect_native_android_runtime_driver_build_receipt",
-        "format_version": DRIVER_PROTOCOL_VERSION,
         "driver_package": DRIVER_PACKAGE,
         "source_tree_sha256": runtime_driver_source_hash(),
         "apk_sha256": _sha256(driver_apk),
     }
     if any(receipt.get(key) != value for key, value in expected.items()):
         raise ValueError("runtime driver build receipt does not match suite source and APK")
+    if receipt.get("format_version") not in {
+        DRIVER_PROTOCOL_VERSION,
+        RUNTIME_RECEIPT_VERSION,
+    }:
+        raise ValueError("runtime driver build receipt version is unsupported")
+    if gesture_apk is not None:
+        if (
+            receipt.get("format_version") != RUNTIME_RECEIPT_VERSION
+            or receipt.get("gesture_package") != GESTURE_PACKAGE
+            or receipt.get("gesture_apk_sha256") != _sha256(gesture_apk)
+        ):
+            raise ValueError(
+                "runtime gesture injector does not match the suite build receipt"
+            )
     return receipt
 
 
@@ -107,7 +128,7 @@ def load_runtime_scenario(path: Path) -> Dict[str, Any]:
         raise ValueError("runtime scenario must be a JSON object")
     if value.get("artifact_type") != "respect_native_android_runtime_scenario":
         raise ValueError("runtime scenario artifact type is invalid")
-    if value.get("format_version") != DRIVER_PROTOCOL_VERSION:
+    if value.get("format_version") not in SCENARIO_FORMAT_VERSIONS:
         raise ValueError("runtime scenario version is unsupported")
     if not _PACKAGE.fullmatch(str(value.get("canapp_package", ""))):
         raise ValueError("runtime scenario CanApp package is invalid")
@@ -127,6 +148,8 @@ def load_runtime_scenario(path: Path) -> Dict[str, Any]:
     if not isinstance(actions, list) or len(actions) > 100:
         raise ValueError("runtime scenario actions are invalid")
     wait_total = 0
+    stroke_total = 0
+    stroke_points = 0
     normalized = []
     for action in actions:
         if not isinstance(action, dict):
@@ -158,11 +181,89 @@ def load_runtime_scenario(path: Path) -> Dict[str, Any]:
             if key not in _KEY_EVENTS:
                 raise ValueError("runtime scenario key action is invalid")
             normalized.append({"type": "keyevent", "key": key})
+        elif action_type == "stroke":
+            if value.get("format_version") != "1.1.0":
+                raise ValueError(
+                    "runtime stroke actions require scenario format 1.1.0"
+                )
+            anchor = _normalize_stroke_anchor(action.get("anchor"))
+            points = action.get("points")
+            if not isinstance(points, list) or not 2 <= len(points) <= 256:
+                raise ValueError("runtime scenario stroke points are invalid")
+            normalized_points = []
+            prior_time = -1
+            for point in points:
+                if not isinstance(point, dict):
+                    raise ValueError("runtime scenario stroke point is invalid")
+                x = point.get("x")
+                y = point.get("y")
+                at_ms = point.get("at_ms")
+                if (
+                    type(x) is not int
+                    or type(y) is not int
+                    or type(at_ms) is not int
+                    or not 0 <= x <= 10_000
+                    or not 0 <= y <= 10_000
+                    or not 0 <= at_ms <= 10_000
+                    or at_ms <= prior_time
+                ):
+                    raise ValueError("runtime scenario stroke point is invalid")
+                normalized_points.append({"x": x, "y": y, "at_ms": at_ms})
+                prior_time = at_ms
+            if normalized_points[0]["at_ms"] != 0:
+                raise ValueError("runtime scenario stroke must start at zero")
+            stroke_total += normalized_points[-1]["at_ms"]
+            stroke_points += len(normalized_points)
+            normalized.append(
+                {
+                    "type": "stroke",
+                    "anchor": anchor,
+                    "points": normalized_points,
+                }
+            )
         else:
             raise ValueError("runtime scenario action type is unsupported")
     if wait_total > 60_000:
         raise ValueError("runtime scenario waits exceed the bounded total")
+    if stroke_total > 60_000 or stroke_points > 2_048:
+        raise ValueError("runtime scenario strokes exceed the bounded total")
     return {**value, "actions": normalized}
+
+
+def _normalize_stroke_anchor(value: Any) -> Dict[str, Any]:
+    if not isinstance(value, dict):
+        raise ValueError("runtime scenario stroke anchor is invalid")
+    anchor_type = value.get("type")
+    if anchor_type == "foreground_window":
+        if set(value) != {"type"}:
+            raise ValueError("runtime scenario foreground anchor is invalid")
+        return {"type": anchor_type}
+    if anchor_type != "element":
+        raise ValueError("runtime scenario stroke anchor type is unsupported")
+    selector = value.get("selector")
+    allowed = {"resource_id", "class_name", "text", "content_description"}
+    if (
+        set(value) != {"type", "selector"}
+        or not isinstance(selector, dict)
+        or not selector
+        or not set(selector).issubset(allowed)
+        or any(
+            not isinstance(item, str) or not item or len(item) > 256
+            for item in selector.values()
+        )
+    ):
+        raise ValueError("runtime scenario element anchor is invalid")
+    return {"type": anchor_type, "selector": dict(sorted(selector.items()))}
+
+
+def _canonical_sha256(value: Any) -> str:
+    return hashlib.sha256(
+        json.dumps(
+            value,
+            sort_keys=True,
+            separators=(",", ":"),
+        ).encode("utf-8")
+    ).hexdigest()
 
 
 def _relations(link: Dict[str, Any]) -> List[str]:
@@ -351,31 +452,144 @@ def _completed(
     return result
 
 
+def _verify_gesture_receipts(
+    text: str,
+    *,
+    strokes: List[Any],
+    action_hashes: List[str],
+    scenario_nonce: str,
+    canapp_package: str,
+) -> List[Dict[str, Any]]:
+    receipts: List[Dict[str, Any]] = []
+    for line_number, line in enumerate(text.splitlines(), 1):
+        if not line.strip():
+            continue
+        try:
+            receipt = json.loads(line)
+        except json.JSONDecodeError as error:
+            raise ValueError(
+                f"invalid gesture receipt at line {line_number}: {error}"
+            )
+        if not isinstance(receipt, dict):
+            raise ValueError("gesture receipt must be a JSON object")
+        receipts.append(receipt)
+    expected_indices = [index for index, _action in strokes]
+    if [item.get("action_index") for item in receipts] != expected_indices:
+        raise ValueError("gesture receipts do not match scenario stroke ordering")
+    for receipt in receipts:
+        index = receipt["action_index"]
+        stroke = strokes[expected_indices.index(index)][1]
+        bounds = receipt.get("resolved_bounds")
+        resolved = receipt.get("resolved_points")
+        if (
+            receipt.get("kind") != "stroke_injected"
+            or receipt.get("success") is not True
+            or receipt.get("action_sha256") != action_hashes[index]
+            or receipt.get("scenario_nonce") != scenario_nonce
+            or receipt.get("canapp_package") != canapp_package
+            or receipt.get("foreground_package") != canapp_package
+            or not isinstance(bounds, dict)
+            or set(bounds) != {"left", "top", "right", "bottom"}
+            or any(type(value) is not int for value in bounds.values())
+            or bounds["right"] <= bounds["left"]
+            or bounds["bottom"] <= bounds["top"]
+            or not isinstance(resolved, list)
+            or len(resolved) != len(stroke["points"])
+            or not all(
+                type(receipt.get(key)) is int
+                for key in (
+                    "display_width",
+                    "display_height",
+                    "display_density_dpi",
+                    "display_rotation",
+                    "started_uptime_ms",
+                    "finished_uptime_ms",
+                )
+            )
+            or receipt["display_width"] <= 0
+            or receipt["display_height"] <= 0
+            or receipt["display_density_dpi"] <= 0
+            or receipt["display_rotation"] not in {0, 1, 2, 3}
+            or receipt["finished_uptime_ms"] < receipt["started_uptime_ms"]
+        ):
+            raise ValueError("gesture receipt is not attributable to the scenario")
+        for normalized, actual in zip(stroke["points"], resolved):
+            expected = {
+                "x": bounds["left"]
+                + (
+                    normalized["x"] * (bounds["right"] - bounds["left"] - 1)
+                    + 5_000
+                )
+                // 10_000,
+                "y": bounds["top"]
+                + (
+                    normalized["y"] * (bounds["bottom"] - bounds["top"] - 1)
+                    + 5_000
+                )
+                // 10_000,
+                "at_ms": normalized["at_ms"],
+            }
+            if actual != expected:
+                raise ValueError(
+                    "gesture receipt resolved path does not match the scenario"
+                )
+    return receipts
+
+
 def run_native_android_runtime(
     target: CanAppTarget,
     *,
     device_id: str,
     driver_apk: Path,
     driver_receipt: Path,
+    gesture_apk: Optional[Path] = None,
     scenario_path: Path,
     scenario_nonce: str,
     certification_mode: bool = False,
     adb: Optional[Path] = None,
     command_runner: Callable[..., subprocess.CompletedProcess] = subprocess.run,
     sleeper: Callable[[float], None] = time.sleep,
+    execution_event: Optional[
+        Callable[[str, str, Dict[str, object]], None]
+    ] = None,
 ) -> Dict[str, Dict[str, Any]]:
     if target.apk is None or not target.apk.is_file():
         raise ValueError("native Android runtime requires the submitted CanApp APK")
     if not driver_apk.is_file():
         raise ValueError("native Android runtime driver APK is missing")
-    verify_runtime_driver_receipt(driver_apk, driver_receipt)
+    verify_runtime_driver_receipt(driver_apk, driver_receipt, gesture_apk)
     scenario = load_runtime_scenario(scenario_path)
+    strokes = [
+        (index, action)
+        for index, action in enumerate(scenario["actions"])
+        if action["type"] == "stroke"
+    ]
+    if strokes and (gesture_apk is None or not gesture_apk.is_file()):
+        raise ValueError(
+            "runtime stroke actions require the suite-owned gesture injector APK"
+        )
     target_inspection = inspect_apk(target.apk)
     driver_inspection = inspect_apk(driver_apk)
     if target_inspection.get("package_id") != scenario["canapp_package"]:
         raise ValueError("runtime scenario CanApp package does not match the submitted APK")
     if driver_inspection.get("package_id") != DRIVER_PACKAGE:
         raise ValueError("runtime driver APK package is not suite-owned")
+    if gesture_apk is not None:
+        gesture_inspection = inspect_apk(gesture_apk)
+        instrumentation_valid = any(
+            item.get("name")
+            in {
+                ".GestureInstrumentation",
+                f"{GESTURE_PACKAGE}.GestureInstrumentation",
+            }
+            and item.get("target_package") == GESTURE_PACKAGE
+            for item in gesture_inspection.get("instrumentations", [])
+        )
+        if (
+            gesture_inspection.get("package_id") != GESTURE_PACKAGE
+            or not instrumentation_valid
+        ):
+            raise ValueError("runtime gesture injector APK is not suite-owned")
     service_valid = any(
         item.get("exported") is True
         and "org.openeel.action.xapioveripc" in item.get("actions", [])
@@ -404,8 +618,12 @@ def run_native_android_runtime(
         )
 
     device("install", "-r", str(driver_apk), timeout=120)
+    if gesture_apk is not None:
+        device("install", "-r", str(gesture_apk), timeout=120)
     device("install", "-r", str(target.apk), timeout=120)
     device("shell", "pm", "clear", DRIVER_PACKAGE)
+    if gesture_apk is not None:
+        device("shell", "pm", "clear", GESTURE_PACKAGE)
     device("shell", "am", "force-stop", scenario["canapp_package"])
     device(
         "shell",
@@ -464,19 +682,70 @@ def run_native_android_runtime(
         "-d",
         shlex.quote(launch_url),
     ).stdout
-    for action in scenario["actions"]:
-        if action["type"] == "wait":
-            sleeper(action["milliseconds"] / 1000)
-        elif action["type"] == "tap":
-            device(
-                "shell",
-                "input",
-                "tap",
-                str(action["x"]),
-                str(action["y"]),
-            )
-        elif action["type"] == "keyevent":
-            device("shell", "input", "keyevent", action["key"])
+    action_hashes = []
+    for action_index, action in enumerate(scenario["actions"]):
+        action_hash = _canonical_sha256(action)
+        action_hashes.append(action_hash)
+        step = f"runtime_action:{action_index}:{action['type']}"
+        details = {
+            "action_index": action_index,
+            "action_type": action["type"],
+            "action_sha256": action_hash,
+        }
+        if execution_event:
+            execution_event(step, "started", details)
+        try:
+            if action["type"] == "wait":
+                sleeper(action["milliseconds"] / 1000)
+            elif action["type"] == "tap":
+                device(
+                    "shell",
+                    "input",
+                    "tap",
+                    str(action["x"]),
+                    str(action["y"]),
+                )
+            elif action["type"] == "keyevent":
+                device("shell", "input", "keyevent", action["key"])
+            elif action["type"] == "stroke":
+                payload = {
+                    "format_version": "1.0.0",
+                    "action_index": action_index,
+                    "action_sha256": action_hash,
+                    "scenario_nonce": scenario_nonce,
+                    "canapp_package": scenario["canapp_package"],
+                    "anchor": action["anchor"],
+                    "points": action["points"],
+                }
+                encoded = base64.urlsafe_b64encode(
+                    json.dumps(
+                        payload,
+                        sort_keys=True,
+                        separators=(",", ":"),
+                    ).encode("utf-8")
+                ).decode("ascii")
+                device(
+                    "shell",
+                    "am",
+                    "instrument",
+                    "-w",
+                    "-r",
+                    "-e",
+                    "stroke",
+                    encoded,
+                    GESTURE_INSTRUMENTATION,
+                    timeout=30,
+                )
+        except Exception as error:
+            if execution_event:
+                execution_event(
+                    step,
+                    "failed",
+                    {**details, "error_type": type(error).__name__},
+                )
+            raise
+        if execution_event:
+            execution_event(step, "completed", details)
     event_text = device(
         "shell",
         "run-as",
@@ -484,16 +753,34 @@ def run_native_android_runtime(
         "cat",
         "files/events.jsonl",
     ).stdout
+    gesture_receipts: List[Dict[str, Any]] = []
+    if strokes:
+        gesture_text = device(
+            "shell",
+            "run-as",
+            GESTURE_PACKAGE,
+            "cat",
+            "files/gesture-events.jsonl",
+        ).stdout
+        gesture_receipts = _verify_gesture_receipts(
+            gesture_text,
+            strokes=strokes,
+            action_hashes=action_hashes,
+            scenario_nonce=scenario_nonce,
+            canapp_package=scenario["canapp_package"],
+        )
     device("shell", "am", "force-stop", scenario["canapp_package"])
     sleeper(0.25)
     raw_events = parse_driver_events(event_text)
 
     apk_sha256 = _sha256(target.apk)
     driver_sha256 = _sha256(driver_apk)
+    gesture_sha256 = _sha256(gesture_apk) if gesture_apk is not None else None
     envelope = {
         "target_digest": target.digest,
         "apk_sha256": apk_sha256,
         "driver_sha256": driver_sha256,
+        "gesture_apk_sha256": gesture_sha256,
         "device_id": device_id,
         "device_environment": {
             key: probe.get(key)
@@ -525,6 +812,10 @@ def run_native_android_runtime(
             for event in raw_events
             if event.get("kind") != "driver_health"
         ],
+        *[
+            {"kind": "gesture_injected", **receipt, **envelope}
+            for receipt in gesture_receipts
+        ],
     ]
     binding = RuntimeBinding(
         target_digest=target.digest,
@@ -547,9 +838,14 @@ def run_native_android_runtime(
         "target_digest": target.digest,
         "apk_sha256": apk_sha256,
         "driver_sha256": driver_sha256,
+        "gesture_apk_sha256": gesture_sha256,
         "device_id": device_id,
         "device_environment": envelope["device_environment"],
         "scenario_nonce": scenario_nonce,
         "event_count": len(events),
+        "scenario_sha256": _canonical_sha256(scenario),
+        "actions_sha256": _canonical_sha256(action_hashes),
+        "gesture_receipt_sha256": _canonical_sha256(gesture_receipts),
+        "gesture_count": len(gesture_receipts),
     }
     return observations

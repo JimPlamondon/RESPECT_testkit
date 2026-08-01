@@ -10,6 +10,7 @@ OUTPUT/
 ├── respect-report.txt
 ├── respect-evidence-manifest.json
 ├── respect-ification-task-packet.json
+├── respect-execution-log.jsonl
 └── junit.xml
 ```
 
@@ -18,12 +19,34 @@ OUTPUT/
 - `respect-evidence-manifest.json` is the exact sanitized evidence projection.
 - `respect-ification-task-packet.json` contains only authorized CanApp repair
   tasks.
+- `respect-execution-log.jsonl` is the mandatory chronological execution
+  record. It records command phases plus start and completion for every
+  selected Matrix row.
 - `junit.xml` represents a CanApp defect as a failure, a TestKit actor
   malfunction as an error, and other non-final dispositions as skipped.
 
 The JSON report, evidence manifest, and task packet are mutually bound by core
 hashes and one `handoff_id`. Do not mix artifacts from different runs or format
 generations.
+
+## Mandatory execution log
+
+Every Test Suite and RESPECT-ification command writes an append-only JSON Lines
+execution log. Logging cannot be disabled. Each event has an invocation
+identifier, monotonic sequence number, Coordinated Universal Time timestamp,
+step, status, details, prior-event hash, and event hash. The SHA-256 chain is
+independent for each invocation, including when repeated commands append to the
+same file.
+
+Full Test Suite runs write `respect-execution-log.jsonl` in `--output-dir`.
+Other commands place the log beside their primary output. Publication Pack and
+server commands place it beside, never inside, the content-bound pack.
+
+Arguments and event details are sanitized before writing. Authorization,
+password, secret, and token values are redacted, including such values in
+Uniform Resource Locator query strings and Bearer credentials. The log records
+control flow and attributable outcomes; authoritative test evidence remains in
+the report and evidence manifest.
 
 ## Result dimensions
 

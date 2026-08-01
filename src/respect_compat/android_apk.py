@@ -81,11 +81,21 @@ def parse_manifest_xml(text: str) -> Dict[str, Any]:
                 "actions": actions,
             }
         )
+    instrumentations = [
+        {
+            "name": item.attrib.get(f"{ANDROID_NS}name", ""),
+            "target_package": item.attrib.get(
+                f"{ANDROID_NS}targetPackage", ""
+            ),
+        }
+        for item in root.findall("instrumentation")
+    ]
     return {
         "package_id": package_id,
         "app_links": app_links,
         "query_actions": query_actions,
         "services": services,
+        "instrumentations": instrumentations,
     }
 
 

@@ -21,6 +21,9 @@ def test_android_manifest_parser_finds_app_link_and_xapi_query():
       <action android:name="org.openeel.action.xapioveripc" />
     </intent>
   </queries>
+  <instrumentation
+      android:name=".GestureInstrumentation"
+      android:targetPackage="org.example.canapp" />
   <application>
     <service android:name=".RuntimeDriverService" android:exported="true">
       <intent-filter>
@@ -55,6 +58,12 @@ def test_android_manifest_parser_finds_app_link_and_xapi_query():
             "service": ".RuntimeDriverService",
             "exported": True,
             "actions": ["org.openeel.action.xapioveripc"],
+        }
+    ]
+    assert result["instrumentations"] == [
+        {
+            "name": ".GestureInstrumentation",
+            "target_package": "org.example.canapp",
         }
     ]
 

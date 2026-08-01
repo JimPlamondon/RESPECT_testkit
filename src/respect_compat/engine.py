@@ -40,6 +40,7 @@ from .target import CanAppTarget
 
 SUITE_VERSION = "2.0.0"
 Executor = Callable[["ExecutionContext", MatrixRow], MatrixRowResult]
+ExecutionEvent = Callable[[str, str, Dict[str, object]], None]
 
 
 @dataclass
@@ -394,6 +395,7 @@ def execute(
     run_seed: Optional[str] = None,
     selected_row_ids: Optional[List[str]] = None,
     challenge: Optional[str] = None,
+    execution_event: Optional[ExecutionEvent] = None,
 ) -> SuiteRun:
     profile = matrix.resolve_profile(profile_value)
     selected = matrix.selected_rows(profile.profile_id)
@@ -427,6 +429,16 @@ def execute(
     )
     results: List[MatrixRowResult] = []
     for row in selected:
+        if execution_event:
+            execution_event(
+                f"matrix_row:{row.row_id}",
+                "started",
+                {
+                    "row_id": row.row_id,
+                    "owner": row.owner,
+                    "test_case_ids": row.test_case_ids,
+                },
+            )
         executor = registry.executor_for(row.row_id)
         if executor is None:
             evidence = [
@@ -437,15 +449,20 @@ def execute(
                     {"registered": False, "row_id": row.row_id},
                 )
             ]
-            results.append(
-                context.result(
-                    row,
-                    ResultState.INCOMPLETE,
-                    "no registered executor",
-                    "The Test Suite has no executor for this selected Matrix row.",
-                    evidence,
-                )
+            result = context.result(
+                row,
+                ResultState.INCOMPLETE,
+                "no registered executor",
+                "The Test Suite has no executor for this selected Matrix row.",
+                evidence,
             )
+            results.append(result)
+            if execution_event:
+                execution_event(
+                    f"matrix_row:{row.row_id}",
+                    "completed",
+                    {"row_id": row.row_id, "state": result.state.value},
+                )
             continue
         try:
             result = executor(context, row)
@@ -477,6 +494,18 @@ def execute(
                 [],
             )
         results.append(result)
+        if execution_event:
+            execution_event(
+                f"matrix_row:{row.row_id}",
+                "completed",
+                {
+                    "row_id": row.row_id,
+                    "state": result.state.value,
+                    "observed_result": (
+                        result.atomic_result.observed_result.value
+                    ),
+                },
+            )
     publication_prerequisites = target.metadata.setdefault(
         "_publication_prerequisites", {}
     )
@@ -503,6 +532,16 @@ def execute(
     evidence_environment = classify_evidence_environment(target)
     provisions = derive_provisions(selected, evidence_environment, results)
     verdict = reduce_verdict(selected, results, mode, provisions)
+    if execution_event:
+        execution_event(
+            "verdict_reduction",
+            "completed",
+            {
+                "selected": len(selected),
+                "executed": len(results),
+                "verdict": verdict.state,
+            },
+        )
     return SuiteRun(
         suite_version=SUITE_VERSION,
         run_id=run_id,

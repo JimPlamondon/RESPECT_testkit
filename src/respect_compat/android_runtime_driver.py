@@ -7,6 +7,8 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Any, Dict, Iterable, List, Optional, Tuple
 
+from .xapi_result import inspect_scaled_scores
+
 
 DRIVER_GATED_ROW_IDS = frozenset(
     {
@@ -322,15 +324,7 @@ def project_runtime_observations(
                 else "A captured statement identifier was not an absolute IRI."
             ),
         )
-        scores = [
-            statement.get("result", {}).get("score", {}).get("scaled")
-            for statement in valid_statements
-            if "scaled" in statement.get("result", {}).get("score", {})
-        ]
-        scores_valid = bool(scores) and all(
-            isinstance(value, (int, float)) and -1 <= value <= 1
-            for value in scores
-        )
+        scores, scores_valid = inspect_scaled_scores(valid_statements)
         observations["XAPI-008"] = _result(
             "pass" if scores_valid else "fail",
             {"scaled_scores": scores},

@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://jims.example/schemas/respect_ification/canapp_lesson_run_plan.schema.json",
+  "title": "CanApp Lesson Run Plan",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["artifact_type", "format_version", "testkit_commit", "target_id", "target_digest", "profile_id", "inventory_semantic_hash", "model_semantic_hash", "selection_semantic_hash", "selected_lesson_ids", "entries", "capability_gaps", "semantic_hash"],
+  "properties": {
+    "artifact_type": {"const": "respect_canapp_lesson_run_plan"},
+    "format_version": {"const": "1.0.0"},
+    "testkit_commit": {"type": "string", "pattern": "^[a-f0-9]{40}$"},
+    "target_id": {"type": "string", "minLength": 1},
+    "target_digest": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "profile_id": {"type": "string", "minLength": 3},
+    "inventory_semantic_hash": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "model_semantic_hash": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "selection_semantic_hash": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "selected_lesson_ids": {"type": "array", "items": {"type": "string", "minLength": 1}},
+    "entries": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["lesson_id", "status"],
+        "properties": {
+          "lesson_id": {"type": "string", "minLength": 1},
+          "status": {"enum": ["compiled", "blocked"]},
+          "reason": {"type": "string"},
+          "missing_capabilities": {"type": "array", "items": {"type": "string"}},
+          "scenario": {"type": "object"},
+          "scenario_sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+        }
+      }
+    },
+    "capability_gaps": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["capability", "mechanism_hash"],
+        "properties": {
+          "capability": {"type": "string", "minLength": 1},
+          "mechanism_hash": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+        }
+      }
+    },
+    "semantic_hash": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+  }
+}

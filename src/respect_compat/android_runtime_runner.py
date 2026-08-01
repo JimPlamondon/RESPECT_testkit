@@ -31,6 +31,9 @@ GESTURE_INSTRUMENTATION = (
 DRIVER_PROTOCOL_VERSION = "1.0.0"
 RUNTIME_RECEIPT_VERSION = "1.1.0"
 SCENARIO_FORMAT_VERSIONS = {"1.0.0", "1.1.0", "1.2.0"}
+SCENARIO_ACTION_TYPES = frozenset(
+    {"wait", "tap", "keyevent", "stroke", "webview_tap"}
+)
 ACQUISITION_PREFIX = "http://opds-spec.org/acquisition"
 DEFAULT_CATALOG_REL = (
     "https://respect.ustadmobile.com/ns/default-lesson-catalog"
@@ -125,6 +128,11 @@ def domain_is_verified(association: str, host: str) -> bool:
 
 def load_runtime_scenario(path: Path) -> Dict[str, Any]:
     value = json.loads(path.read_text(encoding="utf-8"))
+    return validate_runtime_scenario(value)
+
+
+def validate_runtime_scenario(value: Any) -> Dict[str, Any]:
+    """Validate and normalize one in-memory native runtime scenario."""
     if not isinstance(value, dict):
         raise ValueError("runtime scenario must be a JSON object")
     if value.get("artifact_type") != "respect_native_android_runtime_scenario":
@@ -467,11 +475,39 @@ def derive_catalog_launch_url(
     derived = urllib.parse.urlunparse(
         parsed._replace(query=urllib.parse.urlencode(existing + launch_parameters))
     )
-    if scenario["launch_url"] != derived:
+    supplied = urllib.parse.urlparse(scenario["launch_url"])
+    supplied_query = urllib.parse.parse_qsl(
+        supplied.query,
+        keep_blank_values=True,
+    )
+    derived_query = urllib.parse.parse_qsl(
+        urllib.parse.urlparse(derived).query,
+        keep_blank_values=True,
+    )
+
+    def normalized_query(items):
+        normalized = []
+        for key, value in items:
+            if key == "actor":
+                try:
+                    value = json.dumps(
+                        json.loads(value),
+                        separators=(",", ":"),
+                        sort_keys=True,
+                    )
+                except (json.JSONDecodeError, TypeError, ValueError):
+                    pass
+            normalized.append((key, value))
+        return sorted(normalized)
+
+    if (
+        supplied._replace(query="") != parsed._replace(query="")
+        or normalized_query(supplied_query) != normalized_query(derived_query)
+    ):
         raise ValueError(
             "runtime scenario launch URL is not the catalog-derived launch URL"
         )
-    return derived
+    return scenario["launch_url"]
 
 
 def parse_driver_events(text: str) -> List[Dict[str, Any]]:

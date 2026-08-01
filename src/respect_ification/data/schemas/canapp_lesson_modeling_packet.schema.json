@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://jims.example/schemas/respect_ification/canapp_lesson_modeling_packet.schema.json",
+  "title": "CanApp Lesson Modeling Packet",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["artifact_type", "format_version", "inventory_semantic_hash", "source_tree_digest", "source_files", "questions", "authority_notice", "semantic_hash"],
+  "properties": {
+    "artifact_type": {"const": "respect_canapp_lesson_modeling_packet"},
+    "format_version": {"const": "1.0.0"},
+    "inventory_semantic_hash": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "source_tree_digest": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "source_files": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["path", "size", "sha256"],
+        "properties": {
+          "path": {"type": "string", "minLength": 1},
+          "size": {"type": "integer", "minimum": 0},
+          "sha256": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+        }
+      }
+    },
+    "questions": {"type": "array", "items": {"type": "string", "minLength": 1}},
+    "authority_notice": {"type": "string", "minLength": 1},
+    "semantic_hash": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+  }
+}

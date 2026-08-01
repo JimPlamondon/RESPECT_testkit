@@ -27,6 +27,13 @@ Located under `respect_ification/data/schemas/`:
 | `private_prep.schema.json` | Owner-local source inventory and hints |
 | `work_plan.schema.json` | Bound, nonnormative local repair plan |
 | `ledger_event.schema.json` | One hash-chained repair transition |
+| `canapp_lesson_inventory.schema.json` | Owner-confirmed canonical lesson inventory |
+| `canapp_lesson_model.schema.json` | Evidence-backed interaction families, classifications, templates, and bindings |
+| `canapp_lesson_selection.schema.json` | Exact partial, course, family, or complete-inventory selection |
+| `canapp_lesson_run_plan.schema.json` | TestKit/target-bound scenarios and blocking reasons |
+| `canapp_lesson_coverage.schema.json` | Separate inventory, modeling, selection, compilation, and execution coverage |
+| `canapp_lesson_capability_gaps.schema.json` | Generic missing-mechanism report |
+| `canapp_lesson_modeling_packet.schema.json` | Private source-bound AI/human modeling handback |
 
 Publication Pack generation also includes its publication-manifest schema in
 the emitted artifact set.

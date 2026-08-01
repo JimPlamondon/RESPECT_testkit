@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://jims.example/schemas/respect_ification/canapp_lesson_coverage.schema.json",
+  "title": "CanApp Lesson Coverage",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["artifact_type", "format_version", "inventory_semantic_hash", "model_semantic_hash", "selection_semantic_hash", "run_plan_semantic_hash", "counts", "full_inventory_selected", "full_inventory_executed", "lesson_outcomes", "semantic_hash"],
+  "properties": {
+    "artifact_type": {"const": "respect_canapp_lesson_coverage"},
+    "format_version": {"const": "1.0.0"},
+    "inventory_semantic_hash": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "model_semantic_hash": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "selection_semantic_hash": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "run_plan_semantic_hash": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "counts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["inventoried", "classified", "unclassified", "excluded", "selected", "compiled", "executed", "passed", "failed", "blocked", "incomplete"],
+      "properties": {
+        "inventoried": {"type": "integer", "minimum": 0},
+        "classified": {"type": "integer", "minimum": 0},
+        "unclassified": {"type": "integer", "minimum": 0},
+        "excluded": {"type": "integer", "minimum": 0},
+        "selected": {"type": "integer", "minimum": 0},
+        "compiled": {"type": "integer", "minimum": 0},
+        "executed": {"type": "integer", "minimum": 0},
+        "passed": {"type": "integer", "minimum": 0},
+        "failed": {"type": "integer", "minimum": 0},
+        "blocked": {"type": "integer", "minimum": 0},
+        "incomplete": {"type": "integer", "minimum": 0}
+      }
+    },
+    "full_inventory_selected": {"type": "boolean"},
+    "full_inventory_executed": {"type": "boolean"},
+    "lesson_outcomes": {"type": "array", "items": {"type": "object"}},
+    "semantic_hash": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+  }
+}

@@ -58,7 +58,7 @@
       "adaptation_reason": "standalone package layout, installed-resource access, or destination documentation",
       "blob_oid": "1741e313761bcc686895be6bfbc0969ba9bb8b10",
       "destination_path": "docs/respect_ification/README.md",
-      "destination_sha256": "c3089ba04b6abb787b03336f1e3eabd0bbc4c1650557cb73857d58be90869491",
+      "destination_sha256": "e4b7e731fca1a71af194d1f66cf7a708d11ebf841c7a2327cc410769bc407ceb",
       "disposition": "adapted",
       "item_class": "documentation",
       "license": "Apache-2.0",
@@ -1829,7 +1829,7 @@
       "adaptation_reason": "standalone package layout, installed-resource access, or destination documentation",
       "blob_oid": "6a91baadbed1275e3395769237abc4385d9fc8d0",
       "destination_path": "src/respect_ification/cli.py",
-      "destination_sha256": "790dd025d9f26304452e78859c0dcee9540702bee5638c293d74bfe793de7dcf",
+      "destination_sha256": "3a35cc58c30acdadf32e2d95fd4d929d43e205e1444611e4fae3854790fa2465",
       "disposition": "adapted",
       "item_class": "runtime",
       "license": "Apache-2.0",
@@ -1936,7 +1936,7 @@
       "adaptation_reason": "standalone package layout, installed-resource access, or destination documentation",
       "blob_oid": "1feac7c9be074f02673941de5cdc383735b62db1",
       "destination_path": "tests/respect_ification/test_schemas.py",
-      "destination_sha256": "8de98dbac86e724c688228f8dacdfe578cec35011ae3e8a7ed2c6c1904be8e78",
+      "destination_sha256": "f5dce34686034bc42ab13ad63a74e3869816caa840be63c8b470c4de57bba156",
       "disposition": "adapted",
       "item_class": "test",
       "license": "Apache-2.0",
@@ -1990,7 +1990,7 @@
       "adaptation_reason": "standalone package layout, installed-resource access, or destination documentation",
       "blob_oid": "94bb3e64f0d5b9af8ccb5a8e578b3db1664f32ac",
       "destination_path": "docs/SCHEMAS.md",
-      "destination_sha256": "ce3a7774c5fc5459bd5023c7055aa4dc44f80448f1d79684b0dee0af051ebd01",
+      "destination_sha256": "896457c8ffd1029fada3845243f5bfbf53680d658ef2c6efb5577e65ce78509c",
       "disposition": "adapted",
       "item_class": "documentation",
       "license": "Apache-2.0",
@@ -2283,21 +2283,21 @@
       "source_repository": "https://github.com/JimPlamondon/jims"
     }
   ],
-  "manifest_hash": "e292b4dfed465c321a59aad1c4b91281cef4b6bfc897cbcb2690315a0980c09b",
+  "manifest_hash": "15b9203745860b9dd93402afe0fc1fb7349fd64b13d2a58745ae9ec110359b0c",
   "native_entries": [
     {
       "destination_path": "src/respect_compat/data/matrix/legacy_provenance_audit.json",
       "destination_sha256": "ff6c02195fc4b1fae20dfff427b8e936295019765e396d57c9299f1dddec8e92",
-      "item_class": "schema",
+      "item_class": "runtime",
       "provenance": "post_extraction",
-      "reason": "post-separation frozen audit enforcing the two-origin contract for new or changed TestKit requirements"
+      "reason": "post-extraction TestKit authority introduced through the repository's reviewed source/generator workflow"
     },
     {
       "destination_path": "src/respect_compat/data/schemas/atomic_result_v3.schema.json",
       "destination_sha256": "fa0fd8d38432dab8a017fcc2385aec063c81bc3f604c3c3a6bda7f32516aea36",
       "item_class": "schema",
       "provenance": "post_extraction",
-      "reason": "post-separation TestKit atomic-result authority with neutral platform attribution and no Dossier work artifact"
+      "reason": "post-extraction TestKit authority introduced through the repository's reviewed source/generator workflow"
     },
     {
       "destination_path": "src/respect_compat/data/schemas/promotion_packet_v2.schema.json",
@@ -2309,6 +2309,55 @@
     {
       "destination_path": "src/respect_compat/data/schemas/suite_report_v2.schema.json",
       "destination_sha256": "cb7a1ff132fa12e3fcfe333349f2fb507bb53b2a877916035220c2f1caa91bef",
+      "item_class": "schema",
+      "provenance": "post_extraction",
+      "reason": "post-extraction TestKit authority introduced through the repository's reviewed source/generator workflow"
+    },
+    {
+      "destination_path": "src/respect_ification/data/schemas/canapp_lesson_capability_gaps.schema.json",
+      "destination_sha256": "5a63a95406381248f744e965c3931739b3eaf51051b07377ec027af556677c99",
+      "item_class": "schema",
+      "provenance": "post_extraction",
+      "reason": "post-extraction TestKit authority introduced through the repository's reviewed source/generator workflow"
+    },
+    {
+      "destination_path": "src/respect_ification/data/schemas/canapp_lesson_coverage.schema.json",
+      "destination_sha256": "c771794df88682c41d39ac9f72b15b5c58b1464631296b17bd90a3b317a93c5b",
+      "item_class": "schema",
+      "provenance": "post_extraction",
+      "reason": "post-extraction TestKit authority introduced through the repository's reviewed source/generator workflow"
+    },
+    {
+      "destination_path": "src/respect_ification/data/schemas/canapp_lesson_inventory.schema.json",
+      "destination_sha256": "95a7046b5e62c3be856b8b23f2370ea2fa51346bcc07e858a08a771f96b26414",
+      "item_class": "schema",
+      "provenance": "post_extraction",
+      "reason": "post-extraction TestKit authority introduced through the repository's reviewed source/generator workflow"
+    },
+    {
+      "destination_path": "src/respect_ification/data/schemas/canapp_lesson_model.schema.json",
+      "destination_sha256": "5fffc19a5550be7c0a3d7279420a453cdc38b8fcaf8fcb5ccdbfe7fe31ac49cf",
+      "item_class": "schema",
+      "provenance": "post_extraction",
+      "reason": "post-extraction TestKit authority introduced through the repository's reviewed source/generator workflow"
+    },
+    {
+      "destination_path": "src/respect_ification/data/schemas/canapp_lesson_modeling_packet.schema.json",
+      "destination_sha256": "589c97f90fae3f4904c0e3a29b4e0fe107dad77ef5421d615b840358b8e0cf3c",
+      "item_class": "schema",
+      "provenance": "post_extraction",
+      "reason": "post-extraction TestKit authority introduced through the repository's reviewed source/generator workflow"
+    },
+    {
+      "destination_path": "src/respect_ification/data/schemas/canapp_lesson_run_plan.schema.json",
+      "destination_sha256": "403b0b0b25d9840091612c2576fbe3e43bd46a85d1e505e9a274476194573e47",
+      "item_class": "schema",
+      "provenance": "post_extraction",
+      "reason": "post-extraction TestKit authority introduced through the repository's reviewed source/generator workflow"
+    },
+    {
+      "destination_path": "src/respect_ification/data/schemas/canapp_lesson_selection.schema.json",
+      "destination_sha256": "26bbe92470bdb2ffa55d68e04f84d55180d5f3e35e0a06d83f00357323fd8952",
       "item_class": "schema",
       "provenance": "post_extraction",
       "reason": "post-extraction TestKit authority introduced through the repository's reviewed source/generator workflow"

@@ -143,6 +143,20 @@ An exit code of 2 is a non-final outcome, not a process crash.
 The execution log is mandatory and cannot be disabled. Preserve it with every
 run, including unsuccessful and non-final runs.
 
+### Model a lesson inventory
+
+When a CanApp has many lessons or multiple lesson engines, use the CanApp
+Lesson Modeler before writing one-off runtime scenarios. The owner supplies a
+confirmed inventory and an evidence-backed owner-local family model. The
+Modeler selects three lessons, arbitrary lessons, courses, families, or the
+complete inventory and compiles ordinary TestKit scenarios.
+
+Keep identifiers, answers, selectors, gesture geometry, and source facts in
+the owner workspace. An unclassified selected lesson fails closed. A generic
+capability gap is reported separately and never changes the TestKit
+automatically. See
+`docs/respect_ification/CANAPP_LESSON_MODELER.md`.
+
 ## 4. Route the outcome before changing anything
 
 Use each result's `requirement_owner`, `control_owner`, `responsible_party`,

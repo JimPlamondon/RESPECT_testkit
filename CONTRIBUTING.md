@@ -4,6 +4,8 @@ This repository uses task branches, pull requests, active repository-local hooks
 
 Do not commit secrets, private Prep output, hidden certification fixtures, anti-gaming inputs, Candidate App packages, Android Package Kit files, device evidence, caches, or generated run reports.
 
+Do not delete repository files. Move obsolete files under `To_Be_Deleted/`, preserving their repository-relative path, and document the reason for their retirement. The pre-commit hook rejects staged deletions.
+
 Contributions must preserve the Test Suite as the sole compatibility-verdict authority, the Kit as a non-certifying repair workflow, and the canonical Matrix as one maintained runtime authority.
 
 Create an isolated development environment and run the suite:

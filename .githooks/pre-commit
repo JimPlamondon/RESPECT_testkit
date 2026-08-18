@@ -10,4 +10,9 @@ if [ "${branch}" = "main" ]; then
   exit 1
 fi
 
+if git diff --cached --name-status --diff-filter=D | grep -q .; then
+  printf 'Refusing file deletion; move obsolete files under To_Be_Deleted/ instead.\n' >&2
+  exit 1
+fi
+
 git diff --cached --check

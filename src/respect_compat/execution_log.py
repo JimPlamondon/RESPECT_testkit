@@ -29,12 +29,35 @@ _SENSITIVE_FLAGS = {
     "--token",
 }
 _URL_SECRET = re.compile(
-    r"(?i)([?&](?:auth|authorization|password|secret|token)=)[^&\s]+"
+    r"(?i)([?&](?:auth|authorization|password|secret|token|api[_-]?key|client[_-]?secret|access[_-]?token|refresh[_-]?token|private[_-]?key|aws[_-]?secret[_-]?access[_-]?key)=)[^&#\s]+"
 )
+_URL_USERINFO = re.compile(r"(?i)(\b[a-z][a-z0-9+.-]*://)[^/@\s]+@")
 _BEARER = re.compile(r"(?i)\bBearer\s+[A-Za-z0-9._~+/=-]+")
+_SENSITIVE_KEY_FAMILIES = (
+    "auth",
+    "authorization",
+    "password",
+    "passphrase",
+    "secret",
+    "token",
+    "apikey",
+    "clientsecret",
+    "accesstoken",
+    "refreshtoken",
+    "privatekey",
+    "keyfile",
+    "secretaccesskey",
+    "awssecretaccesskey",
+)
+
+
+def _is_sensitive_key(value: str) -> bool:
+    compact = re.sub(r"[^a-z0-9]", "", value.lower())
+    return any(compact.endswith(family) for family in _SENSITIVE_KEY_FAMILIES)
 
 
 def _sanitize_text(value: str) -> str:
+    value = _URL_USERINFO.sub(r"\1[REDACTED]@", value)
     value = _URL_SECRET.sub(r"\1[REDACTED]", value)
     return _BEARER.sub("Bearer [REDACTED]", value)
 
@@ -46,8 +69,7 @@ def _sanitize_value(value: Any) -> Any:
         return {
             str(key): (
                 "[REDACTED]"
-                if str(key).lower()
-                in {"auth", "authorization", "password", "secret", "token"}
+                if _is_sensitive_key(str(key))
                 else _sanitize_value(item)
             )
             for key, item in value.items()
@@ -66,7 +88,7 @@ def sanitize_argv(argv: Sequence[str]) -> list[str]:
             redact_next = False
             continue
         flag = value.split("=", 1)[0].lower()
-        if flag in _SENSITIVE_FLAGS:
+        if flag in _SENSITIVE_FLAGS or _is_sensitive_key(flag.lstrip("-")):
             if "=" in value:
                 sanitized.append(f"{value.split('=', 1)[0]}=[REDACTED]")
             else:

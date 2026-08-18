@@ -1,6 +1,8 @@
 # SPDX-FileCopyrightText: 2026 Jim Plamondon
 # SPDX-License-Identifier: Apache-2.0
 
+import pytest
+
 from respect_compat.xapi_actor import LogicalXapiActor
 
 
@@ -48,3 +50,57 @@ def test_xapi_actor_rejects_bad_auth_actor_iri_and_score():
         {**STATEMENT, "result": {"score": {"scaled": 2}}},
         "Basic valid",
     )["error"] == "invalid_score"
+
+
+def test_xapi_actor_rejects_boolean_scaled_score():
+    response = LogicalXapiActor("Basic valid", ACTOR).submit(
+        {**STATEMENT, "result": {"score": {"scaled": True}}},
+        "Basic valid",
+    )
+
+    assert response == {
+        "accepted": False,
+        "status": 400,
+        "error": "invalid_score",
+    }
+
+
+@pytest.mark.parametrize("verb", [None, "completed", []])
+def test_xapi_actor_gracefully_rejects_non_mapping_verb(verb):
+    response = LogicalXapiActor("Basic valid", ACTOR).submit(
+        {**STATEMENT, "verb": verb},
+        "Basic valid",
+    )
+
+    assert response["accepted"] is False
+    assert response["status"] == 400
+
+
+@pytest.mark.parametrize("statement_object", [None, "lesson", []])
+def test_xapi_actor_gracefully_rejects_non_mapping_object(statement_object):
+    response = LogicalXapiActor("Basic valid", ACTOR).submit(
+        {**STATEMENT, "object": statement_object},
+        "Basic valid",
+    )
+
+    assert response["accepted"] is False
+    assert response["status"] == 400
+
+
+@pytest.mark.parametrize(
+    "result",
+    [
+        "completed",
+        [],
+        {"score": "perfect"},
+        {"score": []},
+    ],
+)
+def test_xapi_actor_gracefully_rejects_non_mapping_result_or_score(result):
+    response = LogicalXapiActor("Basic valid", ACTOR).submit(
+        {**STATEMENT, "result": result},
+        "Basic valid",
+    )
+
+    assert response["accepted"] is False
+    assert response["status"] == 400

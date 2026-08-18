@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import json
+from pathlib import Path
 from xml.etree import ElementTree
 
 import pytest
@@ -12,9 +13,22 @@ from respect_compat.models import ResultState
 from respect_compat.profile import DEFAULT_PROFILE_NAME, load_profile
 from respect_compat.resources import resource
 from respect_compat.security_labels import SecurityContext
+from respect_compat.target import load_fixture_target
 
 
 FIXTURE_ROOT = resource("data/fixtures/v0_1")
+
+
+def _forbid_external_read(monkeypatch, method_name, outside):
+    original = getattr(Path, method_name)
+    resolved_outside = outside.resolve()
+
+    def guarded(path, *args, **kwargs):
+        if path.resolve() == resolved_outside:
+            pytest.fail(f"external fixture read attempted: {resolved_outside}")
+        return original(path, *args, **kwargs)
+
+    monkeypatch.setattr(Path, method_name, guarded)
 
 
 def test_profile_loader_rejects_unknown_profile_before_fixture_io(tmp_path):
@@ -50,6 +64,93 @@ def test_fixture_expected_outcomes(case_dir):
     for item in expected:
         expected_state = legacy_states.get(item["result"], item["result"])
         assert (item["rule_id"], expected_state) in observed_pairs
+
+
+def test_fixture_loader_rejects_parent_manifest_escape(tmp_path):
+    fixture = tmp_path / "fixture"
+    fixture.mkdir()
+    outside = tmp_path / "outside.json"
+    outside.write_text("{}", encoding="utf-8")
+    (fixture / "expected.json").write_text(
+        json.dumps({"manifest": "../outside.json"}),
+        encoding="utf-8",
+    )
+
+    with pytest.raises(ValueError, match="manifest path escapes fixture root"):
+        load_fixture(fixture)
+
+
+def test_fixture_loader_rejects_symlink_manifest_escape(tmp_path):
+    fixture = tmp_path / "fixture"
+    fixture.mkdir()
+    outside = tmp_path / "outside.json"
+    outside.write_text("{}", encoding="utf-8")
+    (fixture / "manifest.json").symlink_to(outside)
+    (fixture / "expected.json").write_text(
+        json.dumps({"manifest": "manifest.json"}),
+        encoding="utf-8",
+    )
+
+    with pytest.raises(ValueError, match="manifest path escapes fixture root"):
+        load_fixture(fixture)
+
+
+def test_fixture_loader_rejects_symlink_expected_without_external_read(
+    tmp_path,
+    monkeypatch,
+):
+    fixture = tmp_path / "fixture"
+    fixture.mkdir()
+    outside = tmp_path / "outside-expected.json"
+    outside.write_text(
+        json.dumps({"manifest": "descriptor.json"}),
+        encoding="utf-8",
+    )
+    (fixture / "expected.json").symlink_to(outside)
+    _forbid_external_read(monkeypatch, "read_text", outside)
+
+    with pytest.raises(ValueError, match="expected.json must not be a symlink"):
+        load_fixture(fixture)
+
+
+def test_fixture_loader_rejects_symlink_metadata_without_external_read(
+    tmp_path,
+    monkeypatch,
+):
+    fixture = tmp_path / "fixture"
+    fixture.mkdir()
+    (fixture / "expected.json").write_text(
+        json.dumps({"manifest": "descriptor.json"}),
+        encoding="utf-8",
+    )
+    (fixture / "descriptor.json").write_text("{}", encoding="utf-8")
+    outside = tmp_path / "outside-metadata.json"
+    outside.write_text('{"private":"secret"}', encoding="utf-8")
+    (fixture / "metadata.json").symlink_to(outside)
+    _forbid_external_read(monkeypatch, "read_text", outside)
+
+    with pytest.raises(ValueError, match="metadata.json must not be a symlink"):
+        load_fixture(fixture)
+
+
+def test_fixture_digest_rejects_unrelated_symlink_without_external_read(
+    tmp_path,
+    monkeypatch,
+):
+    fixture = tmp_path / "fixture"
+    fixture.mkdir()
+    (fixture / "expected.json").write_text(
+        json.dumps({"manifest": "descriptor.json"}),
+        encoding="utf-8",
+    )
+    (fixture / "descriptor.json").write_text("{}", encoding="utf-8")
+    outside = tmp_path / "outside-private.bin"
+    outside.write_bytes(b"private fixture-adjacent bytes")
+    (fixture / "unrelated.bin").symlink_to(outside)
+    _forbid_external_read(monkeypatch, "read_bytes", outside)
+
+    with pytest.raises(ValueError, match="fixture digest rejects symlinks"):
+        load_fixture_target(fixture)
 
 
 def test_cli_writes_parseable_reports_and_is_deterministic(tmp_path):

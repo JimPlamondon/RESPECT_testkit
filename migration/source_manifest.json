@@ -1391,7 +1391,7 @@
       "adaptation_reason": "standalone package layout, installed-resource access, or destination documentation",
       "blob_oid": "5bbf6d1326625de7b155dc3377b1255711f315bb",
       "destination_path": "src/respect_compat/executors.py",
-      "destination_sha256": "89062deaf3959339517afa3d9a20e4da0678e4401ac9ad9bf55a1e0211b7f10a",
+      "destination_sha256": "08be9115b01f3a86f92d4865ef536a5c0fcb6de5c6180520661052b04dea354e",
       "disposition": "adapted",
       "item_class": "runtime",
       "license": "Apache-2.0",
@@ -1440,10 +1440,11 @@
       "source_repository": "https://github.com/JimPlamondon/jims"
     },
     {
+      "adaptation_reason": "post-separation fixture path confinement hardening",
       "blob_oid": "ef760f19630c5a232030f5505f6afc047fd89b6a",
       "destination_path": "src/respect_compat/fixture_loader.py",
-      "destination_sha256": "57d73c196b53419f0951ac0fd73c3747c8d330ea26e864d7fa563453140e6a1d",
-      "disposition": "migrated",
+      "destination_sha256": "bd4fd4acfe8d3c245dc9fbf4f213ba3e778aa0d3c17d6161045e09f85349367a",
+      "disposition": "adapted",
       "item_class": "runtime",
       "license": "Apache-2.0",
       "mode": "100644",
@@ -1652,7 +1653,7 @@
       "adaptation_reason": "standalone package layout, installed-resource access, or destination documentation",
       "blob_oid": "249fea6ab77de37d15e444aafec8c5a075dfe5d0",
       "destination_path": "src/respect_compat/target.py",
-      "destination_sha256": "fb0e678900ed33dad8e614a70c5d75d256e859c2935a27e6da5cdf9c6e3fbae5",
+      "destination_sha256": "d7d1cedfbecb48214c1b24372140d24e10d4f1dc0ac9fdca269bf41649cd3078",
       "disposition": "adapted",
       "item_class": "runtime",
       "license": "Apache-2.0",
@@ -1723,7 +1724,7 @@
       "adaptation_reason": "standalone package layout, installed-resource access, or destination documentation",
       "blob_oid": "03b9d1e34c8d7e6f9ce0b39cf581c7ccddfb89a2",
       "destination_path": "tests/respect_compat/test_matrix_engine.py",
-      "destination_sha256": "31136081e18c6da8a5a13d8087be0f9cbfc2e07ab97e282e7a9fd5e8081431f1",
+      "destination_sha256": "55a2b22ded3497dc690e35f2d8b3e84f6275c675e9fa605575a35a5661897fc8",
       "disposition": "adapted",
       "item_class": "test",
       "license": "Apache-2.0",
@@ -1759,7 +1760,7 @@
       "adaptation_reason": "standalone package layout, installed-resource access, or destination documentation",
       "blob_oid": "34f8d8be54639cbc0df5f3906a6de87e24d23c0a",
       "destination_path": "tests/respect_compat/test_respect_compat.py",
-      "destination_sha256": "9cb83e806f5c456f0d6e3e9c6143fa613c29df9ff2c7b63c607567e9b2893a03",
+      "destination_sha256": "44cbf7eb900f8d006172a0a2797b1397d365a3e58451774da8684540e95f15a6",
       "disposition": "adapted",
       "item_class": "test",
       "license": "Apache-2.0",
@@ -1774,10 +1775,11 @@
       "source_repository": "https://github.com/JimPlamondon/jims"
     },
     {
+      "adaptation_reason": "post-separation hostile xAPI structure regression coverage",
       "blob_oid": "f50ceaae022b16c844da368a9ac737566d929d17",
       "destination_path": "tests/respect_compat/test_xapi_actor.py",
-      "destination_sha256": "37cf827c075be9f7f271e34e2bceddad9bdcc6ede69b8e8322be6e7e96339230",
-      "disposition": "migrated",
+      "destination_sha256": "786637df6782f0f458055519b5ca15f8e283c5bccaade793f72597b3b82dd33d",
+      "disposition": "adapted",
       "item_class": "test",
       "license": "Apache-2.0",
       "mode": "100644",
@@ -1791,10 +1793,11 @@
       "source_repository": "https://github.com/JimPlamondon/jims"
     },
     {
+      "adaptation_reason": "post-separation hostile xAPI structure validation hardening",
       "blob_oid": "f79321d39451f6dfd1f36ebc2a87afb366677205",
       "destination_path": "src/respect_compat/xapi_actor.py",
-      "destination_sha256": "ef6c0d246d7162b88c08cee978b64695c9cb227b65ecd4801dcd865397a47576",
-      "disposition": "migrated",
+      "destination_sha256": "0a954f5acb8d897ae8400a0c18a5bb017b59ddebe579a7ea22b751ce83f334e3",
+      "disposition": "adapted",
       "item_class": "runtime",
       "license": "Apache-2.0",
       "mode": "100644",
@@ -2283,7 +2286,7 @@
       "source_repository": "https://github.com/JimPlamondon/jims"
     }
   ],
-  "manifest_hash": "15b9203745860b9dd93402afe0fc1fb7349fd64b13d2a58745ae9ec110359b0c",
+  "manifest_hash": "47ff9a2218d788b350457ef5dff383537554c197048423f12b19a9b5878819bc",
   "native_entries": [
     {
       "destination_path": "src/respect_compat/data/matrix/legacy_provenance_audit.json",

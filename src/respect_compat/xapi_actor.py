@@ -4,6 +4,7 @@
 import copy
 import urllib.parse
 import uuid
+from collections.abc import Mapping
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional
 
@@ -46,13 +47,25 @@ class LogicalXapiActor:
             }
         if statement["actor"] != self.expected_actor:
             return {"accepted": False, "status": 403, "error": "actor_mismatch"}
-        verb_id = statement.get("verb", {}).get("id")
-        object_id = statement.get("object", {}).get("id")
+        verb = statement["verb"]
+        if not isinstance(verb, Mapping):
+            return {"accepted": False, "status": 400, "error": "invalid_verb"}
+        statement_object = statement["object"]
+        if not isinstance(statement_object, Mapping):
+            return {"accepted": False, "status": 400, "error": "invalid_object"}
+        verb_id = verb.get("id")
+        object_id = statement_object.get("id")
         if not _absolute_iri(verb_id) or not _absolute_iri(object_id):
             return {"accepted": False, "status": 400, "error": "invalid_iri"}
-        scaled = statement.get("result", {}).get("score", {}).get("scaled")
+        result = statement.get("result", {})
+        if not isinstance(result, Mapping):
+            return {"accepted": False, "status": 400, "error": "invalid_result"}
+        score = result.get("score", {})
+        if not isinstance(score, Mapping):
+            return {"accepted": False, "status": 400, "error": "invalid_score"}
+        scaled = score.get("scaled")
         if scaled is not None and (
-            not isinstance(scaled, (int, float)) or not -1 <= scaled <= 1
+            type(scaled) not in {int, float} or not -1 <= scaled <= 1
         ):
             return {"accepted": False, "status": 400, "error": "invalid_score"}
         statement_id = statement.get("id") or str(uuid.uuid4())

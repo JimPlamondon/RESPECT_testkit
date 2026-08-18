@@ -35,6 +35,7 @@ MIGRATED_AUTHORITY_ROOTS = (
     "src/respect_compat/data/schemas/",
     "src/respect_ification/data/schemas/",
 )
+RETIRED_ROOT = "To_Be_Deleted"
 
 
 def sha256_bytes(payload: bytes) -> str:
@@ -50,6 +51,47 @@ def canonical_hash(data: dict[str, Any], hash_field: str) -> str:
 
 def git(source: Path, *args: str) -> bytes:
     return subprocess.check_output(["git", "-C", str(source), *args])
+
+
+def active_authority_files(repository_root: Path, name: str) -> list[Path]:
+    active = []
+    for path in repository_root.rglob(name):
+        relative = path.relative_to(repository_root)
+        if relative.parts and relative.parts[0] == RETIRED_ROOT:
+            continue
+        active.append(path)
+    return sorted(
+        active,
+        key=lambda path: path.relative_to(repository_root).as_posix().encode(),
+    )
+
+
+def authority_layout_errors(repository_root: Path) -> list[str]:
+    errors = []
+    canonical = active_authority_files(
+        repository_root, "compatibility_matrix.json"
+    )
+    historical = active_authority_files(
+        repository_root, "compatibility_matrix_v0_1.json"
+    )
+    expected_canonical = (
+        repository_root
+        / "src/respect_compat/data/matrix/compatibility_matrix.json"
+    )
+    expected_historical = (
+        repository_root
+        / "src/respect_compat/data/profiles/compatibility_matrix_v0_1.json"
+    )
+    if canonical != [expected_canonical]:
+        errors.append(
+            f"DUPLICATE_AUTHORITY: canonical Matrix locations={canonical}"
+        )
+    if historical != [expected_historical]:
+        errors.append(
+            "DUPLICATE_AUTHORITY: historical profile "
+            f"locations={historical}"
+        )
+    return errors
 
 
 def validate_manifest(
@@ -174,12 +216,7 @@ def validate_manifest(
     undeclared = sorted(actual_authorities - declared_destinations)
     if undeclared:
         errors.append(f"UNDECLARED_DESTINATION: {undeclared}")
-    canonical = list(repository_root.rglob("compatibility_matrix.json"))
-    historical = list(repository_root.rglob("compatibility_matrix_v0_1.json"))
-    if canonical != [repository_root / "src/respect_compat/data/matrix/compatibility_matrix.json"]:
-        errors.append(f"DUPLICATE_AUTHORITY: canonical Matrix locations={canonical}")
-    if historical != [repository_root / "src/respect_compat/data/profiles/compatibility_matrix_v0_1.json"]:
-        errors.append(f"DUPLICATE_AUTHORITY: historical profile locations={historical}")
+    errors.extend(authority_layout_errors(repository_root))
     try:
         matrix = load_matrix()
         matrix_data = load_json(resource("data/matrix/compatibility_matrix.json"))

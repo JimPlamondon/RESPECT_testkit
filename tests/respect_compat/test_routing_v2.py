@@ -86,6 +86,19 @@ def test_classifier_round_trips_all_six_dimensions():
             AtomicResult.from_json_dict(broken)
 
 
+@pytest.mark.parametrize("field_name", ["policy_required", "final_affirmative"])
+@pytest.mark.parametrize("bad_value", ["false", 0, 1, None, [], {}])
+def test_atomic_result_rejects_non_boolean_fields(field_name, bad_value):
+    payload = classify_result(
+        "ROW-1",
+        _input(ObservedResult.CANAPP_IMPLEMENTATION_FAIL),
+    ).to_json_dict()
+    payload[field_name] = bad_value
+
+    with pytest.raises(ValueError, match=field_name):
+        AtomicResult.from_json_dict(payload)
+
+
 def test_owner_vocabulary_is_schema_constrained():
     valid = {
         party.value

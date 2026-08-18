@@ -248,6 +248,9 @@ class AtomicResult:
         for field_name in required:
             if field_name not in payload:
                 raise ValueError(f"atomic result missing {field_name}")
+        for field_name in ("policy_required", "final_affirmative"):
+            if type(payload[field_name]) is not bool:
+                raise ValueError(f"atomic result {field_name} must be boolean")
         try:
             return cls(
                 row_id=str(payload["row_id"]),
@@ -268,8 +271,8 @@ class AtomicResult:
                 artifacts=tuple(
                     ArtifactKind(item) for item in payload["artifacts"]
                 ),
-                policy_required=bool(payload["policy_required"]),
-                final_affirmative=bool(payload["final_affirmative"]),
+                policy_required=payload["policy_required"],
+                final_affirmative=payload["final_affirmative"],
             )
         except (TypeError, ValueError) as error:
             raise ValueError(f"invalid atomic result: {error}") from error

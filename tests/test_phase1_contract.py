@@ -3,6 +3,8 @@
 
 from pathlib import Path
 
+from respect_testkit_migration.validator import active_authority_files
+
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -13,8 +15,8 @@ def test_src_packages_exist() -> None:
 
 
 def test_single_matrix_and_historical_profile_layout() -> None:
-    matrix = list(ROOT.rglob("compatibility_matrix.json"))
-    profile = list(ROOT.rglob("compatibility_matrix_v0_1.json"))
+    matrix = active_authority_files(ROOT, "compatibility_matrix.json")
+    profile = active_authority_files(ROOT, "compatibility_matrix_v0_1.json")
     assert matrix == [
         ROOT / "src/respect_compat/data/matrix/compatibility_matrix.json"
     ]

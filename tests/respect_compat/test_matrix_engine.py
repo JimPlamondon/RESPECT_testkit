@@ -539,6 +539,65 @@ def test_opds_005_does_not_vacuously_pass_without_an_acquisition_link():
     assert run.results[0].state == ResultState.NOT_APPLICABLE
 
 
+def test_opds_008_passes_with_one_reachable_declared_image_and_fails_with_none():
+    matrix = load_matrix()
+    reachable_url = "https://canapp.example/reachable.png"
+    document = {
+        "metadata": {
+            "identifier": "https://canapp.example/app",
+            "title": "Example",
+        },
+        "links": [],
+        "images": [
+            {"href": reachable_url, "type": "image/png"},
+            {
+                "href": "https://canapp.example/missing.png",
+                "type": "image/png",
+            },
+        ],
+    }
+    canapp = target(document)
+    canapp.observations.append(
+        HttpObservation(
+            requested_url=reachable_url,
+            final_url=reachable_url,
+            status=200,
+            headers={"content-type": "image/png"},
+            body=b"image",
+        )
+    )
+
+    partial = execute(
+        matrix,
+        canapp,
+        "PROFILE-WEB",
+        "test",
+        build_registry(matrix),
+        run_seed="one-reachable-image",
+        selected_row_ids=["OPDS-008"],
+    )
+    no_images = execute(
+        matrix,
+        target(
+            {
+                "metadata": {
+                    "identifier": "https://canapp.example/app",
+                    "title": "Example",
+                },
+                "links": [],
+            }
+        ),
+        "PROFILE-WEB",
+        "test",
+        build_registry(matrix),
+        run_seed="no-images",
+        selected_row_ids=["OPDS-008"],
+    )
+
+    assert partial.results[0].state == ResultState.PASS
+    assert no_images.results[0].state == ResultState.FAIL
+
+
 def test_opds_009_requires_one_real_visit_for_a_repeated_url():
     resource_url = "https://canapp.example/lesson"
     document = {
@@ -669,6 +728,234 @@ def test_opds_011_requires_the_resolved_relative_resource_to_be_reached(
 
     assert reached.results[0].state == ResultState.PASS
     assert reached.results[0].observed[0]["status"] == 200
+
+
+@pytest.mark.parametrize("escape_kind", ["parent", "absolute", "symlink"])
+def test_fixture_relative_resource_read_rejects_source_root_escape(
+    tmp_path,
+    escape_kind,
+):
+    fixture_root = tmp_path / "fixture"
+    fixture_root.mkdir()
+    outside = tmp_path / "outside.lesson"
+    outside.write_text("private lesson", encoding="utf-8")
+    if escape_kind == "parent":
+        href = "../outside.lesson"
+    elif escape_kind == "absolute":
+        href = str(outside)
+    else:
+        (fixture_root / "linked.lesson").symlink_to(outside)
+        href = "linked.lesson"
+    document = {
+        "metadata": {"title": "Catalog"},
+        "publications": [
+            {
+                "metadata": {
+                    "identifier": "https://canapp.example/lesson",
+                    "title": "Lesson",
+                },
+                "links": [{"href": href, "type": "text/html"}],
+            }
+        ],
+    }
+    canapp = target(document)
+    canapp.source_root = fixture_root
+    matrix = load_matrix()
+
+    run = execute(
+        matrix,
+        canapp,
+        "PROFILE-WEB",
+        "test",
+        build_registry(matrix),
+        run_seed=f"resource-{escape_kind}-escape",
+        selected_row_ids=["OPDS-011"],
+    )
+
+    assert run.results[0].state == ResultState.FAIL
+
+
+@pytest.mark.parametrize("escape_kind", ["parent", "absolute", "symlink"])
+def test_fixture_relative_catalog_read_rejects_source_root_escape(
+    tmp_path,
+    escape_kind,
+):
+    fixture_root = tmp_path / "fixture"
+    fixture_root.mkdir()
+    outside = tmp_path / "outside-catalog.json"
+    outside.write_text(
+        json.dumps(
+            {
+                "metadata": {"title": "Outside catalog"},
+                "links": [],
+            }
+        ),
+        encoding="utf-8",
+    )
+    if escape_kind == "parent":
+        learning_units = "../outside-catalog.json"
+    elif escape_kind == "absolute":
+        learning_units = str(outside)
+    else:
+        (fixture_root / "catalog.json").symlink_to(outside)
+        learning_units = "catalog.json"
+    canapp = target(
+        {
+            "name": {"en": "Legacy"},
+            "defaultLaunchUri": "https://canapp.example/launch",
+            "learningUnits": learning_units,
+        }
+    )
+    canapp.source_root = fixture_root
+    matrix = load_matrix()
+
+    run = execute(
+        matrix,
+        canapp,
+        "PROFILE-WEB",
+        "test",
+        build_registry(matrix),
+        run_seed=f"catalog-{escape_kind}-escape",
+        selected_row_ids=["OPDS-001"],
+    )
+
+    assert run.results[0].state == ResultState.FAIL
+
+
+def test_fixture_nested_catalog_resolves_lesson_against_referring_document(
+    tmp_path,
+):
+    fixture = tmp_path / "fixture"
+    catalogs = fixture / "catalogs"
+    lessons = fixture / "lessons"
+    catalogs.mkdir(parents=True)
+    lessons.mkdir()
+    (fixture / "expected.json").write_text(
+        json.dumps({"manifest": "descriptor.json"}),
+        encoding="utf-8",
+    )
+    (fixture / "descriptor.json").write_text(
+        json.dumps(
+            {
+                "metadata": {
+                    "identifier": "https://canapp.example/app",
+                    "title": "Nested fixture",
+                },
+                "links": [
+                    {
+                        "rel": [
+                            "https://respect.ustadmobile.com/ns/default-lesson-catalog"
+                        ],
+                        "href": "catalogs/catalog.json",
+                        "type": "application/opds+json",
+                    }
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
+    (catalogs / "catalog.json").write_text(
+        json.dumps(
+            {
+                "metadata": {"title": "Nested catalog"},
+                "links": [],
+                "publications": [
+                    {
+                        "metadata": {
+                            "identifier": "https://canapp.example/lesson",
+                            "title": "Nested lesson",
+                        },
+                        "links": [
+                            {
+                                "href": "../lessons/lesson.html",
+                                "type": "text/html",
+                            }
+                        ],
+                    }
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
+    lesson = lessons / "lesson.html"
+    lesson.write_text("nested lesson", encoding="utf-8")
+    matrix = load_matrix()
+
+    run = execute(
+        matrix,
+        load_fixture_target(fixture),
+        "PROFILE-WEB",
+        "test",
+        build_registry(matrix),
+        run_seed="nested-referring-document",
+        selected_row_ids=["OPDS-011"],
+    )
+
+    assert run.results[0].state == ResultState.PASS
+    by_href = {
+        item["href"]: item["resolved"] for item in run.results[0].observed
+    }
+    assert by_href["../lessons/lesson.html"] == lesson.resolve().as_uri()
+
+
+@pytest.mark.parametrize("row_id", ["OPDS-004", "OPDS-005", "OPDS-006", "OPDS-009"])
+def test_opds_escaping_link_fails_as_canapp_without_external_read(
+    tmp_path,
+    monkeypatch,
+    row_id,
+):
+    fixture = tmp_path / "fixture"
+    fixture.mkdir()
+    descriptor = fixture / "descriptor.json"
+    descriptor.write_text("{}", encoding="utf-8")
+    outside = tmp_path / "outside.lesson"
+    outside.write_text("private lesson", encoding="utf-8")
+    original_read_bytes = Path.read_bytes
+
+    def guarded_read_bytes(path):
+        if path.resolve() == outside.resolve():
+            pytest.fail("OPDS executor attempted an external fixture read")
+        return original_read_bytes(path)
+
+    monkeypatch.setattr(Path, "read_bytes", guarded_read_bytes)
+    link = {
+        "rel": ["http://opds-spec.org/acquisition/open-access"],
+        "href": "../outside.lesson",
+        "type": "text/html",
+    }
+    publication = {
+        "metadata": {
+            "identifier": "https://canapp.example/lesson",
+            "title": "Escaping lesson",
+        },
+        "links": [link, copy.deepcopy(link)] if row_id == "OPDS-009" else [link],
+    }
+    canapp = target(
+        {
+            "metadata": {"title": "Fixture catalog"},
+            "links": [],
+            "publications": [publication],
+        }
+    )
+    canapp.source_root = fixture
+    canapp.metadata["descriptor_url"] = descriptor.resolve().as_uri()
+    matrix = load_matrix()
+
+    run = execute(
+        matrix,
+        canapp,
+        "PROFILE-WEB",
+        "test",
+        build_registry(matrix),
+        run_seed=f"{row_id}-escape-attribution",
+        selected_row_ids=[row_id],
+    )
+
+    assert run.results[0].state == ResultState.FAIL
+    assert all(
+        observation.requested_url != outside.resolve().as_uri()
+        for observation in canapp.observations
+    )
 
 
 def test_independent_report_verifier_rejects_tampered_verdict():

@@ -6,7 +6,11 @@ import hashlib
 import json
 from pathlib import Path
 
-from respect_testkit_migration.validator import validate_manifest
+from respect_testkit_migration.validator import (
+    active_authority_files,
+    authority_layout_errors,
+    validate_manifest,
+)
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -36,6 +40,63 @@ def mutated_manifest(tmp_path, mutate):
 
 def test_committed_manifest_is_valid_offline():
     assert validate_manifest(MANIFEST, ROOT) == []
+
+
+def test_retired_authorities_are_ignored_but_active_duplicates_fail(tmp_path):
+    canonical = (
+        tmp_path
+        / "src/respect_compat/data/matrix/compatibility_matrix.json"
+    )
+    historical = (
+        tmp_path
+        / "src/respect_compat/data/profiles/compatibility_matrix_v0_1.json"
+    )
+    canonical.parent.mkdir(parents=True)
+    historical.parent.mkdir(parents=True)
+    canonical.write_text("{}", encoding="utf-8")
+    historical.write_text("{}", encoding="utf-8")
+    assert authority_layout_errors(tmp_path) == []
+
+    retired_canonical = (
+        tmp_path
+        / "To_Be_Deleted/build/lib/respect_compat/data/matrix"
+        / "compatibility_matrix.json"
+    )
+    retired_historical = (
+        tmp_path
+        / "To_Be_Deleted/build/lib/respect_compat/data/profiles"
+        / "compatibility_matrix_v0_1.json"
+    )
+    retired_canonical.parent.mkdir(parents=True)
+    retired_historical.parent.mkdir(parents=True)
+    retired_canonical.write_text("{}", encoding="utf-8")
+    retired_historical.write_text("{}", encoding="utf-8")
+
+    assert active_authority_files(
+        tmp_path, "compatibility_matrix.json"
+    ) == [canonical]
+    assert active_authority_files(
+        tmp_path, "compatibility_matrix_v0_1.json"
+    ) == [historical]
+    assert authority_layout_errors(tmp_path) == []
+
+    active_canonical = tmp_path / "active-copy/compatibility_matrix.json"
+    active_historical = (
+        tmp_path / "active-copy/compatibility_matrix_v0_1.json"
+    )
+    active_canonical.parent.mkdir()
+    active_canonical.write_text("{}", encoding="utf-8")
+    active_historical.write_text("{}", encoding="utf-8")
+
+    errors = authority_layout_errors(tmp_path)
+    assert any(
+        error.startswith("DUPLICATE_AUTHORITY: canonical Matrix")
+        for error in errors
+    )
+    assert any(
+        error.startswith("DUPLICATE_AUTHORITY: historical profile")
+        for error in errors
+    )
 
 
 def test_omission_fails_closed(tmp_path):

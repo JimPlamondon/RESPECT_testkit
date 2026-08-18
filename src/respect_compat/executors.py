@@ -155,9 +155,46 @@ def _content_type(observation: HttpObservation) -> str:
     return observation.headers.get("content-type", "").split(";", 1)[0].strip().lower()
 
 
+def _confined_source_path(source_root: Path, path: Path) -> Path:
+    resolved_root = source_root.resolve(strict=True)
+    resolved_path = path.resolve()
+    try:
+        resolved_path.relative_to(resolved_root)
+    except ValueError as error:
+        raise ValueError("fixture resource path escapes source_root") from error
+    return resolved_path
+
+
 def _resolved(context: ExecutionContext, href: str, base: Optional[str] = None) -> str:
     if context.target.source_root and not urllib.parse.urlparse(href).scheme:
-        return (context.target.source_root / href).resolve().as_uri()
+        parsed = urllib.parse.urlparse(href)
+        relative_path = Path(urllib.request.url2pathname(parsed.path))
+        if parsed.netloc or relative_path.is_absolute():
+            raise ValueError("fixture resource path escapes source_root")
+        candidate_base = base
+        if not (
+            isinstance(candidate_base, str)
+            and urllib.parse.urlparse(candidate_base).scheme == "file"
+        ):
+            descriptor_url = context.target.metadata.get("descriptor_url")
+            candidate_base = (
+                descriptor_url
+                if isinstance(descriptor_url, str)
+                and urllib.parse.urlparse(descriptor_url).scheme == "file"
+                else context.target.source_root.resolve(strict=True).as_uri()
+                + "/"
+            )
+        joined = urllib.parse.urljoin(candidate_base, href)
+        joined_parsed = urllib.parse.urlparse(joined)
+        if joined_parsed.scheme != "file" or joined_parsed.netloc:
+            raise ValueError("fixture resource path escapes source_root")
+        resolved = _confined_source_path(
+            context.target.source_root,
+            Path(urllib.request.url2pathname(joined_parsed.path)),
+        )
+        return urllib.parse.urlunparse(
+            joined_parsed._replace(path=urllib.parse.urlparse(resolved.as_uri()).path)
+        )
     return urllib.parse.urljoin(base or context.target.metadata.get("descriptor_url", context.target.uri), href)
 
 
@@ -175,6 +212,10 @@ def _read_url(context: ExecutionContext, url: str, headers: Optional[Dict[str, s
     parsed = urllib.parse.urlparse(url)
     if parsed.scheme == "file":
         path = Path(urllib.request.url2pathname(parsed.path))
+        if context.target.source_root is not None:
+            if parsed.netloc:
+                raise ValueError("fixture resource path escapes source_root")
+            path = _confined_source_path(context.target.source_root, path)
         body = path.read_bytes()
         resources = context.target.metadata.get("http_resources", {})
         configured = resources.get(url, resources.get(path.name, {}))
@@ -219,19 +260,25 @@ def _read_json(context: ExecutionContext, url: str) -> Tuple[Optional[Dict[str, 
 def _publication_documents(context: ExecutionContext) -> List[Tuple[str, Dict[str, Any]]]:
     documents: List[Tuple[str, Dict[str, Any]]] = []
     root = context.target.document
+    root_url = context.target.metadata.get("descriptor_url")
+    if not isinstance(root_url, str):
+        root_url = context.target.uri
     source_documents: List[Dict[str, Any]] = [root]
     if "publications" in root and isinstance(root["publications"], list):
         documents.extend(
-            (context.target.uri, item)
+            (root_url, item)
             for item in root["publications"]
             if isinstance(item, dict)
         )
     elif context.target.is_current_descriptor:
-        documents.append((context.target.uri, root))
+        documents.append((root_url, root))
     if context.target.is_current_descriptor:
         for link in _links(root):
             if DEFAULT_CATALOG_REL in _relations(link) and isinstance(link.get("href"), str):
-                url = _resolved(context, link["href"])
+                try:
+                    url = _resolved(context, link["href"], root_url)
+                except ValueError:
+                    continue
                 document, _ = _read_json(context, url)
                 if not document:
                     continue
@@ -314,7 +361,11 @@ def descriptor_executor(context: ExecutionContext, row: MatrixRow):
                 "The descriptor does not expose a default lesson catalog.",
             )
         href = catalog_links[0].get("href")
-        document_result, observation = _read_json(context, _resolved(context, str(href)))
+        try:
+            url = _resolved(context, str(href))
+        except ValueError:
+            url = ""
+        document_result, observation = _read_json(context, url)
         return _check(
             context,
             row,
@@ -399,11 +450,11 @@ def manifest_executor(context: ExecutionContext, row: MatrixRow):
             href = context.target.metadata.get("favicon_url")
         if not isinstance(href, str):
             return _check(context, row, False, {"field": field, "value": href}, "", f"No usable {field} URL is declared.")
-        url = _resolved(context, href)
         try:
+            url = _resolved(context, href)
             observation = _read_url(context, url)
         except Exception as error:
-            return _check(context, row, False, {"url": url, "error": type(error).__name__}, "", f"The declared {field} resource was not reachable.")
+            return _check(context, row, False, {"url": href, "error": type(error).__name__}, "", f"The declared {field} resource was not reachable.")
         accepted = observation.status == 200
         if row.row_id == "MANIFEST-007":
             accepted = accepted and _content_type(observation) in JSON_TYPES
@@ -424,17 +475,21 @@ def opds_executor(context: ExecutionContext, row: MatrixRow):
     if context.target.is_legacy_manifest:
         learning_units = context.target.document.get("learningUnits")
         if isinstance(learning_units, str):
-            document, _ = _read_json(context, _resolved(context, learning_units))
+            try:
+                learning_units_url = _resolved(context, learning_units)
+            except ValueError:
+                learning_units_url = ""
+            document, _ = _read_json(context, learning_units_url)
             if document:
                 context.target.metadata["_opds_source_documents"] = [document]
                 if isinstance(document.get("publications"), list):
                     documents = [
-                        (_resolved(context, learning_units), item)
+                        (learning_units_url, item)
                         for item in document["publications"]
                         if isinstance(item, dict)
                     ]
                 else:
-                    documents = [(_resolved(context, learning_units), document)]
+                    documents = [(learning_units_url, document)]
     if not documents:
         return _check(context, row, False, {"documents": 0}, "", "No parseable OPDS feed or publication was discovered.")
     if row.row_id == "OPDS-001":
@@ -489,8 +544,8 @@ def opds_executor(context: ExecutionContext, row: MatrixRow):
         ]
         outcomes = []
         for base, link in accepted:
-            url = _resolved(context, str(link.get("href", "")), base)
             try:
+                url = _resolved(context, str(link.get("href", "")), base)
                 observation = _read_url(context, url)
                 outcomes.append(
                     {
@@ -500,7 +555,12 @@ def opds_executor(context: ExecutionContext, row: MatrixRow):
                     }
                 )
             except Exception as error:
-                outcomes.append({"url": url, "error": type(error).__name__})
+                outcomes.append(
+                    {
+                        "url": str(link.get("href", "")),
+                        "error": type(error).__name__,
+                    }
+                )
         passed = bool(outcomes) and all(
             item.get("status") == 200
             and item.get("content_type") in LEARNING_UNIT_TYPES
@@ -515,19 +575,27 @@ def opds_executor(context: ExecutionContext, row: MatrixRow):
                 "No acquisition URL is present to evaluate.",
             )
         prohibited = []
+        invalid = []
         for base, link in acquisition:
-            parsed = urllib.parse.urlparse(_resolved(context, str(link.get("href", "")), base))
+            href = str(link.get("href", ""))
+            try:
+                resolved = _resolved(context, href, base)
+            except ValueError as error:
+                invalid.append({"href": href, "error": type(error).__name__})
+                continue
+            parsed = urllib.parse.urlparse(resolved)
             keys = set(urllib.parse.parse_qs(parsed.query))
             if parsed.fragment or keys & RESERVED_LAUNCH_PARAMETERS:
                 prohibited.append({"url": parsed.geturl(), "reserved": sorted(keys & RESERVED_LAUNCH_PARAMETERS)})
-        return _check(context, row, not prohibited, prohibited, "Acquisition URLs avoid fragments and reserved launch parameters.", "An acquisition URL contains a fragment or reserved launch parameter.")
+        observed = {"invalid": invalid, "prohibited": prohibited}
+        return _check(context, row, not invalid and not prohibited, observed, "Acquisition URLs avoid fragments and reserved launch parameters.", "An acquisition URL is invalid or contains a fragment or reserved launch parameter.")
     if row.row_id == "OPDS-006":
         if not acquisition:
             return _not_applicable(context, row, "No acquisition resource requires publication-manifest discovery.")
         discoveries = []
         for base, link in acquisition:
-            url = _resolved(context, str(link.get("href", "")), base)
             try:
+                url = _resolved(context, str(link.get("href", "")), base)
                 observation = _read_url(context, url)
             except Exception:
                 continue
@@ -578,20 +646,54 @@ def opds_executor(context: ExecutionContext, row: MatrixRow):
             return _check(context, row, False, {"links": 0}, "", "The publication declares no required resource of this kind.")
         outcomes = []
         for base, link in selected:
-            url = _resolved(context, str(link.get("href", "")), base)
             try:
+                url = _resolved(context, str(link.get("href", "")), base)
                 observation = _read_url(context, url)
                 outcomes.append({"url": url, "status": observation.status})
             except Exception as error:
-                outcomes.append({"url": url, "error": type(error).__name__})
+                outcomes.append(
+                    {
+                        "url": str(link.get("href", "")),
+                        "error": type(error).__name__,
+                    }
+                )
+        if row.row_id == "OPDS-008":
+            return _check(
+                context,
+                row,
+                any(item.get("status") == 200 for item in outcomes),
+                outcomes,
+                "At least one declared image is reachable.",
+                "No declared image is reachable.",
+            )
         return _check(context, row, all(item.get("status") == 200 for item in outcomes), outcomes, "Every declared resource is reachable.", "A declared resource is unreachable.")
     if row.row_id == "OPDS-009":
-        declared_urls = [
-            _resolved(context, str(link.get("href", "")), base)
-            for base, publication in documents
-            for link in _links(publication)
-            if isinstance(link.get("href"), str)
-        ]
+        declared_urls = []
+        invalid = []
+        for base, publication in documents:
+            for link in _links(publication):
+                if not isinstance(link.get("href"), str):
+                    continue
+                try:
+                    declared_urls.append(
+                        _resolved(context, link["href"], base)
+                    )
+                except ValueError as error:
+                    invalid.append(
+                        {
+                            "href": link["href"],
+                            "error": type(error).__name__,
+                        }
+                    )
+        if invalid:
+            return _check(
+                context,
+                row,
+                False,
+                {"invalid_links": invalid},
+                "Every declared URL is confined to the fixture source root.",
+                "A declared URL escapes the fixture source root.",
+            )
         repeats = sorted(
             {url for url in declared_urls if declared_urls.count(url) > 1}
         )
@@ -655,8 +757,9 @@ def opds_executor(context: ExecutionContext, row: MatrixRow):
         return _not_applicable(context, row, "No relative OPDS link is present.")
     observed = []
     for base, href in relative:
-        resolved = _resolved(context, href, base)
+        resolved = None
         try:
+            resolved = _resolved(context, href, base)
             observation = _read_url(context, resolved)
             observed.append(
                 {

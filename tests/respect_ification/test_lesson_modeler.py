@@ -1,6 +1,7 @@
 # SPDX-FileCopyrightText: 2026 Jim Plamondon
 # SPDX-License-Identifier: Apache-2.0
 
+import hashlib
 import json
 from pathlib import Path
 
@@ -333,6 +334,25 @@ def test_modeling_packet_is_source_bound_without_copying_source(tmp_path):
     assert str(prompt) in todo.read_text()
 
 
+def test_modeling_packet_source_digest_binds_files_larger_than_preview_limit(
+    tmp_path,
+):
+    source = tmp_path / "owner-source"
+    source.mkdir()
+    large = source / "large-lesson.bundle"
+    large.write_bytes(b"a" * 2_000_001)
+    inventory = _inventory(1)
+
+    before = build_modeling_packet(source, inventory)
+    large.write_bytes(b"b" + b"a" * 2_000_000)
+    after = build_modeling_packet(source, inventory)
+
+    assert [item["path"] for item in before["source_files"]] == [
+        "large-lesson.bundle"
+    ]
+    assert before["source_tree_digest"] != after["source_tree_digest"]
+
+
 def test_batch_preserves_child_results_and_resume_requires_exact_hashes(tmp_path):
     inventory = _inventory(2)
     model = _model(inventory, 2)
@@ -384,6 +404,55 @@ def test_batch_preserves_child_results_and_resume_requires_exact_hashes(tmp_path
     changed = finalize_artifact(changed)
     with pytest.raises(ValueError, match="run plan"):
         run_lesson_batch(changed, output, runner, resume=True)
+
+
+def test_batch_resume_rejects_unsafe_report_references(tmp_path):
+    inventory = _inventory(1)
+    model = _model(inventory, 1)
+    selection = _selection(inventory, model, all=True)
+    plan = compile_run_plan(
+        inventory,
+        model,
+        selection,
+        testkit_commit="b" * 40,
+        target_id="synthetic-target",
+        target_digest=DIGEST,
+        profile_id="PROFILE-NATIVE_ANDROID",
+        available_capabilities={"wait"},
+    )
+
+    def runner(entry, child_dir, event):
+        report = {
+            "lesson_id": entry["lesson_id"],
+            "scenario_sha256": entry["scenario_sha256"],
+            "exit_code": 0,
+            "outcome": "passed",
+        }
+        (child_dir / "respect-report.json").write_text(json.dumps(report))
+        return report
+
+    output = tmp_path / "batch"
+    run_lesson_batch(plan, output, runner)
+    index_path = output / "canapp-lesson-batch-index.json"
+    original = json.loads(index_path.read_text(encoding="utf-8"))
+    outside = tmp_path / "outside-report.json"
+    outside.write_text('{"private":true}', encoding="utf-8")
+    (output / "linked-report.json").symlink_to(outside)
+    report_hash = hashlib.sha256(outside.read_bytes()).hexdigest()
+
+    for reference in (
+        "../outside-report.json",
+        str(outside),
+        "linked-report.json",
+    ):
+        tampered = json.loads(json.dumps(original))
+        tampered["children"][0]["report"] = reference
+        tampered["children"][0]["report_sha256"] = report_hash
+        tampered = finalize_artifact(tampered)
+        index_path.write_text(json.dumps(tampered), encoding="utf-8")
+
+        with pytest.raises(ValueError, match="unsafe report reference"):
+            run_lesson_batch(plan, output, runner, resume=True)
 
 
 def test_execution_log_omits_sensitive_lesson_values(tmp_path):

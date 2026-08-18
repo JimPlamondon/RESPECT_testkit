@@ -54,3 +54,57 @@ def test_sanitize_argv_preserves_nonsecret_arguments():
         "--profile",
         "PROFILE-WEB",
     ]
+
+
+def test_execution_log_recursively_redacts_secret_key_families_and_url_userinfo(
+    tmp_path,
+):
+    path = tmp_path / "execution.jsonl"
+    log = ExecutionLog(
+        path,
+        program="respect-ification",
+        command="example",
+        argv=[
+            "--api-key=argv-api-secret",
+            "--aws-secret-access-key=argv-aws-secret",
+            "--manifest-url",
+            (
+                "https://url-user:url-password@example.test/descriptor.json"
+                "?access_token=url-access-secret&client_secret=url-client-secret"
+                "&aws_secret_access_key=url-aws-secret"
+            ),
+        ],
+    )
+    log.emit(
+        "nested",
+        "observed",
+        {
+            "request": {
+                "api_key": "nested-api-secret",
+                "client-secret": "nested-client-secret",
+                "aws_secret_access_key": "nested-aws-secret",
+                "credentials": [
+                    {"accessToken": "nested-access-secret"},
+                    {"safe": "retained"},
+                ],
+            }
+        },
+    )
+    log.finish(0)
+
+    serialized = path.read_text(encoding="utf-8")
+    for secret in (
+        "argv-api-secret",
+        "argv-aws-secret",
+        "url-user",
+        "url-password",
+        "url-access-secret",
+        "url-client-secret",
+        "url-aws-secret",
+        "nested-api-secret",
+        "nested-client-secret",
+        "nested-access-secret",
+        "nested-aws-secret",
+    ):
+        assert secret not in serialized
+    assert "retained" in serialized

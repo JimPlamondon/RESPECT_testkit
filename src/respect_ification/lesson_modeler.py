@@ -9,7 +9,7 @@ import copy
 import hashlib
 import json
 import os
-from pathlib import Path
+from pathlib import Path, PurePosixPath, PureWindowsPath
 from typing import Any, Callable, Dict, Iterable, List, Mapping, Optional, Set
 
 import jsonschema
@@ -67,7 +67,6 @@ _IGNORED_SOURCE_PARTS = {
     "target",
     "vendor",
 }
-_MAX_SOURCE_FILE = 2_000_000
 
 
 def _is_sha256(value: Any) -> bool:
@@ -536,14 +535,15 @@ def _source_files(root: Path) -> List[Dict[str, Any]]:
             if any(part in _IGNORED_SOURCE_PARTS for part in relative.parts):
                 continue
             size = path.stat().st_size
-            if size > _MAX_SOURCE_FILE:
-                continue
-            body = path.read_bytes()
+            hasher = hashlib.sha256()
+            with path.open("rb") as handle:
+                for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+                    hasher.update(chunk)
             result.append(
                 {
                     "path": relative.as_posix(),
                     "size": size,
-                    "sha256": hashlib.sha256(body).hexdigest(),
+                    "sha256": hasher.hexdigest(),
                 }
             )
     return result
@@ -616,6 +616,29 @@ def _child_directory(root: Path, index: int, lesson_id: str) -> Path:
     return root / "children" / f"{index:06d}-{digest}"
 
 
+def _resume_report_path(output_dir: Path, reference: str) -> Path:
+    posix = PurePosixPath(reference)
+    windows = PureWindowsPath(reference)
+    if (
+        not reference
+        or posix.is_absolute()
+        or windows.is_absolute()
+        or windows.drive
+        or ".." in posix.parts
+        or ".." in windows.parts
+    ):
+        raise ValueError("unsafe report reference in resumable child")
+    resolved_root = output_dir.resolve(strict=True)
+    resolved_path = (output_dir / reference).resolve()
+    try:
+        resolved_path.relative_to(resolved_root)
+    except ValueError as error:
+        raise ValueError(
+            "unsafe report reference in resumable child"
+        ) from error
+    return resolved_path
+
+
 def run_lesson_batch(
     run_plan: Mapping[str, Any],
     output_dir: Path,
@@ -658,7 +681,7 @@ def run_lesson_batch(
                 report_hash
             ):
                 raise ValueError("resumable child report binding is missing")
-            report_path = output_dir / report_reference
+            report_path = _resume_report_path(output_dir, report_reference)
             if (
                 not report_path.is_file()
                 or hashlib.sha256(report_path.read_bytes()).hexdigest()

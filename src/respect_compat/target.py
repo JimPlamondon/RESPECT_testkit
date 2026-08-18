@@ -3,7 +3,9 @@
 
 import hashlib
 import json
+import os
 import ssl
+import stat
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -113,14 +115,32 @@ def _digest(adapter: str, uri: str, body: bytes, apk: Optional[Path]) -> str:
 
 
 def _fixture_digest(root: Path, uri: str, apk: Optional[Path]) -> str:
+    resolved_root = root.resolve(strict=True)
     hasher = hashlib.sha256()
     hasher.update(b"fixture\0")
     hasher.update(uri.encode("utf-8"))
-    for path in sorted(item for item in root.rglob("*") if item.is_file()):
-        hasher.update(b"\0path\0")
-        hasher.update(path.relative_to(root).as_posix().encode("utf-8"))
-        hasher.update(b"\0content\0")
-        hasher.update(path.read_bytes())
+    for current, directories, names in os.walk(
+        resolved_root,
+        followlinks=False,
+    ):
+        current_path = Path(current)
+        directories.sort()
+        names.sort()
+        for name in directories:
+            if (current_path / name).is_symlink():
+                raise ValueError("fixture digest rejects symlinks")
+        for name in names:
+            path = current_path / name
+            if path.is_symlink():
+                raise ValueError("fixture digest rejects symlinks")
+            if not stat.S_ISREG(path.lstat().st_mode):
+                raise ValueError("fixture digest accepts only regular files")
+            hasher.update(b"\0path\0")
+            hasher.update(
+                path.relative_to(resolved_root).as_posix().encode("utf-8")
+            )
+            hasher.update(b"\0content\0")
+            hasher.update(path.read_bytes())
     if apk:
         hasher.update(b"\0apk\0")
         hasher.update(apk.read_bytes())
@@ -193,6 +213,7 @@ def load_fixture_target(root: Path, apk: Optional[Path] = None) -> CanAppTarget:
         apk=apk,
         metadata={
             **case.metadata,
+            "descriptor_url": case.manifest_path.as_uri(),
             "fixture_expected": case.expected,
             "_trusted_reference": trusted_reference,
             "_controlled_runtime": False,
